@@ -1,13 +1,68 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
-  output   = "../app/generated/prisma"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  name      String?
+  image     String?
+  createdAt DateTime  @default(now()) @map("created_at")
+  
+  attempts  Attempt[]
+  
+  @@map("users")
+}
+
+model Quiz {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  
+  questions   Question[]
+  attempts    Attempt[]
+  
+  @@map("quizzes")
+}
+
+model Question {
+  id               String @id @default(cuid())
+  text             String
+  options          Json
+  correctOptionId  String @map("correct_option_id")
+  order            Int
+  explanation      String?
+  quizId           String @map("quiz_id")
+  
+  quiz             Quiz   @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  
+  @@map("questions")
+  @@index([quizId])
+}
+
+model Attempt {
+  id               String   @id @default(cuid())
+  userId           String?  @map("user_id")
+  guestId          String?  @map("guest_id")
+  quizId           String   @map("quiz_id")
+  score            Int
+  totalQuestions   Int      @map("total_questions")
+  answers          Json
+  syncStatus       String   @default("pending") @map("sync_status")
+  createdAt        DateTime @default(now()) @map("created_at")
+  
+  user   User?  @relation(fields: [userId], references: [id])
+  quiz   Quiz   @relation(fields: [quizId], references: [id])
+  
+  @@map("attempts")
+  @@index([userId])
+  @@index([guestId])
+  @@index([syncStatus])
 }

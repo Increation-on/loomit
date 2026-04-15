@@ -6,7 +6,7 @@ const optionSchema = z.object({
   text: z.string().min(1, 'Текст варианта обязателен')
 })
 
-export const questionSchema = z.object({
+const baseQuestionSchema = z.object({
   id: z.string().cuid(),
   text: z.string().min(1, 'Текст вопроса обязателен').max(500),
   options: z.array(optionSchema).min(2, 'Минимум 2 варианта ответа'),
@@ -14,12 +14,15 @@ export const questionSchema = z.object({
   order: z.number().int().min(0),
   explanation: z.string().max(1000).nullable().optional(),
   quizId: z.string().cuid()
-}).refine(
+})
+
+export const questionSchema = baseQuestionSchema.refine(
   (data) => data.options.some(opt => opt.id === data.correctOptionId),
   { message: 'Правильный ответ должен быть среди вариантов', path: ['correctOptionId'] }
 )
 
-export const createQuestionSchema = questionSchema.omit({ id: true })
+export const createQuestionSchema = baseQuestionSchema.omit({ id: true })
+
 export const updateQuestionSchema = createQuestionSchema.partial()
 
 export type Question = z.infer<typeof questionSchema>

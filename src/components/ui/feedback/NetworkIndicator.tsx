@@ -1,12 +1,16 @@
-// src/components/ui/NetworkIndicator.tsx
+// src/components/ui/feedback/NetworkIndicator.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
 
 export default function NetworkIndicator() {
-  const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
+  const [isOnline, setIsOnline] = useState(true); // Сервер всегда рендерит true
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+    setIsOnline(navigator.onLine);
+
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
 
@@ -18,6 +22,11 @@ export default function NetworkIndicator() {
       window.removeEventListener('offline', handleOffline);
     };
   }, []);
+
+  // Пока не смонтировано — показываем заглушку (или ничего)
+  if (!mounted) {
+    return <div className="w-2 h-2 rounded-full bg-gray-300" />;
+  }
 
   return (
     <div className="flex items-center gap-2">

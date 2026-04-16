@@ -2,7 +2,7 @@
 'use client';
 
 import { Component, ErrorInfo, ReactNode } from 'react';
-import { Button } from './core/Button';
+import { Button } from '../core/Button';
 
 interface ErrorBoundaryProps {
   children: ReactNode;

@@ -1,8 +1,12 @@
+// src/store/store.ts
 import { configureStore } from '@reduxjs/toolkit';
+
+// Временный пустой редюсер
+const emptyReducer = (state = {}) => state;
 
 export const store = configureStore({
   reducer: {
-    // сюда будем добавлять редюсеры позже
+    _empty: emptyReducer,
   },
 });
 

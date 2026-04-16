@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import NetworkIndicator from '@/components/ui/feedback/NetworkIndicator';
 import Logo from '../ui/core/Logo';
 import { HeaderNavbar } from './HeaderNavbar';
+import { ThemeToggle } from '../ui/core/ThemeToggle';
 
 
 export default function Header() {
@@ -27,6 +28,7 @@ export default function Header() {
         {/* Индикатор сети + Кнопка профиля */}
         <div className="flex items-center gap-3">
           <NetworkIndicator />
+          <ThemeToggle />
           <Link 
             href="/profile" 
             className="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"

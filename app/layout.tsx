@@ -1,19 +1,19 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Space_Grotesk, Inter } from 'next/font/google'
 import "./globals.css";
-import { Providers } from "./Providers";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { Providers } from "./providers";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+const spaceGrotesk = Space_Grotesk({ 
+  subsets: ['latin'],
+  variable: '--font-display'
+})
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const inter = Inter({ 
+  subsets: ['latin'],
+  variable: '--font-body'
+})
 
 export const metadata: Metadata = {
   title: "LoomIt — Квизы по собеседованиям",
@@ -28,10 +28,10 @@ export default function RootLayout({
   return (
     <html
       lang="ru"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${spaceGrotesk.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-       <Providers>
+        <Providers>
           <Header />
           <main className="flex-1">
             {children}

@@ -1,33 +1,29 @@
-@import "tailwindcss/preflight";
-@import "tailwindcss/utilities";
+@import "tailwindcss";
 
 @layer base {
   :root {
-  /* Основные цвета */
-  --loom-yellow: #D4A800;
-  --loom-cyan: #00CCCC;
-  --loom-purple: #6B00CC;
-  --loom-black: #FFFFFF;
-  --loom-white: #111111;
-  
-  /* Глитч-эффекты (опционально) */
-  --glitch-pink: #D41976;
-  --glitch-darkpurple: #871F78;
-  --glitch-blue: #00BFFF;
-}
+    --loom-yellow: #D4A800;
+    --loom-cyan: #00CCCC;
+    --loom-purple: #6B00CC;
+    --loom-black: #FFFFFF;
+    --loom-white: #111111;
+    
+    --glitch-pink: #D41976;
+    --glitch-darkpurple: #871F78;
+    --glitch-blue: #00BFFF;
+  }
 
-.dark {
-  --loom-yellow: #FFD700;
-  --loom-cyan: #00FFFF;
-  --loom-purple: #8B00FF;
-  --loom-black: #000000;
-  --loom-white: #FFFFFF;
-  
-  /* Глитч-эффекты (опционально) */
-  --glitch-pink: #FFC0CB;
-  --glitch-darkpurple: #871F78;
-  --glitch-blue: #00BFFF;
-}
+  .dark {
+    --loom-yellow: #FFD700;
+    --loom-cyan: #00FFFF;
+    --loom-purple: #8B00FF;
+    --loom-black: #000000;
+    --loom-white: #FFFFFF;
+    
+    --glitch-pink: #FFC0CB;
+    --glitch-darkpurple: #871F78;
+    --glitch-blue: #00BFFF;
+  }
 
   body {
     background-color: var(--loom-black);

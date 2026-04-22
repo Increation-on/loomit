@@ -1,32 +1,29 @@
 // middleware.ts
+import { withAuth } from 'next-auth/middleware'
 import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
 
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
-  
-  // Временная заглушка — позже добавим проверку сессии
-  const isAuthenticated = request.cookies.has('next-auth.session-token') || 
-                          request.cookies.has('__Secure-next-auth.session-token')
-  const isAdmin = request.cookies.has('admin-auth')
+export default withAuth(
+  function middleware(req) {
+    const token = req.nextauth.token
+    const isAdmin = token?.role === 'admin'
 
-  // Защита /profile/*
-  if (pathname.startsWith('/profile')) {
-    if (!isAuthenticated) {
-      return NextResponse.redirect(new URL('/login', request.url))
+    if (req.nextUrl.pathname.startsWith('/admin') && !isAdmin) {
+      return NextResponse.redirect(new URL('/login', req.url))
     }
-  }
 
-  // Защита /admin/*
-  if (pathname.startsWith('/admin')) {
-    if (!isAdmin) {
-      return NextResponse.redirect(new URL('/admin/login', request.url))
+    if (req.nextUrl.pathname.startsWith('/profile') && !token) {
+      return NextResponse.redirect(new URL('/login', req.url))
     }
-  }
 
-  return NextResponse.next()
-}
+    return NextResponse.next()
+  },
+  {
+    callbacks: {
+      authorized: () => true,
+    },
+  }
+)
 
 export const config = {
-  matcher: ['/profile/:path*', '/admin/:path*']
+  matcher: ['/profile/:path*', '/admin/:path*'],
 }

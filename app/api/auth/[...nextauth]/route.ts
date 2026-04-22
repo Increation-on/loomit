@@ -9,7 +9,7 @@ import type { JWT } from 'next-auth/jwt'
 import type { Session } from 'next-auth'
 
 const authOptions = {
-  adapter: PrismaAdapter(prisma),
+  // adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,

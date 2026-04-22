@@ -4,7 +4,6 @@
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -20,7 +19,6 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
-  const dispatch = useDispatch();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -45,6 +43,10 @@ export default function LoginPage() {
       router.push('/');
       router.refresh();
     }
+  };
+
+  const handleGoogleSignIn = () => {
+    signIn('google', { callbackUrl: '/' });
   };
 
   return (
@@ -86,6 +88,14 @@ export default function LoginPage() {
             <span className="px-2 bg-white text-gray-500">Или</span>
           </div>
         </div>
+        
+        <Button
+          variant="outline"
+          onClick={handleGoogleSignIn}
+          className="w-full"
+        >
+          Войти через Google
+        </Button>
         
         <p className="text-center text-sm text-gray-600 mt-4">
           Нет аккаунта?{' '}

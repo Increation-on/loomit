@@ -1,40 +1,54 @@
-// src/components/layout/Header.tsx
 'use client';
 
+import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import NetworkIndicator from '@/components/ui/feedback/NetworkIndicator';
-import Logo from '../ui/core/Logo';
-import { HeaderNavbar } from './HeaderNavbar';
-import { ThemeToggle } from '../ui/core/ThemeToggle';
-
+import { ThemeToggle } from '@/components/ui/core/ThemeToggle';
 
 export default function Header() {
-  const pathname = usePathname();
-  
-  if (pathname?.startsWith('/admin')) {
-    return null;
-  }
+  const { data: session, status } = useSession();
+  const isAuthenticated = status === 'authenticated';
 
   return (
-    <header className="border-b bg-white sticky top-0 z-10">
+    <header className="border-b border-loom-purple/20 bg-loom-black sticky top-0 z-10">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        {/* Логотип */}
-       <Logo/>
-        
-        {/* Навигация */}
-       <HeaderNavbar/>
-       
-        {/* Индикатор сети + Кнопка профиля */}
+        <Link href="/" className="text-xl font-bold text-loom-yellow">
+          LoomIt
+        </Link>
+
+        <nav className="hidden md:flex gap-6">
+          <Link href="/" className="hover:text-loom-cyan text-loom-white">
+            Главная
+          </Link>
+          <Link href="/profile" className="hover:text-loom-cyan text-loom-white">
+            Профиль
+          </Link>
+        </nav>
+
         <div className="flex items-center gap-3">
           <NetworkIndicator />
           <ThemeToggle />
-          <Link 
-            href="/profile" 
-            className="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-          >
-            Профиль
-          </Link>
+          
+          {isAuthenticated ? (
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-loom-white">
+                {session?.user?.name || session?.user?.email}
+              </span>
+              <button
+                onClick={() => signOut()}
+                className="text-sm bg-loom-pink text-loom-white px-4 py-2 rounded-lg hover:opacity-80 transition"
+              >
+                Выйти
+              </button>
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              className="text-sm bg-loom-cyan text-loom-black px-4 py-2 rounded-lg hover:opacity-80 transition"
+            >
+              Войти
+            </Link>
+          )}
         </div>
       </div>
     </header>

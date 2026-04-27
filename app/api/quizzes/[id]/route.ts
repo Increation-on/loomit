@@ -1,26 +1,28 @@
-// app/api/quizzes/[id]/route.ts
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server';
+
+const mockQuiz = {
+  id: '1',
+  title: 'React Basics',
+  questions: [
+    {
+      id: 'q1',
+      text: 'Что такое JSX?',
+      options: ['JavaScript XML', 'Java Syntax Extension', 'JSON Xport', 'Javascript Xtra'],
+      correctOptionId: 'JavaScript XML',
+    },
+    {
+      id: 'q2',
+      text: 'Какой хук используется для сайд-эффектов?',
+      options: ['useState', 'useEffect', 'useReducer', 'useMemo'],
+      correctOptionId: 'useEffect',
+    },
+  ],
+};
 
 export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  request: Request,
+  { params }: { params: { id: string } }
 ) {
-  const { id } = await params
-  return NextResponse.json({ message: `Quiz ${id} endpoint in development` })
-}
-
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const { id } = await params
-  return NextResponse.json({ message: `Update quiz ${id} endpoint in development` })
-}
-
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const { id } = await params
-  return NextResponse.json({ message: `Delete quiz ${id} endpoint in development` })
+  // Временно игнорируем id, возвращаем мок
+  return NextResponse.json(mockQuiz);
 }

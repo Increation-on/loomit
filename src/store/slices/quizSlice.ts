@@ -12,6 +12,7 @@ interface QuizState {
   answers: UserAnswer[];
   currentIndex: number;
   isFinished: boolean;
+  startedAt: string | null;
 }
 
 const initialState: QuizState = {
@@ -20,6 +21,7 @@ const initialState: QuizState = {
   answers: [],
   currentIndex: 0,
   isFinished: false,
+  startedAt: null,
 };
 
 const quizSlice = createSlice({
@@ -32,6 +34,7 @@ const quizSlice = createSlice({
       state.answers = [];
       state.currentIndex = 0;
       state.isFinished = false;
+      state.startedAt = new Date().toISOString();
     },
     answerQuestion(state, action: PayloadAction<{ questionId: string; selectedOptionId: string }>) {
       const question = state.questions.find(q => q.id === action.payload.questionId);

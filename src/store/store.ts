@@ -1,12 +1,9 @@
-// src/store/store.ts
 import { configureStore } from '@reduxjs/toolkit';
-
-// Временный пустой редюсер
-const emptyReducer = (state = {}) => state;
+import quizReducer from './slices/quizSlice';
 
 export const store = configureStore({
   reducer: {
-    _empty: emptyReducer,
+    quiz: quizReducer,
   },
 });
 

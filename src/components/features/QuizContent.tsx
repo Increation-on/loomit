@@ -1,45 +1,38 @@
 'use client';
 import { useDispatch, useSelector } from 'react-redux';
+import { useRouter } from 'next/navigation';
 import { 
   selectCurrentQuestion, 
   selectScore, 
   selectProgress, 
   selectIsAnswered,
   selectQuizState, 
-  startQuiz
+  startQuiz,
+  resetQuiz
 } from '@/store/slices/quizSlice';
 import { answerQuestion, nextQuestion, previousQuestion, finishQuiz } from '@/store/slices/quizSlice';
 import { Button } from '@/components/ui/core/Button';
 import { RadioGroup } from '@/components/ui/selection/RadioGroup';
 import { ProgressBar } from '@/components/ui/feedback/ProgressBar';
 import { useSaveAttemptMutation } from '@/store/api/attemptsApi';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 export function QuizContent({ id }: { id: string }) {
   const dispatch = useDispatch();
+  const router = useRouter();
   const currentQuestion = useSelector(selectCurrentQuestion);
   const score = useSelector(selectScore);
   const progress = useSelector(selectProgress);
   const isAnswered = useSelector(selectIsAnswered);
   const { questions, answers, currentIndex, isFinished, currentQuiz } = useSelector(selectQuizState);
   const [saveAttempt] = useSaveAttemptMutation();
+  const loadedRef = useRef(false);
+  const savedRef = useRef(false);
 
-  // Сохранение после завершения
+  // Загрузка квиза — один раз при маунте, если стейт пустой
   useEffect(() => {
-    if (isFinished && questions.length > 0) {
-      const attempt = {
-        quizId: currentQuestion?.id,
-        score: answers.filter(a => a.isCorrect).length,
-        totalQuestions: questions.length,
-        answers: answers,
-      };
-      saveAttempt(attempt);
-    }
-  }, [isFinished, questions, answers, currentQuestion, saveAttempt]);
-
-  // Загрузка квиза только если нет вопросов
-  useEffect(() => {
-    if (questions.length === 0) {
+    if (!loadedRef.current && questions.length === 0 && !currentQuiz) {
+      loadedRef.current = true;
       fetch(`/api/quizzes/${id}`)
         .then(res => res.json())
         .then(quiz => {
@@ -49,13 +42,38 @@ export function QuizContent({ id }: { id: string }) {
           }));
         });
     }
-  }, [id, dispatch, questions.length]);
+  }, []);
+
+  // Сохранение после завершения — один раз
+  useEffect(() => {
+    if (isFinished && questions.length > 0 && !savedRef.current) {
+      savedRef.current = true;
+      const attempt = {
+        quizId: id,
+        score: answers.filter(a => a.isCorrect).length,
+        totalQuestions: questions.length,
+        answers: answers,
+      };
+      
+      saveAttempt(attempt)
+        .then(() => {
+          console.log('✅ Сохранено успешно');
+        })
+        .catch((error) => {
+          console.error('Ошибка сохранения:', error);
+        });
+    }
+  }, [isFinished, questions, answers, id, saveAttempt, dispatch]);
 
   if (isFinished) {
     return (
       <div className="p-4 text-center">
         <h2 className="text-2xl font-bold text-loom-white mb-4">Квиз завершён!</h2>
-        <p className="text-loom-white/80">Результат: {score} из {questions.length}</p>
+        <p className="text-loom-white/80 mb-6">Результат: {score} из {questions.length}</p>
+        <Button onClick={() => {
+          dispatch(resetQuiz());
+          router.push('/');
+        }}>На главную</Button>
       </div>
     );
   }

@@ -1,3 +1,5 @@
+//app\api\quizzes\[id]\route.ts
+
 import { NextResponse } from 'next/server';
 
 const mockQuiz = {

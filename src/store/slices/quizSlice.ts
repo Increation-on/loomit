@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { RootState } from '../store';
 
 export interface UserAnswer {
   questionId: string;
@@ -29,6 +30,7 @@ const quizSlice = createSlice({
   initialState,
   reducers: {
     startQuiz(state, action: PayloadAction<{ quiz: { id: string; title: string }; questions: any[] }>) {
+      console.log('⚠️ startQuiz вызван, данные:', action.payload.quiz.id);
       state.currentQuiz = action.payload.quiz;
       state.questions = action.payload.questions;
       state.answers = [];
@@ -61,6 +63,30 @@ const quizSlice = createSlice({
     },
   },
 });
+
+// Селекторы
+export const selectQuizState = (state: RootState) => state.quiz;
+
+export const selectCurrentQuestion = (state: RootState) => {
+  const { questions, currentIndex } = state.quiz;
+  return questions[currentIndex];
+};
+
+export const selectScore = (state: RootState) => {
+  const { answers } = state.quiz;
+  return answers.filter(a => a.isCorrect).length;
+};
+
+export const selectProgress = (state: RootState) => {
+  const { currentIndex, questions } = state.quiz;
+  return (currentIndex + 1) / questions.length;
+};
+
+export const selectIsAnswered = (state: RootState) => {
+  const { answers, questions, currentIndex } = state.quiz;
+  const currentQuestion = questions[currentIndex];
+  return !!answers.find(a => a.questionId === currentQuestion?.id);
+};
 
 export const { startQuiz, answerQuestion, nextQuestion, previousQuestion, finishQuiz, resetQuiz } = quizSlice.actions;
 export default quizSlice.reducer;

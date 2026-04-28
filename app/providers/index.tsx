@@ -1,8 +1,9 @@
 'use client';
 
 import { SessionProvider } from 'next-auth/react';
-import { Provider as ReduxStoreProvider } from 'react-redux';
-import { store } from '@/store/store';
+import { Provider as ReduxProvider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import { store, persistor } from '@/store/store';
 import { ToastContainer } from '@/components/ui/feedback/ToastContainer';
 import { ThemeProvider } from './ThemeProvider';
 import { Session } from 'next-auth';
@@ -16,13 +17,15 @@ export function Providers({
 }) {
   return (
     <SessionProvider session={session}>
-      <ReduxStoreProvider store={store}>
-        <ThemeProvider>
-          <ToastContainer>
-            {children}
-          </ToastContainer>
-        </ThemeProvider>
-      </ReduxStoreProvider>
+      <ReduxProvider store={store}>
+        <PersistGate loading={<div className="p-4 text-center text-loom-white">Загрузка...</div>} persistor={persistor}>
+          <ThemeProvider>
+            <ToastContainer>
+              {children}
+            </ToastContainer>
+          </ThemeProvider>
+        </PersistGate>
+      </ReduxProvider>
     </SessionProvider>
   );
 }

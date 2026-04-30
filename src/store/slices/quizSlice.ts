@@ -12,6 +12,7 @@ interface QuizState {
   questions: { id: string; text: string; options: string[]; correctOptionId: string }[];
   answers: UserAnswer[];
   currentIndex: number;
+  selectedOption: string | null; // выбранный, но не подтверждённый вариант
   isFinished: boolean;
   startedAt: string | null;
 }
@@ -21,6 +22,7 @@ const initialState: QuizState = {
   questions: [],
   answers: [],
   currentIndex: 0,
+  selectedOption: null,
   isFinished: false,
   startedAt: null,
 };
@@ -30,33 +32,55 @@ const quizSlice = createSlice({
   initialState,
   reducers: {
     startQuiz(state, action: PayloadAction<{ quiz: { id: string; title: string }; questions: any[] }>) {
-      console.log('⚠️ startQuiz вызван, данные:', action.payload.quiz.id);
       state.currentQuiz = action.payload.quiz;
       state.questions = action.payload.questions;
       state.answers = [];
       state.currentIndex = 0;
+      state.selectedOption = null;
       state.isFinished = false;
       state.startedAt = new Date().toISOString();
     },
-    answerQuestion(state, action: PayloadAction<{ questionId: string; selectedOptionId: string }>) {
-      const question = state.questions.find(q => q.id === action.payload.questionId);
-      const isCorrect = question?.correctOptionId === action.payload.selectedOptionId;
-      const existing = state.answers.find(a => a.questionId === action.payload.questionId);
+    selectOption(state, action: PayloadAction<string>) {
+      state.selectedOption = action.payload;
+    },
+    confirmAnswer(state) {
+      const question = state.questions[state.currentIndex];
+      const selectedOption = state.selectedOption;
+      if (!question || !selectedOption) return;
+
+      const isCorrect = question.correctOptionId === selectedOption;
+      const existing = state.answers.find(a => a.questionId === question.id);
       if (existing) {
-        existing.selectedOptionId = action.payload.selectedOptionId;
+        existing.selectedOptionId = selectedOption;
         existing.isCorrect = isCorrect;
       } else {
-        state.answers.push({ ...action.payload, isCorrect });
+        state.answers.push({ questionId: question.id, selectedOptionId: selectedOption, isCorrect });
       }
     },
     nextQuestion(state) {
-      if (state.currentIndex < state.questions.length - 1) state.currentIndex++;
+      if (state.currentIndex < state.questions.length - 1) {
+        state.currentIndex++;
+        state.selectedOption = null;
+      }
     },
     previousQuestion(state) {
-      if (state.currentIndex > 0) state.currentIndex--;
+      if (state.currentIndex > 0) {
+        state.currentIndex--;
+        // восстанавливаем выбранный вариант для этого вопроса, если он был отвечен
+        const prevAnswer = state.answers.find(a => a.questionId === state.questions[state.currentIndex]?.id);
+        state.selectedOption = prevAnswer?.selectedOptionId || null;
+      }
     },
     finishQuiz(state) {
       state.isFinished = true;
+    },
+    goToQuestion(state, action: PayloadAction<number>) {
+      const index = action.payload;
+      if (index >= 0 && index < state.questions.length) {
+        state.currentIndex = index;
+        const answer = state.answers.find(a => a.questionId === state.questions[index]?.id);
+        state.selectedOption = answer?.selectedOptionId || null;
+      }
     },
     resetQuiz(state) {
       return initialState;
@@ -82,11 +106,13 @@ export const selectProgress = (state: RootState) => {
   return (currentIndex + 1) / questions.length;
 };
 
-export const selectIsAnswered = (state: RootState) => {
+export const selectIsConfirmed = (state: RootState) => {
   const { answers, questions, currentIndex } = state.quiz;
   const currentQuestion = questions[currentIndex];
   return !!answers.find(a => a.questionId === currentQuestion?.id);
 };
 
-export const { startQuiz, answerQuestion, nextQuestion, previousQuestion, finishQuiz, resetQuiz } = quizSlice.actions;
+export const selectSelectedOption = (state: RootState) => state.quiz.selectedOption;
+
+export const { startQuiz, selectOption, confirmAnswer, nextQuestion, previousQuestion, finishQuiz, resetQuiz, goToQuestion } = quizSlice.actions;
 export default quizSlice.reducer;

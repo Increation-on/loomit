@@ -1,30 +1,45 @@
-//app\api\quizzes\[id]\route.ts
+export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
-
-const mockQuiz = {
-  id: '1',
-  title: 'React Basics',
-  questions: [
-    {
-      id: 'q1',
-      text: 'Что такое JSX?',
-      options: ['JavaScript XML', 'Java Syntax Extension', 'JSON Xport', 'Javascript Xtra'],
-      correctOptionId: 'JavaScript XML',
-    },
-    {
-      id: 'q2',
-      text: 'Какой хук используется для сайд-эффектов?',
-      options: ['useState', 'useEffect', 'useReducer', 'useMemo'],
-      correctOptionId: 'useEffect',
-    },
-  ],
-};
+import { prisma } from '@/lib/prisma';
 
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  // Временно игнорируем id, возвращаем мок
-  return NextResponse.json(mockQuiz);
+  try {
+    const { id } = await params;
+    const quiz = await prisma.quiz.findUnique({
+      where: { id },
+      include: {
+        questions: {
+          orderBy: { order: 'asc' },
+        },
+      },
+    });
+
+    if (!quiz) {
+      return NextResponse.json({ error: 'Quiz not found' }, { status: 404 });
+    }
+
+    const transformed = {
+      ...quiz,
+      questions: quiz.questions.map((q) => {
+        const originalOptions = q.options as Array<{ id: string; text: string }>;
+        const textOptions = originalOptions.map((opt) => opt.text);
+        const correctOption = originalOptions.find((opt) => opt.id === q.correctOptionId);
+
+        return {
+          ...q,
+          options: textOptions,
+          correctOptionId: correctOption?.text || q.correctOptionId,
+        };
+      }),
+    };
+
+    return NextResponse.json(transformed);
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json({ error: String(error) }, { status: 500 });
+  }
 }

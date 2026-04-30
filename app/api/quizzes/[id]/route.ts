@@ -1,26 +1,45 @@
-// app/api/quizzes/[id]/route.ts
-import { NextRequest, NextResponse } from 'next/server'
+export const runtime = 'nodejs';
+
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 
 export async function GET(
-  req: NextRequest,
+  request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params
-  return NextResponse.json({ message: `Quiz ${id} endpoint in development` })
-}
+  try {
+    const { id } = await params;
+    const quiz = await prisma.quiz.findUnique({
+      where: { id },
+      include: {
+        questions: {
+          orderBy: { order: 'asc' },
+        },
+      },
+    });
 
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const { id } = await params
-  return NextResponse.json({ message: `Update quiz ${id} endpoint in development` })
-}
+    if (!quiz) {
+      return NextResponse.json({ error: 'Quiz not found' }, { status: 404 });
+    }
 
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const { id } = await params
-  return NextResponse.json({ message: `Delete quiz ${id} endpoint in development` })
+    const transformed = {
+      ...quiz,
+      questions: quiz.questions.map((q) => {
+        const originalOptions = q.options as Array<{ id: string; text: string }>;
+        const textOptions = originalOptions.map((opt) => opt.text);
+        const correctOption = originalOptions.find((opt) => opt.id === q.correctOptionId);
+
+        return {
+          ...q,
+          options: textOptions,
+          correctOptionId: correctOption?.text || q.correctOptionId,
+        };
+      }),
+    };
+
+    return NextResponse.json(transformed);
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json({ error: String(error) }, { status: 500 });
+  }
 }

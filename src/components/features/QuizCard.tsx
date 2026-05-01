@@ -1,8 +1,5 @@
-// src/components/features/QuizCard.tsx
 'use client';
 
-import Image from 'next/image';
-import Link from 'next/link';
 import { Card, CardContent, CardTitle } from '@/components/ui/core/Card';
 import { cn } from '@/lib/utils';
 
@@ -23,22 +20,27 @@ export function QuizCard({
   questionsCount,
   className,
 }: QuizCardProps) {
+
+  const handleClick = (e: React.MouseEvent) => {
+    // Проверяем есть ли в persist другой квиз
+    const stored = localStorage.getItem('persist:quiz');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        const savedQuiz = JSON.parse(parsed.currentQuiz || 'null');
+        if (savedQuiz && savedQuiz.id !== id) {
+          localStorage.removeItem('persist:quiz');
+        }
+      } catch {}
+    }
+  };
+
   return (
-    <Link href={`/quiz/${id}`}>
+    <div>
       <Card className={cn(
         'overflow-hidden hover:shadow-lg transition-all duration-200 hover:-translate-y-1 cursor-pointer',
         className
       )}>
-        {imageUrl && (
-          <div className="relative h-40 w-full">
-            <Image
-              src={imageUrl}
-              alt={title}
-              fill
-              className="object-cover"
-            />
-          </div>
-        )}
         <CardContent className="p-4">
           <CardTitle className="mb-2 line-clamp-1">{title}</CardTitle>
           <p className="text-sm text-gray-600 line-clamp-2 mb-3">{description}</p>
@@ -52,6 +54,6 @@ export function QuizCard({
           </div>
         </CardContent>
       </Card>
-    </Link>
+    </div>
   );
 }

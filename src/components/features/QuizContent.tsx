@@ -4,8 +4,6 @@ import { useRouter } from 'next/navigation';
 import {
   selectCurrentQuestion,
   selectScore,
-  selectProgress,
-  selectIsConfirmed,
   selectSelectedOption,
   selectQuizState,
   startQuiz,
@@ -23,21 +21,30 @@ import { useSaveAttemptMutation } from '@/store/api/attemptsApi';
 import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+import { persistor } from '@/store/store';
+
 export function QuizContent({ id }: { id: string }) {
   const dispatch = useDispatch();
   const router = useRouter();
   const currentQuestion = useSelector(selectCurrentQuestion);
   const score = useSelector(selectScore);
-  const progress = useSelector(selectProgress);
   const selectedOption = useSelector(selectSelectedOption);
-  const isConfirmed = useSelector(selectIsConfirmed);
   const { questions, answers, currentIndex, isFinished, currentQuiz } = useSelector(selectQuizState);
   const [saveAttempt] = useSaveAttemptMutation();
   const loadedRef = useRef(false);
   const savedRef = useRef(false);
 
-  // Загрузка квиза
-  useEffect(() => {
+// Загрузка квиза
+useEffect(() => {
+  const initQuiz = async () => {
+    // Если в сторе другой квиз — сбрасываем persist и стейт
+    if (currentQuiz && currentQuiz.id !== id) {
+      await persistor.purge();
+      dispatch(resetQuiz());
+      loadedRef.current = false;
+      savedRef.current = false;
+    }
+    
     if (!loadedRef.current && questions.length === 0 && !currentQuiz) {
       loadedRef.current = true;
       fetch(`/api/quizzes/${id}`)
@@ -49,7 +56,9 @@ export function QuizContent({ id }: { id: string }) {
           }));
         });
     }
-  }, []);
+  };
+  initQuiz();
+}, [id, currentQuiz, questions.length, dispatch]);
 
   // Сохранение
   useEffect(() => {
@@ -84,6 +93,9 @@ export function QuizContent({ id }: { id: string }) {
 
   return (
   <div className="p-4 space-y-6 max-w-2xl mx-auto">
+    {currentQuiz && (
+  <h1 className="text-3xl font-bold text-loom-yellow text-center">{currentQuiz.title}</h1>
+)}
       <ProgressBar current={currentIndex + 1} total={questions.length} showPercentage />
 
       <AnimatePresence mode="wait">

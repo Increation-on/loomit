@@ -2,6 +2,9 @@
 import { PrismaClient } from '../src/generated/prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 
+console.log('DATABASE_URL exists:', !!process.env.DATABASE_URL)
+console.log('DATABASE_URL starts with:', process.env.DATABASE_URL?.substring(0, 30))
+
 const prisma = new PrismaClient({
   adapter: new PrismaPg({
     connectionString: process.env.DATABASE_URL!
@@ -85,6 +88,56 @@ async function main() {
       }
     }
   })
+
+  const reactQuiz = await prisma.quiz.create({
+  data: {
+    title: 'React для начинающих',
+    description: 'Проверьте знание React: хуки, состояние, жизненный цикл',
+    questions: {
+      create: [
+        {
+          text: 'Какой хук используется для управления состоянием?',
+          options: [
+            { id: '1', text: 'useState' },
+            { id: '2', text: 'useEffect' },
+            { id: '3', text: 'useContext' },
+            { id: '4', text: 'useReducer' }
+          ],
+          correctOptionId: '1',
+          order: 1,
+          explanation: 'useState — основной хук для добавления состояния в функциональный компонент.'
+        },
+        {
+          text: 'Какой хук выполняет побочные эффекты?',
+          options: [
+            { id: '1', text: 'useState' },
+            { id: '2', text: 'useEffect' },
+            { id: '3', text: 'useCallback' },
+            { id: '4', text: 'useMemo' }
+          ],
+          correctOptionId: '2',
+          order: 2,
+          explanation: 'useEffect запускает код после рендера: запросы, подписки, таймеры.'
+        },
+        {
+          text: 'Что возвращает useState?',
+          options: [
+            { id: '1', text: 'Объект с полями state и setState' },
+            { id: '2', text: 'Кортеж [значение, функция-сеттер]' },
+            { id: '3', text: 'Только значение' },
+            { id: '4', text: 'Промис' }
+          ],
+          correctOptionId: '2',
+          order: 3,
+          explanation: 'useState возвращает массив из двух элементов: текущее значение и функция для его обновления.'
+        }
+      ]
+    }
+  }
+})
+
+console.log('✅ Создан демо-квиз:', reactQuiz.title)
+console.log('🆔 ID для доступа:', reactQuiz.id)
 
   console.log('✅ Создан демо-квиз:', jsQuiz.title)
   console.log('🆔 ID для доступа:', jsQuiz.id)

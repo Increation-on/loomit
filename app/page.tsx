@@ -1,9 +1,10 @@
-import Image from "next/image";
+import { ResumeQuizButton } from "@/components/features/ResumeQuizButton";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black text-white">
-      Main
-    </div>
+     <div className="p-4">
+          <h1 className="text-2xl font-bold mb-4">Главная</h1>
+          <ResumeQuizButton />
+        </div>
   );
 }

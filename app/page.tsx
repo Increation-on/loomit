@@ -10,6 +10,7 @@ import { selectQuizState, resetQuiz } from '@/store/slices/quizSlice';
 import { persistor } from '@/store/store';
 import { Modal } from '@/components/ui/feedback/Modal';
 import { EmptyState } from '@/components/ui/feedback/EmptyState';
+import { QuizCardSkeleton } from '@/components/ui/feedback/Skeleton';
 
 export default function Home() {
   const { data: quizzes, isLoading, error } = useGetQuizzesQuery({});
@@ -50,12 +51,20 @@ export default function Home() {
     setPendingQuizId(null);
   };
 
+  const testEmpty = true;
+
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4 text-loom-white">Каталог квизов</h1>
       <ResumeQuizButton />
 
-      {isLoading && <p className="text-loom-white/60">Загрузка...</p>}
+      {isLoading && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+          {[1, 2, 3].map((i) => (
+            <QuizCardSkeleton key={i} />
+          ))}
+        </div>
+      )}
       {error && <p className="text-red-400">Ошибка загрузки</p>}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
@@ -77,6 +86,8 @@ export default function Home() {
           description="Загляните позже, скоро здесь появятся новые квизы."
         />
       )}
+
+      
 
       <Modal
         isOpen={!!pendingQuizId}

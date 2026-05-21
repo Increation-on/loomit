@@ -22,6 +22,9 @@ import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { persistor } from '@/store/store';
+import { useGetQuizByIdQuery } from '@/store/api/quizApi';
+import { useSession } from 'next-auth/react';
+import { useToast } from '../ui/feedback/ToastContainer';
 
 export function QuizContent({ id }: { id: string }) {
   const dispatch = useDispatch();
@@ -31,34 +34,31 @@ export function QuizContent({ id }: { id: string }) {
   const selectedOption = useSelector(selectSelectedOption);
   const { questions, answers, currentIndex, isFinished, currentQuiz } = useSelector(selectQuizState);
   const [saveAttempt] = useSaveAttemptMutation();
-  const loadedRef = useRef(false);
   const savedRef = useRef(false);
+  const { data: quizData } = useGetQuizByIdQuery(id, { skip: !!currentQuiz });
+  const { status } = useSession();
+  const isAuthenticated = status === 'authenticated';
+  const { warning } = useToast();
 
-// Загрузка квиза
-useEffect(() => {
-  const initQuiz = async () => {
-    // Если в сторе другой квиз — сбрасываем persist и стейт
+  // Загрузка квиза
+  useEffect(() => {
     if (currentQuiz && currentQuiz.id !== id) {
-      await persistor.purge();
+      persistor.purge();
       dispatch(resetQuiz());
-      loadedRef.current = false;
       savedRef.current = false;
     }
-    
-    if (!loadedRef.current && questions.length === 0 && !currentQuiz) {
-      loadedRef.current = true;
-      fetch(`/api/quizzes/${id}`)
-        .then(res => res.json())
-        .then(quiz => {
-          dispatch(startQuiz({
-            quiz: { id: quiz.id, title: quiz.title },
-            questions: quiz.questions,
-          }));
-        });
+  }, [id, currentQuiz, dispatch]);
+
+  useEffect(() => {
+    if (quizData && !currentQuiz) {
+      dispatch(startQuiz({
+        quiz: { id: quizData.id, title: quizData.title },
+        questions: quizData.questions,
+      }));
     }
-  };
-  initQuiz();
-}, [id, currentQuiz, questions.length, dispatch]);
+  }, [quizData, currentQuiz, dispatch]);
+
+
 
   // Сохранение
   useEffect(() => {
@@ -72,7 +72,12 @@ useEffect(() => {
       };
       saveAttempt(attempt)
         .then(() => console.log('✅ Сохранено успешно'))
-        .catch((error) => console.error('Ошибка сохранения:', error));
+        .catch((error) => {
+          console.error('Ошибка сохранения:', error);
+          if (!isAuthenticated) {
+            warning('Нет сети, результат не сохранён');
+          }
+        });
     }
   }, [isFinished, questions, answers, id, saveAttempt, dispatch]);
 
@@ -81,7 +86,13 @@ useEffect(() => {
       <div className="p-4 text-center">
         <h2 className="text-2xl font-bold text-loom-white mb-4">Квиз завершён!</h2>
         <p className="text-loom-white/80 mb-6">Результат: {score} из {questions.length}</p>
-        <Button onClick={() => { dispatch(resetQuiz()); router.push('/'); }}>На главную</Button>
+        <div className="flex justify-center gap-4">
+          <Button onClick={() => {
+            dispatch(resetQuiz());
+            router.push(`/quiz/${id}`);
+          }}>Пройти заново</Button>
+          <Button onClick={() => { dispatch(resetQuiz()); router.push('/'); }}>На главную</Button>
+        </div>
       </div>
     );
   }
@@ -92,10 +103,10 @@ useEffect(() => {
   const isCurrentConfirmed = !!currentAnswer;
 
   return (
-  <div className="p-4 space-y-6 max-w-2xl mx-auto">
-    {currentQuiz && (
-  <h1 className="text-3xl font-bold text-loom-yellow text-center">{currentQuiz.title}</h1>
-)}
+    <div className="p-4 space-y-6 max-w-2xl mx-auto">
+      {currentQuiz && (
+        <h1 className="text-3xl font-bold text-loom-yellow text-center">{currentQuiz.title}</h1>
+      )}
       <ProgressBar current={currentIndex + 1} total={questions.length} showPercentage />
 
       <AnimatePresence mode="wait">

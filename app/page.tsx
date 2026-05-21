@@ -9,6 +9,7 @@ import { QuizCard } from '@/components/features/QuizCard';
 import { selectQuizState, resetQuiz } from '@/store/slices/quizSlice';
 import { persistor } from '@/store/store';
 import { Modal } from '@/components/ui/feedback/Modal';
+import { EmptyState } from '@/components/ui/feedback/EmptyState';
 
 export default function Home() {
   const { data: quizzes, isLoading, error } = useGetQuizzesQuery({});
@@ -69,6 +70,13 @@ export default function Home() {
           </div>
         ))}
       </div>
+
+      {quizzes && quizzes.length === 0 && (
+        <EmptyState
+          title="Нет доступных квизов"
+          description="Загляните позже, скоро здесь появятся новые квизы."
+        />
+      )}
 
       <Modal
         isOpen={!!pendingQuizId}

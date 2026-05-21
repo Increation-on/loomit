@@ -23,6 +23,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 import { persistor } from '@/store/store';
 import { useGetQuizByIdQuery } from '@/store/api/quizApi';
+import { useSession } from 'next-auth/react';
+import { useToast } from '../ui/feedback/ToastContainer';
 
 export function QuizContent({ id }: { id: string }) {
   const dispatch = useDispatch();
@@ -34,26 +36,29 @@ export function QuizContent({ id }: { id: string }) {
   const [saveAttempt] = useSaveAttemptMutation();
   const savedRef = useRef(false);
   const { data: quizData } = useGetQuizByIdQuery(id, { skip: !!currentQuiz });
+  const { status } = useSession();
+  const isAuthenticated = status === 'authenticated';
+  const { warning } = useToast();
 
   // Загрузка квиза
   useEffect(() => {
-  if (currentQuiz && currentQuiz.id !== id) {
-    persistor.purge();
-    dispatch(resetQuiz());
-    savedRef.current = false;
-  }
-}, [id, currentQuiz, dispatch]);
+    if (currentQuiz && currentQuiz.id !== id) {
+      persistor.purge();
+      dispatch(resetQuiz());
+      savedRef.current = false;
+    }
+  }, [id, currentQuiz, dispatch]);
 
-useEffect(() => {
-  if (quizData && !currentQuiz) {
-    dispatch(startQuiz({
-      quiz: { id: quizData.id, title: quizData.title },
-      questions: quizData.questions,
-    }));
-  }
-}, [quizData, currentQuiz, dispatch]);
+  useEffect(() => {
+    if (quizData && !currentQuiz) {
+      dispatch(startQuiz({
+        quiz: { id: quizData.id, title: quizData.title },
+        questions: quizData.questions,
+      }));
+    }
+  }, [quizData, currentQuiz, dispatch]);
 
-  
+
 
   // Сохранение
   useEffect(() => {
@@ -67,25 +72,30 @@ useEffect(() => {
       };
       saveAttempt(attempt)
         .then(() => console.log('✅ Сохранено успешно'))
-        .catch((error) => console.error('Ошибка сохранения:', error));
+        .catch((error) => {
+          console.error('Ошибка сохранения:', error);
+          if (!isAuthenticated) {
+            warning('Нет сети, результат не сохранён');
+          }
+        });
     }
   }, [isFinished, questions, answers, id, saveAttempt, dispatch]);
 
   if (isFinished) {
-  return (
-    <div className="p-4 text-center">
-      <h2 className="text-2xl font-bold text-loom-white mb-4">Квиз завершён!</h2>
-      <p className="text-loom-white/80 mb-6">Результат: {score} из {questions.length}</p>
-      <div className="flex justify-center gap-4">
-        <Button onClick={() => {
-          dispatch(resetQuiz());
-          router.push(`/quiz/${id}`);
-        }}>Пройти заново</Button>
-        <Button onClick={() => { dispatch(resetQuiz()); router.push('/'); }}>На главную</Button>
+    return (
+      <div className="p-4 text-center">
+        <h2 className="text-2xl font-bold text-loom-white mb-4">Квиз завершён!</h2>
+        <p className="text-loom-white/80 mb-6">Результат: {score} из {questions.length}</p>
+        <div className="flex justify-center gap-4">
+          <Button onClick={() => {
+            dispatch(resetQuiz());
+            router.push(`/quiz/${id}`);
+          }}>Пройти заново</Button>
+          <Button onClick={() => { dispatch(resetQuiz()); router.push('/'); }}>На главную</Button>
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
   if (!currentQuestion) return null;
 

@@ -10,7 +10,10 @@ export const quizApi = createApi({
       providesTags: ['Quizzes'],
       keepUnusedDataFor: 300,
     }),
+    getQuizById: builder.query({
+      query: (id: string) => `/quizzes/${id}`,
+    }),
   }),
 });
 
-export const { useGetQuizzesQuery } = quizApi;
+export const { useGetQuizzesQuery, useGetQuizByIdQuery } = quizApi;

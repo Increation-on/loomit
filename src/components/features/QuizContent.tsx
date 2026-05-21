@@ -22,6 +22,7 @@ import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { persistor } from '@/store/store';
+import { useGetQuizByIdQuery } from '@/store/api/quizApi';
 
 export function QuizContent({ id }: { id: string }) {
   const dispatch = useDispatch();
@@ -31,34 +32,28 @@ export function QuizContent({ id }: { id: string }) {
   const selectedOption = useSelector(selectSelectedOption);
   const { questions, answers, currentIndex, isFinished, currentQuiz } = useSelector(selectQuizState);
   const [saveAttempt] = useSaveAttemptMutation();
-  const loadedRef = useRef(false);
   const savedRef = useRef(false);
+  const { data: quizData } = useGetQuizByIdQuery(id, { skip: !!currentQuiz });
 
   // Загрузка квиза
   useEffect(() => {
-    const initQuiz = async () => {
-      // Если в сторе другой квиз — сбрасываем persist и стейт
-      if (currentQuiz && currentQuiz.id !== id) {
-        await persistor.purge();
-        dispatch(resetQuiz());
-        loadedRef.current = false;
-        savedRef.current = false;
-      }
+  if (currentQuiz && currentQuiz.id !== id) {
+    persistor.purge();
+    dispatch(resetQuiz());
+    savedRef.current = false;
+  }
+}, [id, currentQuiz, dispatch]);
 
-      if (!loadedRef.current && questions.length === 0 && !currentQuiz) {
-        loadedRef.current = true;
-        fetch(`/api/quizzes/${id}`)
-          .then(res => res.json())
-          .then(quiz => {
-            dispatch(startQuiz({
-              quiz: { id: quiz.id, title: quiz.title },
-              questions: quiz.questions,
-            }));
-          });
-      }
-    };
-    initQuiz();
-  }, [id, currentQuiz, questions.length, dispatch]);
+useEffect(() => {
+  if (quizData && !currentQuiz) {
+    dispatch(startQuiz({
+      quiz: { id: quizData.id, title: quizData.title },
+      questions: quizData.questions,
+    }));
+  }
+}, [quizData, currentQuiz, dispatch]);
+
+  
 
   // Сохранение
   useEffect(() => {

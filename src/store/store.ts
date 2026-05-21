@@ -1,21 +1,33 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
 import { attemptsApi } from './api/attemptsApi';
 import { quizApi } from './api/quizApi';
 import quizReducer from './slices/quizSlice';
+import syncReducer from './slices/syncSlice';
+import idbStorage from '@/lib/idbStorage';
+import { useDispatch } from 'react-redux';
+import { offlineMiddleware } from './middleware/offlineMiddleware';
 
-const persistConfig = {
+
+const quizPersistConfig = {
   key: 'quiz',
-  storage,
+  storage: idbStorage,
   whitelist: ['questions', 'answers', 'currentIndex', 'isFinished', 'startedAt', 'currentQuiz'],
 };
 
-const persistedQuizReducer = persistReducer(persistConfig, quizReducer);
+const syncPersistConfig = {
+  key: 'sync',
+  storage: idbStorage,
+  whitelist: ['pendingActions'],
+};
+
+const persistedQuizReducer = persistReducer(quizPersistConfig, quizReducer);
+const persistedSyncReducer = persistReducer(syncPersistConfig, syncReducer);
 
 export const store = configureStore({
   reducer: {
     quiz: persistedQuizReducer,
+    sync: persistedSyncReducer,
     [attemptsApi.reducerPath]: attemptsApi.reducer,
     [quizApi.reducerPath]: quizApi.reducer,
   },
@@ -26,10 +38,12 @@ export const store = configureStore({
       },
     })
       .concat(attemptsApi.middleware)
-      .concat(quizApi.middleware),
+      .concat(quizApi.middleware)
+      .concat(offlineMiddleware),
 });
 
 export const persistor = persistStore(store);
+export const useAppDispatch = () => useDispatch<AppDispatch>();
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

@@ -34,31 +34,31 @@ export function QuizContent({ id }: { id: string }) {
   const loadedRef = useRef(false);
   const savedRef = useRef(false);
 
-// Загрузка квиза
-useEffect(() => {
-  const initQuiz = async () => {
-    // Если в сторе другой квиз — сбрасываем persist и стейт
-    if (currentQuiz && currentQuiz.id !== id) {
-      await persistor.purge();
-      dispatch(resetQuiz());
-      loadedRef.current = false;
-      savedRef.current = false;
-    }
-    
-    if (!loadedRef.current && questions.length === 0 && !currentQuiz) {
-      loadedRef.current = true;
-      fetch(`/api/quizzes/${id}`)
-        .then(res => res.json())
-        .then(quiz => {
-          dispatch(startQuiz({
-            quiz: { id: quiz.id, title: quiz.title },
-            questions: quiz.questions,
-          }));
-        });
-    }
-  };
-  initQuiz();
-}, [id, currentQuiz, questions.length, dispatch]);
+  // Загрузка квиза
+  useEffect(() => {
+    const initQuiz = async () => {
+      // Если в сторе другой квиз — сбрасываем persist и стейт
+      if (currentQuiz && currentQuiz.id !== id) {
+        await persistor.purge();
+        dispatch(resetQuiz());
+        loadedRef.current = false;
+        savedRef.current = false;
+      }
+
+      if (!loadedRef.current && questions.length === 0 && !currentQuiz) {
+        loadedRef.current = true;
+        fetch(`/api/quizzes/${id}`)
+          .then(res => res.json())
+          .then(quiz => {
+            dispatch(startQuiz({
+              quiz: { id: quiz.id, title: quiz.title },
+              questions: quiz.questions,
+            }));
+          });
+      }
+    };
+    initQuiz();
+  }, [id, currentQuiz, questions.length, dispatch]);
 
   // Сохранение
   useEffect(() => {
@@ -77,14 +77,20 @@ useEffect(() => {
   }, [isFinished, questions, answers, id, saveAttempt, dispatch]);
 
   if (isFinished) {
-    return (
-      <div className="p-4 text-center">
-        <h2 className="text-2xl font-bold text-loom-white mb-4">Квиз завершён!</h2>
-        <p className="text-loom-white/80 mb-6">Результат: {score} из {questions.length}</p>
+  return (
+    <div className="p-4 text-center">
+      <h2 className="text-2xl font-bold text-loom-white mb-4">Квиз завершён!</h2>
+      <p className="text-loom-white/80 mb-6">Результат: {score} из {questions.length}</p>
+      <div className="flex justify-center gap-4">
+        <Button onClick={() => {
+          dispatch(resetQuiz());
+          router.push(`/quiz/${id}`);
+        }}>Пройти заново</Button>
         <Button onClick={() => { dispatch(resetQuiz()); router.push('/'); }}>На главную</Button>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   if (!currentQuestion) return null;
 
@@ -92,10 +98,10 @@ useEffect(() => {
   const isCurrentConfirmed = !!currentAnswer;
 
   return (
-  <div className="p-4 space-y-6 max-w-2xl mx-auto">
-    {currentQuiz && (
-  <h1 className="text-3xl font-bold text-loom-yellow text-center">{currentQuiz.title}</h1>
-)}
+    <div className="p-4 space-y-6 max-w-2xl mx-auto">
+      {currentQuiz && (
+        <h1 className="text-3xl font-bold text-loom-yellow text-center">{currentQuiz.title}</h1>
+      )}
       <ProgressBar current={currentIndex + 1} total={questions.length} showPercentage />
 
       <AnimatePresence mode="wait">

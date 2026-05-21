@@ -11,6 +11,7 @@ import { persistor } from '@/store/store';
 import { Modal } from '@/components/ui/feedback/Modal';
 import { EmptyState } from '@/components/ui/feedback/EmptyState';
 import { QuizCardSkeleton } from '@/components/ui/feedback/Skeleton';
+import { Button } from '@/components/ui/core/Button';
 
 export default function Home() {
   const { data: quizzes, isLoading, error } = useGetQuizzesQuery({});
@@ -51,7 +52,6 @@ export default function Home() {
     setPendingQuizId(null);
   };
 
-  const testEmpty = true;
 
   return (
     <div className="p-4">
@@ -65,7 +65,13 @@ export default function Home() {
           ))}
         </div>
       )}
-      {error && <p className="text-red-400">Ошибка загрузки</p>}
+      
+      {error && (
+        <div className="text-center py-10">
+          <p className="text-red-400 mb-4">Не удалось загрузить квизы</p>
+          <Button onClick={() => window.location.reload()}>Повторить</Button>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
         {quizzes?.map((quiz: any) => (
@@ -87,7 +93,7 @@ export default function Home() {
         />
       )}
 
-      
+
 
       <Modal
         isOpen={!!pendingQuizId}

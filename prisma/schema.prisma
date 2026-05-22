@@ -85,6 +85,7 @@ model users {
   accounts       accounts[]
   attempts       attempts[]
   sessions       sessions[]
+  role String @default("user")
 }
 
 model verification_tokens {

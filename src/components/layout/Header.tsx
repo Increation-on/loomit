@@ -4,6 +4,7 @@ import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
 import NetworkIndicator from '@/components/ui/feedback/NetworkIndicator';
 import { ThemeToggle } from '@/components/ui/core/ThemeToggle';
+import { HeaderNavbar } from './HeaderNavbar';
 
 export default function Header() {
   const { data: session, status } = useSession();
@@ -16,14 +17,7 @@ export default function Header() {
           LoomIt
         </Link>
 
-        <nav className="hidden md:flex gap-6">
-          <Link href="/" className="hover:text-loom-cyan text-loom-white">
-            Главная
-          </Link>
-          <Link href="/profile" className="hover:text-loom-cyan text-loom-white">
-            Профиль
-          </Link>
-        </nav>
+        <HeaderNavbar/>
 
         <div className="flex items-center gap-3">
           <NetworkIndicator />

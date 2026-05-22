@@ -31,7 +31,7 @@ const authOptions = {
           throw new Error('Email and password required')
         }
 
-        const user = await prisma.user.findUnique({
+        const user = await prisma.users.findUnique({
           where: { email: credentials.email },
         })
 
@@ -49,6 +49,7 @@ const authOptions = {
           id: user.id,
           email: user.email,
           name: user.name,
+          role: user.role,
         }
       },
     }),
@@ -60,12 +61,14 @@ const authOptions = {
     async jwt({ token, user }: { token: JWT; user: any }) {
       if (user) {
         token.id = user.id
+        token.role = user.role
       }
       return token
     },
     async session({ session, token }: { session: Session; token: JWT }) {
       if (session.user) {
         session.user.id = token.id as string
+        (session.user as any).role = token.role;
       }
       return session
     },

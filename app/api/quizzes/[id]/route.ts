@@ -27,12 +27,12 @@ export async function GET(
       questions: quiz.questions.map((q) => {
         const originalOptions = q.options as Array<{ id: string; text: string }>;
         const textOptions = originalOptions.map((opt) => opt.text);
-        const correctOption = originalOptions.find((opt) => opt.id === q.correctOptionId);
+        const correctOption = originalOptions.find((opt) => opt.id === q.correct_option_id);
 
         return {
           ...q,
           options: textOptions,
-          correctOptionId: correctOption?.text || q.correctOptionId,
+          correctOptionId: correctOption?.text || q.correct_option_id,
         };
       }),
     };

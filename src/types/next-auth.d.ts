@@ -1,22 +1,25 @@
-import 'next-auth'
+import 'next-auth';
 
 declare module 'next-auth' {
   interface User {
-    id: string
+    id: string;
+    role?: string; // ← добавить
   }
-  
+
   interface Session {
     user: {
-      id: string
-      email?: string | null
-      name?: string | null
-      image?: string | null
-    }
+      id: string;
+      role?: string; // ← добавить
+      email?: string | null;
+      name?: string | null;
+      image?: string | null;
+    };
   }
 }
 
 declare module 'next-auth/jwt' {
   interface JWT {
-    id: string
+    id: string;
+    role?: string; // ← добавить
   }
 }

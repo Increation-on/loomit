@@ -22,6 +22,7 @@ async function main() {
     data: {
       title: 'Основы JavaScript',
       description: 'Проверьте свои знания основ JavaScript',
+       updated_at: new Date(),
       questions: {
         create: [
           {
@@ -32,7 +33,7 @@ async function main() {
               { id: '3', text: 'object' },
               { id: '4', text: 'number' }
             ],
-            correctOptionId: '3',
+            correct_option_id: '3',
             order: 1,
             explanation: 'В JavaScript typeof null возвращает "object" - это известная особенность языка.'
           },
@@ -44,7 +45,7 @@ async function main() {
               { id: '3', text: 'addToEnd()' },
               { id: '4', text: 'insert()' }
             ],
-            correctOptionId: '1',
+            correct_option_id: '1',
             order: 2,
             explanation: 'Метод push() добавляет один или несколько элементов в конец массива.'
           },
@@ -56,7 +57,7 @@ async function main() {
               { id: '3', text: 'Тип данных для хранения чисел' },
               { id: '4', text: 'Метод для работы с DOM' }
             ],
-            correctOptionId: '2',
+            correct_option_id: '2',
             order: 3,
             explanation: 'Promise - это объект, который представляет возможное завершение или неудачу асинхронной операции.'
           },
@@ -68,7 +69,7 @@ async function main() {
               { id: '3', text: 'Нет разницы, они идентичны' },
               { id: '4', text: '=== работает только в строгом режиме' }
             ],
-            correctOptionId: '1',
+            correct_option_id: '1',
             order: 4,
             explanation: '== выполняет приведение типов, === сравнивает без приведения.'
           },
@@ -80,7 +81,7 @@ async function main() {
               { id: '3', text: 'Создает новый массив, применяя функцию к каждому элементу' },
               { id: '4', text: 'Находит первый подходящий элемент' }
             ],
-            correctOptionId: '3',
+            correct_option_id: '3',
             order: 5,
             explanation: 'map() создает новый массив с результатами вызова функции для каждого элемента.'
           }
@@ -93,6 +94,7 @@ async function main() {
   data: {
     title: 'React для начинающих',
     description: 'Проверьте знание React: хуки, состояние, жизненный цикл',
+     updated_at: new Date(),
     questions: {
       create: [
         {
@@ -103,7 +105,7 @@ async function main() {
             { id: '3', text: 'useContext' },
             { id: '4', text: 'useReducer' }
           ],
-          correctOptionId: '1',
+          correct_option_id: '1',
           order: 1,
           explanation: 'useState — основной хук для добавления состояния в функциональный компонент.'
         },
@@ -115,7 +117,7 @@ async function main() {
             { id: '3', text: 'useCallback' },
             { id: '4', text: 'useMemo' }
           ],
-          correctOptionId: '2',
+          correct_option_id: '2',
           order: 2,
           explanation: 'useEffect запускает код после рендера: запросы, подписки, таймеры.'
         },
@@ -127,7 +129,7 @@ async function main() {
             { id: '3', text: 'Только значение' },
             { id: '4', text: 'Промис' }
           ],
-          correctOptionId: '2',
+          correct_option_id: '2',
           order: 3,
           explanation: 'useState возвращает массив из двух элементов: текущее значение и функция для его обновления.'
         }

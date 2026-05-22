@@ -8,11 +8,11 @@
  *
  * 🟢 You can import this file directly.
  */
-export type * from './models/User'
-export type * from './models/Quiz'
-export type * from './models/Question'
-export type * from './models/Attempt'
-export type * from './models/Account'
-export type * from './models/Session'
-export type * from './models/VerificationToken'
+export type * from './models/account'
+export type * from './models/attempt'
+export type * from './models/question'
+export type * from './models/quiz'
+export type * from './models/session'
+export type * from './models/user'
+export type * from './models/verificationToken'
 export type * from './commonInputTypes'

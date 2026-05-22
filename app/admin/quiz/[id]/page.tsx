@@ -93,20 +93,6 @@ export default function EditQuizPage() {
   };
 
   const saveQuiz = async () => {
-    if (!title || questions.length === 0) {
-      showError('Название и минимум 1 вопрос обязательны');
-      return;
-    }
-    for (const q of questions) {
-      if (q.options.length !== 4) {
-        showError('У каждого вопроса должно быть ровно 4 варианта');
-        return;
-      }
-      if (!q.text || q.options.filter(o => o.text).length !== 4 || !q.correctOptionId) {
-        showError('Заполните все 4 варианта и выберите правильный');
-        return;
-      }
-    }
 
     setSaving(true);
     try {

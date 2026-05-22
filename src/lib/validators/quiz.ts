@@ -16,6 +16,23 @@ export const createQuizSchema = quizSchema.pick({
 
 export const updateQuizSchema = createQuizSchema.partial()
 
+export const adminQuizCreateSchema = z.object({
+  title: z.string().min(1, 'Название обязательно').max(200),
+  description: z.string().max(1000).optional(),
+  questions: z.array(
+    z.object({
+      text: z.string().min(1, 'Текст вопроса обязателен'),
+      options: z.array(
+        z.object({
+          id: z.string(),
+          text: z.string().min(1, 'Вариант обязателен'),
+        })
+      ).length(4, 'Должно быть ровно 4 варианта'),
+      correctOptionId: z.string().min(1, 'Выберите правильный вариант'),
+    })
+  ).min(1, 'Минимум 1 вопрос'),
+});
+
 export type Quiz = z.infer<typeof quizSchema>
 export type CreateQuiz = z.infer<typeof createQuizSchema>
 export type UpdateQuiz = z.infer<typeof updateQuizSchema>

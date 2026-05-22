@@ -71,22 +71,6 @@ export default function NewQuizPage() {
   };
 
   const saveQuiz = async () => {
-    if (!title || questions.length === 0) {
-      showError('Название и минимум 1 вопрос обязательны');
-      return;
-    }
-
-    for (const q of questions) {
-      if (q.options.length !== 4) {
-        showError('У каждого вопроса должно быть ровно 4 варианта ответа');
-        return;
-      }
-      if (!q.text || q.options.filter(o => o.text).length !== 4 || !q.correctOptionId) {
-        showError('У каждого вопроса должны быть заполнены все 4 варианта и выбран правильный');
-        return;
-      }
-    }
-
     setSaving(true);
     try {
       const res = await fetch('/api/admin/quizzes', {

@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { createQuizSchema } from '@/lib/validators'
+import z from 'zod'
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,7 +12,7 @@ export async function POST(req: NextRequest) {
     
     if (!validated.success) {
       return NextResponse.json(
-        { error: validated.error.format() },
+        { error: z.treeifyError(validated.error) },
         { status: 400 }
       )
     }

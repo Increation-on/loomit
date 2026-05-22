@@ -12,13 +12,13 @@ export async function POST(request: Request) {
 
     const attempt = await prisma.attempt.create({
       data: {
-        userId: session?.user?.id,
-        guestId: !session?.user?.id ? `guest_${Date.now()}` : undefined,
-        quizId,
+        user_id: session?.user?.id,
+        guest_id: !session?.user?.id ? `guest_${Date.now()}` : undefined,
+        quiz_id: quizId,
         score,
-        totalQuestions,
+        total_questions: totalQuestions,
         answers: JSON.stringify(answers),
-        syncStatus: 'synced',
+        sync_status: 'synced',
       },
     });
 

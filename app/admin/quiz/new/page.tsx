@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/core/Button';
+import { useToast } from '@/components/ui/feedback/ToastContainer';
 
 interface Option {
   id: string;
@@ -21,6 +22,8 @@ export default function NewQuizPage() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [questions, setQuestions] = useState<Question[]>([]);
+  const [saving, setSaving] = useState(false);
+  const { success, error: showError } = useToast();
 
   const addQuestion = () => {
     setQuestions([
@@ -49,12 +52,6 @@ export default function NewQuizPage() {
     setQuestions(questions.filter((_, i) => i !== index));
   };
 
-  const addOption = (questionIndex: number) => {
-    const updated = [...questions];
-    updated[questionIndex].options.push({ id: crypto.randomUUID(), text: '' });
-    setQuestions(updated);
-  };
-
   const updateOptionText = (questionIndex: number, optionIndex: number, text: string) => {
     const updated = [...questions];
     updated[questionIndex].options[optionIndex].text = text;
@@ -71,6 +68,45 @@ export default function NewQuizPage() {
     const updated = [...questions];
     updated[questionIndex].correctOptionId = optionId;
     setQuestions(updated);
+  };
+
+  const saveQuiz = async () => {
+    if (!title || questions.length === 0) {
+      showError('Название и минимум 1 вопрос обязательны');
+      return;
+    }
+
+    for (const q of questions) {
+      if (q.options.length !== 4) {
+        showError('У каждого вопроса должно быть ровно 4 варианта ответа');
+        return;
+      }
+      if (!q.text || q.options.filter(o => o.text).length !== 4 || !q.correctOptionId) {
+        showError('У каждого вопроса должны быть заполнены все 4 варианта и выбран правильный');
+        return;
+      }
+    }
+
+    setSaving(true);
+    try {
+      const res = await fetch('/api/admin/quizzes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, description, questions }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Ошибка сохранения');
+      }
+
+      success('Квиз создан!');
+      router.push('/admin');
+    } catch (err: any) {
+      showError(err.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -126,12 +162,6 @@ export default function NewQuizPage() {
             ))}
             <div className="flex gap-3">
               <button
-                onClick={() => addOption(qi)}
-                className="text-loom-cyan text-sm hover:text-loom-yellow"
-              >
-                + Добавить вариант
-              </button>
-              <button
                 onClick={() => deleteQuestion(qi)}
                 className="text-red-400 text-sm hover:text-red-300"
               >
@@ -152,8 +182,8 @@ export default function NewQuizPage() {
         <Button variant="ghost" onClick={() => router.back()}>
           Отмена
         </Button>
-        <Button onClick={() => console.log('Сохранить', { title, description, questions })}>
-          Сохранить
+        <Button onClick={saveQuiz} disabled={saving}>
+          {saving ? 'Сохранение...' : 'Сохранить'}
         </Button>
       </div>
     </div>

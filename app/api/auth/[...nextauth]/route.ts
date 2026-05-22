@@ -14,7 +14,40 @@ if (!prisma) {
 }
 
 const authOptions = {
-  adapter: PrismaAdapter(prisma),
+  adapter: {
+  ...PrismaAdapter(prisma),
+  getUserByAccount: async (providerAccountId: any) => {
+    const account = await (prisma as any).account.findUnique({
+      where: {
+        provider_provider_account_id: {
+          provider: providerAccountId.provider,
+          provider_account_id: providerAccountId.providerAccountId,
+        },
+      },
+      include: { user: true },
+    });
+    return account?.user ?? null;
+  },
+  createUser: async (data: any) => {
+    const { emailVerified, ...rest } = data;
+    return (prisma as any).user.create({
+      data: {
+        ...rest,
+        email_verified: emailVerified,
+      },
+    });
+  },
+  linkAccount: async (data: any) => {
+    const { providerAccountId, userId, ...rest } = data;
+    return (prisma as any).account.create({
+      data: {
+        ...rest,
+        provider_account_id: providerAccountId,
+        user_id: userId,
+      },
+    });
+  },
+} as any,
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -31,7 +64,7 @@ const authOptions = {
           throw new Error('Email and password required')
         }
 
-        const user = await prisma.users.findUnique({
+        const user = await prisma.user.findUnique({
           where: { email: credentials.email },
         })
 

@@ -17,11 +17,15 @@ export async function POST(req: NextRequest) {
     }
     
     const quiz = await prisma.quiz.create({
-      data: validated.data
+      data: {
+        ...validated.data,
+        updated_at: new Date(),
+      },
     })
     
     return NextResponse.json(quiz, { status: 201 })
   } catch (error) {
+    console.error('POST /api/quizzes error:', error);
     return NextResponse.json(
       { error: 'Внутренняя ошибка сервера' },
       { status: 500 }
@@ -36,16 +40,17 @@ export async function GET() {
         id: true,
         title: true,
         description: true,
-        createdAt: true,
+        created_at: true,
         _count: {
           select: { questions: true }
         }
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { created_at: 'desc' }
     })
     
     return NextResponse.json(quizzes)
   } catch (error) {
+    console.error('GET /api/quizzes error:', error);
     return NextResponse.json(
       { error: 'Внутренняя ошибка сервера' },
       { status: 500 }

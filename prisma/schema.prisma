@@ -7,8 +7,8 @@ datasource db {
   provider = "postgresql"
 }
 
-model accounts {
-  id                  String  @id
+model account {
+  id                  String  @id @default(cuid())
   user_id             String
   type                String
   provider            String
@@ -20,13 +20,13 @@ model accounts {
   scope               String?
   id_token            String?
   session_state       String?
-  users               users   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user                user    @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@unique([provider, provider_account_id])
 }
 
-model attempts {
-  id              String   @id
+model attempt {
+  id              String   @id @default(cuid())
   user_id         String?
   guest_id        String?
   quiz_id         String
@@ -35,60 +35,60 @@ model attempts {
   answers         Json
   sync_status     String   @default("pending")
   created_at      DateTime @default(now())
-  quizzes         quizzes  @relation(fields: [quiz_id], references: [id])
-  users           users?   @relation(fields: [user_id], references: [id])
+  quiz            quiz     @relation(fields: [quiz_id], references: [id])
+  user            user?    @relation(fields: [user_id], references: [id])
 
   @@index([guest_id])
   @@index([sync_status])
   @@index([user_id])
 }
 
-model questions {
-  id                String  @id
+model question {
+  id                String  @id @default(cuid())
   text              String
   options           Json
   correct_option_id String
   order             Int
   explanation       String?
   quiz_id           String
-  quizzes           quizzes @relation(fields: [quiz_id], references: [id], onDelete: Cascade)
+  quiz              quiz    @relation(fields: [quiz_id], references: [id], onDelete: Cascade)
 
   @@index([quiz_id])
 }
 
-model quizzes {
-  id          String      @id
+model quiz {
+  id          String      @id @default(cuid())
   title       String
   description String?
   created_at  DateTime    @default(now())
   updated_at  DateTime
-  attempts    attempts[]
-  questions   questions[]
+  attempts    attempt[]
+  questions   question[]
 }
 
-model sessions {
-  id            String   @id
+model session {
+  id            String   @id @default(cuid())
   session_token String   @unique
   user_id       String
   expires       DateTime
-  users         users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user          user     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
-model users {
-  id             String     @id
+model user {
+  id             String     @id @default(cuid())
   email          String     @unique
   name           String?
   image          String?
   created_at     DateTime   @default(now())
   password       String?
   email_verified DateTime?
-  accounts       accounts[]
-  attempts       attempts[]
-  sessions       sessions[]
-  role String @default("user")
+  role           String     @default("user")
+  accounts       account[]
+  attempts       attempt[]
+  sessions       session[]
 }
 
-model verification_tokens {
+model verificationToken {
   identifier String
   token      String   @unique
   expires    DateTime

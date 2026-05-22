@@ -51,13 +51,13 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-  accounts: 'accounts',
-  attempts: 'attempts',
-  questions: 'questions',
-  quizzes: 'quizzes',
-  sessions: 'sessions',
-  users: 'users',
-  verification_tokens: 'verification_tokens'
+  account: 'account',
+  attempt: 'attempt',
+  question: 'question',
+  quiz: 'quiz',
+  session: 'session',
+  user: 'user',
+  verificationToken: 'verificationToken'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -76,7 +76,7 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
-export const AccountsScalarFieldEnum = {
+export const AccountScalarFieldEnum = {
   id: 'id',
   user_id: 'user_id',
   type: 'type',
@@ -91,10 +91,10 @@ export const AccountsScalarFieldEnum = {
   session_state: 'session_state'
 } as const
 
-export type AccountsScalarFieldEnum = (typeof AccountsScalarFieldEnum)[keyof typeof AccountsScalarFieldEnum]
+export type AccountScalarFieldEnum = (typeof AccountScalarFieldEnum)[keyof typeof AccountScalarFieldEnum]
 
 
-export const AttemptsScalarFieldEnum = {
+export const AttemptScalarFieldEnum = {
   id: 'id',
   user_id: 'user_id',
   guest_id: 'guest_id',
@@ -106,10 +106,10 @@ export const AttemptsScalarFieldEnum = {
   created_at: 'created_at'
 } as const
 
-export type AttemptsScalarFieldEnum = (typeof AttemptsScalarFieldEnum)[keyof typeof AttemptsScalarFieldEnum]
+export type AttemptScalarFieldEnum = (typeof AttemptScalarFieldEnum)[keyof typeof AttemptScalarFieldEnum]
 
 
-export const QuestionsScalarFieldEnum = {
+export const QuestionScalarFieldEnum = {
   id: 'id',
   text: 'text',
   options: 'options',
@@ -119,10 +119,10 @@ export const QuestionsScalarFieldEnum = {
   quiz_id: 'quiz_id'
 } as const
 
-export type QuestionsScalarFieldEnum = (typeof QuestionsScalarFieldEnum)[keyof typeof QuestionsScalarFieldEnum]
+export type QuestionScalarFieldEnum = (typeof QuestionScalarFieldEnum)[keyof typeof QuestionScalarFieldEnum]
 
 
-export const QuizzesScalarFieldEnum = {
+export const QuizScalarFieldEnum = {
   id: 'id',
   title: 'title',
   description: 'description',
@@ -130,20 +130,20 @@ export const QuizzesScalarFieldEnum = {
   updated_at: 'updated_at'
 } as const
 
-export type QuizzesScalarFieldEnum = (typeof QuizzesScalarFieldEnum)[keyof typeof QuizzesScalarFieldEnum]
+export type QuizScalarFieldEnum = (typeof QuizScalarFieldEnum)[keyof typeof QuizScalarFieldEnum]
 
 
-export const SessionsScalarFieldEnum = {
+export const SessionScalarFieldEnum = {
   id: 'id',
   session_token: 'session_token',
   user_id: 'user_id',
   expires: 'expires'
 } as const
 
-export type SessionsScalarFieldEnum = (typeof SessionsScalarFieldEnum)[keyof typeof SessionsScalarFieldEnum]
+export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
 
 
-export const UsersScalarFieldEnum = {
+export const UserScalarFieldEnum = {
   id: 'id',
   email: 'email',
   name: 'name',
@@ -154,16 +154,16 @@ export const UsersScalarFieldEnum = {
   role: 'role'
 } as const
 
-export type UsersScalarFieldEnum = (typeof UsersScalarFieldEnum)[keyof typeof UsersScalarFieldEnum]
+export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
-export const Verification_tokensScalarFieldEnum = {
+export const VerificationTokenScalarFieldEnum = {
   identifier: 'identifier',
   token: 'token',
   expires: 'expires'
 } as const
 
-export type Verification_tokensScalarFieldEnum = (typeof Verification_tokensScalarFieldEnum)[keyof typeof Verification_tokensScalarFieldEnum]
+export type VerificationTokenScalarFieldEnum = (typeof VerificationTokenScalarFieldEnum)[keyof typeof VerificationTokenScalarFieldEnum]
 
 
 export const SortOrder = {

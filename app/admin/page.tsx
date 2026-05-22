@@ -1,11 +1,32 @@
 'use client';
 
+import { useState } from 'react';
 import { useGetQuizzesQuery } from '@/store/api/quizApi';
 import Link from 'next/link';
 import { Button } from '@/components/ui/core/Button';
+import { Modal } from '@/components/ui/feedback/Modal';
+import { useToast } from '@/components/ui/feedback/ToastContainer';
 
 export default function AdminDashboard() {
-  const { data: quizzes, isLoading } = useGetQuizzesQuery({});
+  const { data: quizzes, isLoading, refetch } = useGetQuizzesQuery({}, {
+    refetchOnMountOrArgChange: true,
+  });
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const { success, error: showError } = useToast();
+
+  const handleDelete = async () => {
+    if (!deleteId) return;
+    try {
+      const res = await fetch(`/api/admin/quizzes/${deleteId}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Ошибка удаления');
+      success('Квиз удалён');
+      refetch();
+    } catch (err: any) {
+      showError(err.message);
+    } finally {
+      setDeleteId(null);
+    }
+  };
 
   if (isLoading) return <p className="text-loom-white">Загрузка...</p>;
 
@@ -41,7 +62,12 @@ export default function AdminDashboard() {
                 <Link href={`/admin/quiz/${quiz.id}`}>
                   <Button variant="outline" size="sm">Ред.</Button>
                 </Link>
-                <Button variant="outline" size="sm" className="text-red-400">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-red-400"
+                  onClick={() => setDeleteId(quiz.id)}
+                >
                   Удалить
                 </Button>
               </div>
@@ -49,6 +75,18 @@ export default function AdminDashboard() {
           ))}
         </div>
       )}
+
+      <Modal
+        isOpen={!!deleteId}
+        onClose={() => setDeleteId(null)}
+        onCancel={() => setDeleteId(null)}
+        onConfirm={handleDelete}
+        title="Удалить квиз?"
+        confirmText="Удалить"
+        cancelText="Отмена"
+      >
+        <p>Вы уверены? Это действие нельзя отменить.</p>
+      </Modal>
     </div>
   );
 }

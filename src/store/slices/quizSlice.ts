@@ -5,6 +5,8 @@ export interface UserAnswer {
   questionId: string;
   selectedOptionId: string;
   isCorrect: boolean;
+   questionText: string;
+  correctOptionId: string;
 }
 
 interface QuizState {
@@ -44,19 +46,27 @@ const quizSlice = createSlice({
       state.selectedOption = action.payload;
     },
     confirmAnswer(state) {
-      const question = state.questions[state.currentIndex];
-      const selectedOption = state.selectedOption;
-      if (!question || !selectedOption) return;
+  const question = state.questions[state.currentIndex];
+  const selectedOption = state.selectedOption;
+  if (!question || !selectedOption) return;
 
-      const isCorrect = question.correctOptionId === selectedOption;
-      const existing = state.answers.find(a => a.questionId === question.id);
-      if (existing) {
-        existing.selectedOptionId = selectedOption;
-        existing.isCorrect = isCorrect;
-      } else {
-        state.answers.push({ questionId: question.id, selectedOptionId: selectedOption, isCorrect });
-      }
-    },
+  const isCorrect = question.correctOptionId === selectedOption;
+  const existing = state.answers.find(a => a.questionId === question.id);
+  if (existing) {
+    existing.selectedOptionId = selectedOption;
+    existing.isCorrect = isCorrect;
+    existing.questionText = question.text;
+    existing.correctOptionId = question.correctOptionId;
+  } else {
+    state.answers.push({
+      questionId: question.id,
+      selectedOptionId: selectedOption,
+      isCorrect,
+      questionText: question.text,
+      correctOptionId: question.correctOptionId,
+    });
+  }
+},
     nextQuestion(state) {
       if (state.currentIndex < state.questions.length - 1) {
         state.currentIndex++;

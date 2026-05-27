@@ -7,6 +7,7 @@ import syncReducer from './slices/syncSlice';
 import idbStorage from '@/lib/idbStorage';
 import { useDispatch } from 'react-redux';
 import { offlineMiddleware } from './middleware/offlineMiddleware';
+import { profileApi } from './api/profileApi';
 
 
 const quizPersistConfig = {
@@ -30,6 +31,7 @@ export const store = configureStore({
     sync: persistedSyncReducer,
     [attemptsApi.reducerPath]: attemptsApi.reducer,
     [quizApi.reducerPath]: quizApi.reducer,
+    [profileApi.reducerPath]: profileApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -39,7 +41,8 @@ export const store = configureStore({
     })
       .concat(attemptsApi.middleware)
       .concat(quizApi.middleware)
-      .concat(offlineMiddleware),
+      .concat(offlineMiddleware)
+      .concat(profileApi.middleware)
 });
 
 export const persistor = persistStore(store);

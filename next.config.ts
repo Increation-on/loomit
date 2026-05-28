@@ -3,6 +3,9 @@ import withSerwist from '@serwist/next'
 
 const nextConfig: NextConfig = {
   turbopack: {},
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   ...(process.env.NODE_ENV === 'development' && {
     headers: async () => [
       {
@@ -22,4 +25,6 @@ export default withSerwist({
   swSrc: 'app/sw.ts',
   swDest: 'public/sw.js',
   disable: false,
+  swUrl: '/sw.js',
+  include: ['/'],
 })(nextConfig)

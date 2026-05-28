@@ -14,7 +14,7 @@ interface QuizState {
   questions: { id: string; text: string; options: string[]; correctOptionId: string }[];
   answers: UserAnswer[];
   currentIndex: number;
-  selectedOption: string | null; // выбранный, но не подтверждённый вариант
+  selectedOption: string | null; 
   isFinished: boolean;
   startedAt: string | null;
 }

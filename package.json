@@ -10,7 +10,8 @@
     "seed": "tsx --env-file=.env.local prisma/seed.ts",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "build:webpack": "next build --webpack"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",

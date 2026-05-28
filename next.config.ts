@@ -2,6 +2,7 @@ import type { NextConfig } from 'next'
 import withSerwist from '@serwist/next'
 
 const nextConfig: NextConfig = {
+  turbopack: {},
   ...(process.env.NODE_ENV === 'development' && {
     headers: async () => [
       {

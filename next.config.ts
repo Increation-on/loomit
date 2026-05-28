@@ -26,5 +26,5 @@ export default withSerwist({
   swDest: 'public/sw.js',
   disable: false,
   swUrl: '/sw.js',
-  include: ['/'],
+  include: ['/', '/offline']
 })(nextConfig)

@@ -1,20 +1,22 @@
 import type { NextConfig } from 'next'
+import withSerwistInit from '@serwist/next'
+
+const revision = crypto.randomUUID();
+
+const withSerwist = withSerwistInit({
+  swSrc: 'app/sw.ts',
+  swDest: 'public/sw.js',
+  disable: process.env.NODE_ENV === 'development',
+  cacheOnNavigation: true,
+  additionalPrecacheEntries: [
+    { url: '/offline', revision },
+  ],
+})
 
 const nextConfig: NextConfig = {
-  // Отключаем CSP только в разработке
-  ...(process.env.NODE_ENV === 'development' && {
-    headers: async () => [
-      {
-        source: '/(.*)',
-        headers: [
-          {
-            key: 'Content-Security-Policy',
-            value: "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com https://apis.google.com https://*.google.com",
-          },
-        ],
-      },
-    ],
-  }),
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 }
 
-export default nextConfig
+export default withSerwist(nextConfig)

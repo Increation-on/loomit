@@ -7,12 +7,12 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Providers } from "./providers";
 
-const spaceGrotesk = Space_Grotesk({ 
+const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
   variable: '--font-display'
 })
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ['latin'],
   variable: '--font-body'
 })
@@ -40,18 +40,33 @@ export default async function RootLayout({
   const session = await getServerSession(authOptions)
 
   return (
-   <html
-  lang="ru"
-  className={`${spaceGrotesk.variable} ${inter.variable} h-full antialiased`}
-  suppressHydrationWarning
->
-  <body className="min-h-full flex flex-col">
-    <Providers session={session}>
-      <Header />
-      <main className="flex-1">{children}</main>
-      <Footer />
-    </Providers>
-  </body>
-</html>
+    <html
+      lang="ru"
+      className={`${spaceGrotesk.variable} ${inter.variable} h-full antialiased`}
+      suppressHydrationWarning
+    >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', function() {
+            navigator.serviceWorker.register('/sw.js').catch(function(err) {
+              console.log('SW registration failed: ', err);
+            });
+          });
+        }
+      `,
+          }}
+        />
+      </head>
+      <body className="min-h-full flex flex-col">
+        <Providers session={session}>
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </Providers>
+      </body>
+    </html>
   );
 }

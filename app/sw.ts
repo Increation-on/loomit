@@ -1,6 +1,3 @@
-import { defaultCache } from '@serwist/next/worker';
-
-declare let self: any;
-self.__SW_MANIFEST = [];
+import { defaultCache } from '@serwist/turbopack/worker';
 
 export { defaultCache };

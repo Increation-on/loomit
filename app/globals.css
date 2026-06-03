@@ -11,6 +11,8 @@
     --glitch-pink: #D41976;
     --glitch-darkpurple: #871F78;
     --glitch-blue: #00BFFF;
+
+    --nav-bg: rgba(255, 255, 255, 0.01);
   }
 
   .dark {
@@ -23,6 +25,8 @@
     --glitch-pink: #FFC0CB;
     --glitch-darkpurple: #871F78;
     --glitch-blue: #00BFFF;
+
+     --nav-bg: rgba(0, 0, 0, 0.2);
   }
 
   body {

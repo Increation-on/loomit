@@ -14,17 +14,17 @@ export default function Header() {
   const isDesktop = useMediaQuery('(min-width: 768px)');
   const userName = session?.user?.name || 'пользователь';
 
-  // Мобильная версия (как на главной)
+  // Мобильная версия
 if (!isDesktop) {
   return (
-    <header className="border-b border-loom-purple/20 bg-loom-black sticky top-0 z-10 px-4 h-16 flex items-center justify-between">
+   <header className="border-b border-loom-purple/20 bg-(--loom-black) sticky top-0 z-10 px-4 h-16 flex items-center justify-between">
       <Link href="/" className="text-xl font-bold text-loom-yellow glitch-text" data-text="LoomIt">
         LoomIt
       </Link>
       
       <div className="flex items-center gap-3">
         {/* Приветствие */}
-        <div className="hidden sm:block text-left">
+        <div className="text-left">
           <p className="text-sm text-gray-500 leading-none">Hello,</p>
           <p className="font-semibold text-loom-white">
             {userName}

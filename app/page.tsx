@@ -136,9 +136,9 @@ export default function HomePage() {
           </div>
         )}
 
-        {quizzes && quizzes.length > 0 ? (
+        {mockQuizzes && mockQuizzes.length > 0 ? (
           <div className="space-y-3">
-            {quizzes.slice(0, quizzes.length > 4 ? 4 : quizzes.length).map((quiz: any) => (
+            {mockQuizzes.slice(0, mockQuizzes.length > 4 ? 4 : mockQuizzes.length).map((quiz: any) => (
               <div
                 key={quiz.id}
                 onClick={() => handleQuizClick(quiz.id)}

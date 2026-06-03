@@ -16,16 +16,16 @@ import { ArrowRight, Search } from 'lucide-react';
 export default function HomePage() {
 
   // Временные моковые данные (пока нет реальных квизов)
-const mockQuizzes = [
-  { id: '1', title: 'React для начинающих', description: 'Изучите хуки, состояние и жизненный цикл', _count: { questions: 10 } },
-  { id: '2', title: 'Основы JavaScript', description: 'Переменные, функции, замыкания', _count: { questions: 15 } },
-  { id: '3', title: 'TypeScript Mastery', description: 'Типы, интерфейсы, дженерики', _count: { questions: 12 } },
-  { id: '4', title: 'Next.js с нуля', description: 'SSR, ISR, App Router', _count: { questions: 8 } },
-  { id: '5', title: 'Алгоритмы и структуры', description: 'Сортировки, графы, деревья', _count: { questions: 20 } },
-];
+  const mockQuizzes = [
+    { id: '1', title: 'React для начинающих', description: 'Изучите хуки, состояние и жизненный цикл', _count: { questions: 10 } },
+    { id: '2', title: 'Основы JavaScript', description: 'Переменные, функции, замыкания', _count: { questions: 15 } },
+    { id: '3', title: 'TypeScript Mastery', description: 'Типы, интерфейсы, дженерики', _count: { questions: 12 } },
+    { id: '4', title: 'Next.js с нуля', description: 'SSR, ISR, App Router', _count: { questions: 8 } },
+    { id: '5', title: 'Алгоритмы и структуры', description: 'Сортировки, графы, деревья', _count: { questions: 20 } },
+  ];
 
-// Замени в коде `quizzes` на `mockQuizzes` для теста
-const displayedQuizzes = mockQuizzes; // Или quizzes, если данные есть
+  // Замени в коде `quizzes` на `mockQuizzes` для теста
+  const displayedQuizzes = mockQuizzes; // Или quizzes, если данные есть
 
   const { data: quizzes, isLoading, error } = useGetQuizzesQuery({});
   const router = useRouter();
@@ -91,14 +91,14 @@ const displayedQuizzes = mockQuizzes; // Или quizzes, если данные �
             </div>
 
             <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
-              {mockQuizzes && [...mockQuizzes ]
+              {mockQuizzes && [...mockQuizzes]
                 .sort(() => Math.random() - 0.5)
                 .slice(0, 5)
                 .map((quiz: any) => (
                   <div
                     key={quiz.id}
                     onClick={() => handleQuizClick(quiz.id)}
-                    className="min-w-40 snap-start bg-(--loom-cyan)/20 p-4 rounded-2xl border border-(--loom-cyan)/30 cursor-pointer hover:scale-105 transition-transform"
+                    className="min-w-40 snap-start bg-(--loom-cyan)/20 p-4 rounded-2xl border border-(--loom-cyan)/30 cursor-pointer"
                   >
                     <h3 className="font-bold text-lg">{quiz.title}</h3>
                     <p className="text-sm text-gray-400 line-clamp-2">{quiz.description}</p>

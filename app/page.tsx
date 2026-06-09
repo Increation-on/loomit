@@ -39,7 +39,6 @@ export default function HomePage() {
   const hasUnfinished = currentQuiz && answers.length > 0 && !isFinished;
   const isSameQuiz = currentQuiz?.id === pendingQuizId;
 
-  const userName = "Maksim";
 
   const handleQuizClick = (quizId: string) => {
     if (hasUnfinished) {
@@ -91,7 +90,7 @@ export default function HomePage() {
             </div>
 
             <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
-              {mockQuizzes && [...mockQuizzes]
+              {quizzes && [...quizzes]
                 .sort(() => Math.random() - 0.5)
                 .slice(0, 5)
                 .map((quiz: any) => (
@@ -136,9 +135,9 @@ export default function HomePage() {
           </div>
         )}
 
-        {mockQuizzes && mockQuizzes.length > 0 ? (
+        {quizzes && quizzes.length > 0 ? (
           <div className="space-y-3">
-            {mockQuizzes.slice(0, mockQuizzes.length > 4 ? 4 : mockQuizzes.length).map((quiz: any) => (
+            {quizzes.slice(0, quizzes.length > 4 ? 4 : quizzes.length).map((quiz: any) => (
               <div
                 key={quiz.id}
                 onClick={() => handleQuizClick(quiz.id)}

@@ -76,7 +76,7 @@ export default function HomePage() {
           <input
             type="text"
             placeholder="Поиск квизов..."
-            className="w-full bg-(--loom-white)/10 border border-gray-700 rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:border-(--loom-cyan) text-(--loom-white)"
+            className="w-full bg-(--loom-white)/10 rounded-xl py-3 pl-10 pr-4 focus:outline-none text-(--loom-white) glitch-border"
           />
         </div>
       </div>
@@ -88,22 +88,32 @@ export default function HomePage() {
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-bold">Try it</h2>
             </div>
-
+            {/* Карточки Try it */}
             <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
               {quizzes && [...quizzes]
                 .sort(() => Math.random() - 0.5)
                 .slice(0, 5)
                 .map((quiz: any) => (
-                  <div
-                    key={quiz.id}
-                    onClick={() => handleQuizClick(quiz.id)}
-                    className="min-w-40 snap-start bg-(--loom-cyan)/20 p-4 rounded-2xl border border-(--loom-cyan)/30 cursor-pointer"
-                  >
-                    <h3 className="font-bold text-lg">{quiz.title}</h3>
-                    <p className="text-sm text-gray-400 line-clamp-2">{quiz.description}</p>
-                    <div className="mt-3 flex items-center gap-1 text-(--loom-cyan) text-sm font-semibold">
-                      Start <ArrowRight size={14} />
-                    </div>
+                  <div className="rounded-xl overflow-hidden relative" key={quiz.id} >
+                    <div 
+  key={quiz.id} 
+  onClick={() => handleQuizClick(quiz.id)}
+  className="min-w-40 snap-start bg-(--loom-cyan)/20 p-4 rounded-xl cursor-pointer relative glitch-border"
+>
+  {/* Левая циановая рамка (живая линия) */}
+  <div 
+    className="absolute left-0 top-1 bottom-1 w-[4px] bg-(--loom-cyan) rounded-l-lg"
+    style={{
+      boxShadow: '0 0 8px rgba(0, 204, 204, 0.4)'
+    }}
+  />
+
+  {/* Жёлтая точка со свечением */}
+  <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-(--loom-yellow) shadow-[0_0_6px_var(--loom-yellow)]" />
+
+  <h3 className="font-bold text-lg text-(--loom-white) leading-tight mb-2">{quiz.title}</h3>
+  <p className="text-sm text-(--loom-white)/60 line-clamp-2">{quiz.description}</p>
+</div>
                   </div>
                 ))}
             </div>

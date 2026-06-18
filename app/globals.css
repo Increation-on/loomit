@@ -51,3 +51,42 @@ h1, h2, h3, .font-display {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Глитч-рамка (чистый внутренний эффект) */
+.glitch-border {
+  border: 1px solid #D4A800;
+  border-radius: 12px;
+  box-shadow: 
+    /* Основной жёлтый контур */
+    0 0 0 1px #D4A800,
+    
+    /* Тонкая циановая линия, разорванная сверху */
+    inset 0 1px 0 0 #00CCCC,
+    inset 0 -1px 0 0 transparent,
+    inset 1px 0 0 0 #00CCCC,
+    inset -1px 0 0 0 #00CCCC,
+    
+    /* Тонкая фиолетовая линия, разорванная снизу */
+    inset 0 1px 0 0 transparent,
+    inset 0 -1px 0 0 #6B00CC,
+    inset 1px 0 0 0 transparent,
+    inset -1px 0 0 0 transparent;
+}
+
+.glitch-border:focus-within {
+  outline: none !important;
+  box-shadow: 
+    /* Жёлтая основа */
+    0 0 0 1px #D4A800,
+    
+    /* При фокусе линии становятся чуть ярче и смещаются больше */
+    inset 0 2px 0 0 #00CCCC,
+    inset 0 -2px 0 0 transparent,
+    inset 2px 0 0 0 #00CCCC,
+    inset -2px 0 0 0 #00CCCC,
+    
+    inset 0 2px 0 0 transparent,
+    inset 0 -2px 0 0 #6B00CC,
+    inset 2px 0 0 0 transparent,
+    inset -2px 0 0 0 transparent;
+}

@@ -31,8 +31,18 @@ export default function Footer() {
 
   // Мобильная версия (Bottom Nav)
 return (
-<nav className="fixed bottom-0 left-0 right-0 bg-(--nav-bg) backdrop-blur-lg border-t border-gray-200 z-50 pb-safe">
-    <div className="flex justify-around items-center h-16 max-w-md mx-auto">
+  <nav className="fixed bottom-0 left-0 right-0 bg-(--nav-bg) backdrop-blur-lg z-50 pb-safe">
+    
+    {/* Глитч-линия прямо над навбаром (вместо обычного border-t) */}
+    <div className="absolute top-0 left-0 w-full px-4">
+      <img 
+        src="/glitch-line.png" 
+        alt="glitch line" 
+        className="w-full h-0.5 object-cover pointer-events-none" 
+      />
+    </div>
+
+    <div className="flex justify-around items-center h-16 max-w-md mx-auto relative z-10">
       <Link href="/" className={`flex flex-col items-center gap-1 ${pathname === '/' ? 'text-(--loom-yellow)' : 'text-gray-500'}`}>
         <Home size={24} />
         <span className="text-xs">Главная</span>

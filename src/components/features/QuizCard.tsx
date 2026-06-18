@@ -21,20 +21,6 @@ export function QuizCard({
   className,
 }: QuizCardProps) {
 
-  const handleClick = (e: React.MouseEvent) => {
-    // Проверяем есть ли в persist другой квиз
-    const stored = localStorage.getItem('persist:quiz');
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        const savedQuiz = JSON.parse(parsed.currentQuiz || 'null');
-        if (savedQuiz && savedQuiz.id !== id) {
-          localStorage.removeItem('persist:quiz');
-        }
-      } catch {}
-    }
-  };
-
   return (
     <div>
       <Card className={cn(

@@ -5,7 +5,6 @@ import { useState, useEffect } from 'react';
 export function useTheme() {
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
 
-  // Загрузка сохранённой темы
   useEffect(() => {
     const saved = localStorage.getItem('theme') as 'light' | 'dark' | null;
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -13,14 +12,6 @@ export function useTheme() {
     setTheme(initial);
     document.documentElement.classList.toggle('dark', initial === 'dark');
   }, []);
-
-  // Обновление theme-color при изменении темы
-  useEffect(() => {
-    const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) {
-      meta.setAttribute('content', theme === 'dark' ? '#000000' : '#FFFFFF');
-    }
-  }, [theme]);
 
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';

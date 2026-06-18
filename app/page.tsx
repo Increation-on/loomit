@@ -89,34 +89,26 @@ export default function HomePage() {
               <h2 className="text-lg font-bold">Try it</h2>
             </div>
             {/* Карточки Try it */}
-            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
-              {quizzes && [...quizzes]
-                .sort(() => Math.random() - 0.5)
-                .slice(0, 5)
-                .map((quiz: any) => (
-                  <div className="rounded-xl overflow-hidden relative" key={quiz.id} >
-                    <div 
-  key={quiz.id} 
-  onClick={() => handleQuizClick(quiz.id)}
-  className="min-w-40 snap-start bg-(--loom-cyan)/20 p-4 rounded-xl cursor-pointer relative glitch-border"
->
-  {/* Левая циановая рамка (живая линия) */}
-  <div 
-    className="absolute left-0 top-1 bottom-1 w-[4px] bg-(--loom-cyan) rounded-l-lg"
-    style={{
-      boxShadow: '0 0 8px rgba(0, 204, 204, 0.4)'
-    }}
-  />
+           <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory w-max min-w-full">
+  {quizzes && [...quizzes]
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 5)
+    .map((quiz: any) => (
+      <div 
+        key={quiz.id} 
+        onClick={() => handleQuizClick(quiz.id)}
+        className="w-40 h-36 shrink-0 snap-start bg-(--loom-cyan)/20 p-4 rounded-xl cursor-pointer relative glitch-border"
+      >
+        {/* Левая циановая рамка */}
+        <div className="absolute left-0 top-1 bottom-1 w-[4px] bg-(--loom-cyan) rounded-l-lg" />
 
-  {/* Жёлтая точка со свечением */}
-  <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-(--loom-yellow) shadow-[0_0_6px_var(--loom-yellow)]" />
+        <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-(--loom-yellow) shadow-[0_0_6px_var(--loom-yellow)]" />
 
-  <h3 className="font-bold text-lg text-(--loom-white) leading-tight mb-2">{quiz.title}</h3>
-  <p className="text-sm text-(--loom-white)/60 line-clamp-2">{quiz.description}</p>
+        <h3 className="font-bold text-lg text-(--loom-white) leading-tight mb-2">{quiz.title}</h3>
+        <p className="text-sm text-(--loom-white)/60 line-clamp-2">{quiz.description}</p>
+      </div>
+    ))}
 </div>
-                  </div>
-                ))}
-            </div>
           </div>
         )}
       </div>

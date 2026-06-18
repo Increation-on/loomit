@@ -89,7 +89,7 @@ export default function HomePage() {
               <h2 className="text-lg font-bold">Try it</h2>
             </div>
             {/* Карточки Try it */}
-           <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory w-max min-w-full">
+           <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory w-max max-w-full touch-pan-x">
   {quizzes && [...quizzes]
     .sort(() => Math.random() - 0.5)
     .slice(0, 5)

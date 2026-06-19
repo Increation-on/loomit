@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+@property --glitch-color {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: #00CCCC;
+}
+
 body {
   font-family: var(--font-body), sans-serif;
 }
@@ -89,4 +95,30 @@ h1, h2, h3, .font-display {
     inset 0 -2px 0 0 #6B00CC,
     inset 2px 0 0 0 transparent,
     inset -2px 0 0 0 transparent;
+}
+
+@keyframes smooth-color-shift {
+  0%   { --glitch-color: #00CCCC; }
+  25%  { --glitch-color: #D4A800; }
+  50%  { --glitch-color: #6B00CC; }
+  75%  { --glitch-color: #D4A800; }
+  100% { --glitch-color: #00CCCC; }
+}
+
+.try-it-card {
+  --glitch-color: #00CCCC;
+  border: 1px solid #D4A800;
+  border-radius: 12px;
+  box-shadow: 
+    0 0 0 1px #D4A800,
+    inset 6px 0 0 0 var(--glitch-color),
+    inset 0 1px 0 0 #00CCCC,
+    inset 0 -1px 0 0 transparent,
+    inset 1px 0 0 0 #00CCCC,
+    inset -1px 0 0 0 #00CCCC,
+    inset 0 1px 0 0 transparent,
+    inset 0 -1px 0 0 #6B00CC,
+    inset 1px 0 0 0 transparent,
+    inset -1px 0 0 0 transparent;
+  animation: smooth-color-shift 5s ease-in-out infinite;
 }

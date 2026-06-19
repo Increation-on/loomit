@@ -12,7 +12,7 @@ import { EmptyState } from '@/components/ui/feedback/EmptyState';
 import { QuizCardSkeleton } from '@/components/ui/feedback/Skeleton';
 import { Button } from '@/components/ui/core/Button';
 import { ArrowRight, Search } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { pluralize } from '@/lib/utils';
 
 export default function HomePage() {
 
@@ -42,6 +42,13 @@ export default function HomePage() {
 
 
   const handleQuizClick = (quizId: string) => {
+    // Если это тот же самый квиз, который уже идёт — сразу переходим в него
+    if (currentQuiz?.id === quizId) {
+      router.push(`/quiz/${quizId}`);
+      return;
+    }
+
+    // Если есть другой незавершённый квиз — показываем модалку
     if (hasUnfinished) {
       setPendingQuizId(quizId);
     } else {
@@ -84,19 +91,19 @@ export default function HomePage() {
 
       {/* Баннер "Продолжить квиз" (Hero) */}
 
+      {/* Баннер "Продолжить квиз" (ширина как у поиска) */}
       {hasUnfinished && (
-        <div className="bg-(--loom-purple)/20 p-4 rounded-2xl border border-(--loom-purple)/30">
-          <div className="flex justify-between items-center">
-            <div>
-              <h3 className="font-bold text-(--loom-purple)">Продолжить квиз</h3>
-              <p className="text-sm text-gray-400">{currentQuiz?.title}</p>
-              <p className="text-xs text-gray-500 mt-1">{answers.length} вопросов</p>
+        <div className="w-full px-4 mb-6">
+          <div className="bg-(--loom-white)/5 p-3 rounded-xl border border-(--loom-cyan)/30 flex items-center justify-between glitch-border">
+            <div className="flex flex-col">
+              <span className="text-xs text-(--loom-white)/60">Продолжить</span>
+              <span className="font-semibold text-(--loom-white) text-sm">{currentQuiz?.title}</span>
+              <span className="text-[10px] text-(--loom-white)/40 mt-0.5">
+                {answers.length} {pluralize(answers.length, 'вопрос', 'вопроса', 'вопросов')}
+              </span>
             </div>
-            <Button
-              onClick={() => handleQuizClick(currentQuiz!.id)}
-              className="bg-(--loom-purple) text-white px-4 py-2 rounded-xl"
-            >
-              Продолжить →
+            <Button variant="glitch" size="default" onClick={() => handleQuizClick(currentQuiz!.id)}>
+              Go
             </Button>
           </div>
         </div>

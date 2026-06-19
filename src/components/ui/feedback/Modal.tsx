@@ -96,7 +96,7 @@ export function Modal({
             </Button>
             {onConfirm && (
               <Button
-                variant="primary"
+                variant="glitch"
                 className={variant === 'danger' ? 'bg-red-600 hover:bg-red-700' : ''}
                 onClick={() => {
                   onConfirm();

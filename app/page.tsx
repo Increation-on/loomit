@@ -139,51 +139,53 @@ export default function HomePage() {
 
       {/* Категории */}
       <div className="px-4">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-bold">Категории</h2>
-          {quizzes && quizzes.length > 4 && (
-            <Link href="/catalog" className="text-sm text-(--loom-yellow)">Все категории →</Link>
-          )}
+  <div className="flex justify-between items-center mb-4">
+    <h2 className="text-lg font-bold">Категории</h2>
+    {quizzes && quizzes.length > 4 && (
+      <Link href="/catalog" className="text-sm text-(--loom-yellow)">Все категории →</Link>
+    )}
+  </div>
+
+  {isLoading && (
+    <div className="space-y-3">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="h-16 bg-gray-800 rounded-xl animate-pulse" />
+      ))}
+    </div>
+  )}
+
+  {error && (
+    <div className="text-center py-10">
+      <p className="text-red-400 mb-4">Не удалось загрузить квизы</p>
+      <Button onClick={() => window.location.reload()}>Повторить</Button>
+    </div>
+  )}
+
+  {quizzes && quizzes.length > 0 ? (
+    <div className="space-y-3">
+      {quizzes.slice(0, quizzes.length > 4 ? 4 : quizzes.length).map((quiz: any) => (
+        <div
+          key={quiz.id}
+          onClick={() => handleQuizClick(quiz.id)}
+          className="bg-(--loom-white)/5 rounded-2xl p-4 cursor-pointer flex justify-between items-center relative glitch-border"
+        >
+          <div>
+            <h3 className="font-bold">{quiz.title}</h3>
+            <p className="text-sm text-gray-400">{quiz._count?.questions} вопросов</p>
+          </div>
+          
+          {/* Жёлтая точка со свечением (вместо стрелки) */}
+          <div className="w-2 h-2 rounded-full bg-(--loom-yellow) shadow-[0_0_6px_var(--loom-yellow)]" />
         </div>
-
-        {isLoading && (
-          <div className="space-y-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-16 bg-gray-800 rounded-xl animate-pulse" />
-            ))}
-          </div>
-        )}
-
-        {error && (
-          <div className="text-center py-10">
-            <p className="text-red-400 mb-4">Не удалось загрузить квизы</p>
-            <Button onClick={() => window.location.reload()}>Повторить</Button>
-          </div>
-        )}
-
-        {quizzes && quizzes.length > 0 ? (
-          <div className="space-y-3">
-            {quizzes.slice(0, quizzes.length > 4 ? 4 : quizzes.length).map((quiz: any) => (
-              <div
-                key={quiz.id}
-                onClick={() => handleQuizClick(quiz.id)}
-                className="bg-(--loom-white)/5 rounded-2xl p-4 border border-gray-800 cursor-pointer hover:border-(--loom-yellow) transition-colors flex justify-between items-center"
-              >
-                <div>
-                  <h3 className="font-bold">{quiz.title}</h3>
-                  <p className="text-sm text-gray-400">{quiz._count?.questions} вопросов</p>
-                </div>
-                <ArrowRight size={16} className="text-(--loom-white)/40" />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <EmptyState
-            title="Нет доступных квизов"
-            description="Загляните позже, скоро здесь появятся новые квизы."
-          />
-        )}
-      </div>
+      ))}
+    </div>
+  ) : (
+    <EmptyState
+      title="Нет доступных квизов"
+      description="Загляните позже, скоро здесь появятся новые квизы."
+    />
+  )}
+</div>
 
       {/* Модалка */}
       <Modal

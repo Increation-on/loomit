@@ -46,7 +46,7 @@ export async function POST(request: Request) {
         create: questions.map((q, index) => ({
           id: crypto.randomUUID(),
           text: q.text,
-          options: JSON.stringify(q.options.map(o => o.text)),
+          options: q.options,
           correct_option_id: q.correctOptionId,
           order: index,
         })),

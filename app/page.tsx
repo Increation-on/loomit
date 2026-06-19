@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSelector, useDispatch } from 'react-redux';
 import Link from 'next/link';
@@ -10,7 +10,7 @@ import { persistor } from '@/store/store';
 import { Modal } from '@/components/ui/feedback/Modal';
 import { EmptyState } from '@/components/ui/feedback/EmptyState';
 import { Button } from '@/components/ui/core/Button';
-import { Search, Bell, ArrowRight } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { pluralize } from '@/lib/utils';
 
 export default function HomePage() {
@@ -23,46 +23,44 @@ export default function HomePage() {
   const isFinished = quizState.isFinished;
   const [pendingQuizId, setPendingQuizId] = useState<string | null>(null);
 
-  // === Отслеживаем активную карточку для анимации змейки ===
-  const [activeQuizId, setActiveQuizId] = useState<string | null>(null);
+  // ✅ Фиксируем порядок карточек один раз при загрузке (не будет перескакивать)
+  const [shuffledQuizzes, setShuffledQuizzes] = useState<any[]>([]);
 
   useEffect(() => {
-  // 1. Если квизы загружены и есть хотя бы одна карточка — активируем первую
-  if (quizzes && quizzes.length > 0) {
-    setActiveQuizId(quizzes[0].id);
-  }
-
-  // 2. Настраиваем IntersectionObserver для отслеживания смены карточек
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setActiveQuizId(entry.target.id);
-        }
-      });
-    },
-    {
-      root: document.querySelector('.try-it-scroll'),
-      threshold: 0.6,
+    if (quizzes && quizzes.length > 0) {
+      setShuffledQuizzes([...quizzes].sort(() => Math.random() - 0.5).slice(0, 5));
     }
-  );
+  }, [quizzes]); // Сработает только когда загрузятся данные, а не при каждом скролле
 
-  // 3. Находим все карточки и начинаем следить за ними
-  const cards = document.querySelectorAll('.try-it-card');
-  cards.forEach((el) => observer.observe(el));
+  // ✅ Считаем ширину карточек один раз, но через useMemo (чтобы не пересчитывать при каждом рендере)
+  const cardWidth = useMemo(() => 160 + 16, []); // w-40 + gap-4
 
-  // 4. Чистим за собой при размонтировании
-  return () => observer.disconnect();
-}, [quizzes]);
-  // ===============================================
+  // === Анимация по скроллу ===
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [clickedId, setClickedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el || shuffledQuizzes.length === 0) return;
+
+    const handleScroll = () => {
+      const scrollLeft = el.scrollLeft;
+      const index = Math.min(Math.round(scrollLeft / cardWidth), shuffledQuizzes.length - 1);
+      setActiveIndex(index);
+    };
+
+    el.addEventListener('scroll', handleScroll);
+    handleScroll(); // Зажигаем первую при загрузке
+
+    return () => el.removeEventListener('scroll', handleScroll);
+  }, [shuffledQuizzes, cardWidth]);
 
   const hasUnfinished = currentQuiz && answers.length > 0 && !isFinished;
   const isSameQuiz = currentQuiz?.id === pendingQuizId;
 
-  const userName = "Maksim";
-
   const handleQuizClick = (quizId: string) => {
-    // Если это тот же самый квиз — сразу переходим
+    // Если это тот же квиз — сразу переходим
     if (currentQuiz?.id === quizId) {
       router.push(`/quiz/${quizId}`);
       return;
@@ -95,9 +93,9 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-(--loom-black) text-(--loom-white) pb-24">
-      {/* Верхняя панель */}
-      <div className="p-4">
-        <div className="relative mb-4">
+      {/* Поиск */}
+      <div className="p-4 mb-2">
+        <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
           <div className="glitch-border w-full rounded-xl overflow-hidden">
             <input
@@ -109,7 +107,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Баннер "Продолжить квиз" / Try it */}
+      {/* Баннер "Продолжить" / Try it */}
       <div className="px-4 mb-6">
         {hasUnfinished ? (
           <div className="bg-(--loom-white)/5 p-3 rounded-xl border border-(--loom-cyan)/30 flex items-center justify-between glitch-border">
@@ -129,24 +127,32 @@ export default function HomePage() {
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-bold">Try it</h2>
             </div>
-            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory w-max max-w-full touch-pan-x try-it-scroll">
-              {quizzes && [...quizzes]
-                .sort(() => Math.random() - 0.5)
-                .slice(0, 5)
-                .map((quiz: any) => (
+            <div
+              ref={scrollRef}
+              className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory w-max max-w-full touch-pan-x try-it-scroll"
+            >
+              {shuffledQuizzes.map((quiz: any, index: number) => {
+                const isActive = activeIndex === index;
+                const isClicked = clickedId === quiz.id;
+                return (
                   <div
                     key={quiz.id}
                     id={quiz.id}
-                    onClick={() => handleQuizClick(quiz.id)}
+                    onClick={() => {
+                      handleQuizClick(quiz.id);
+                      setClickedId(quiz.id);
+                      setTimeout(() => setClickedId(null), 1000);
+                    }}
                     className={`w-48 h-36 shrink-0 snap-start bg-(--loom-cyan)/20 p-4 rounded-xl cursor-pointer relative transition-all duration-300 try-it-card ${
-                      activeQuizId === quiz.id ? 'snake-active' : ''
+                      isActive || isClicked ? 'snake-active' : ''
                     }`}
                   >
                     <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-(--loom-yellow) shadow-[0_0_6px_var(--loom-yellow)]" />
                     <h3 className="font-bold text-lg text-(--loom-white) truncate">{quiz.title}</h3>
                     <p className="text-sm text-(--loom-white)/60 line-clamp-2">{quiz.description}</p>
                   </div>
-                ))}
+                );
+              })}
             </div>
           </div>
         )}

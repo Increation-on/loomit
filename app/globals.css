@@ -126,3 +126,21 @@ h1, h2, h3, .font-display {
   box-shadow: inset 0 0 0 1px #00CCCC;
   transition: border-color 0.3s ease;
 }
+
+
+/* браузерные артефакты на мобилке */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  touch-action: manipulation;
+  background-color: var(--loom-black);
+}
+
+input, textarea, button {
+  user-select: none;
+  -webkit-user-select: none;
+}

@@ -12,6 +12,7 @@ import { EmptyState } from '@/components/ui/feedback/EmptyState';
 import { Button } from '@/components/ui/core/Button';
 import { Search } from 'lucide-react';
 import { pluralize } from '@/lib/utils';
+import { Input } from '@/components/ui/core/Input';
 
 export default function HomePage() {
   const { data: quizzes, isLoading, error } = useGetQuizzesQuery({});
@@ -95,16 +96,11 @@ export default function HomePage() {
     <div className="min-h-screen bg-(--loom-black) text-(--loom-white) pb-24">
       {/* Поиск */}
       <div className="p-4 mb-2">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
-          <div className="glitch-border w-full rounded-xl overflow-hidden">
-            <input
-              type="text"
-              placeholder="Поиск квизов..."
-              className="w-full bg-(--loom-white)/10 py-3 pl-10 pr-4 focus:outline-none text-(--loom-white)"
-            />
-          </div>
-        </div>
+        <Input
+          type="text"
+          placeholder="Поиск квизов..."
+          leftIcon={<Search size={20} />}
+        />
       </div>
 
       {/* Баннер "Продолжить" / Try it */}
@@ -143,9 +139,8 @@ export default function HomePage() {
                       setClickedId(quiz.id);
                       setTimeout(() => setClickedId(null), 1000);
                     }}
-                    className={`w-48 h-36 shrink-0 snap-start bg-(--loom-cyan)/20 p-4 rounded-xl cursor-pointer relative transition-all duration-300 try-it-card ${
-                      isActive || isClicked ? 'snake-active' : ''
-                    }`}
+                    className={`w-48 h-36 shrink-0 snap-start bg-(--loom-cyan)/20 p-4 rounded-xl cursor-pointer relative transition-all duration-300 try-it-card ${isActive || isClicked ? 'snake-active' : ''
+                      }`}
                   >
                     <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-(--loom-yellow) shadow-[0_0_6px_var(--loom-yellow)]" />
                     <h3 className="font-bold text-lg text-(--loom-white) truncate">{quiz.title}</h3>
@@ -174,7 +169,7 @@ export default function HomePage() {
             ))}
           </div>
         )}
-        
+
         {error && (
           <div className="text-center py-10">
             <p className="text-red-400 mb-4">Не удалось загрузить квизы</p>
@@ -213,16 +208,16 @@ export default function HomePage() {
         onCancel={handleStartNew}
         title="Незавершённый квиз"
         cancelText={isSameQuiz ? 'Начать заново' : 'Начать новый квиз'}
-        confirmText={isSameQuiz ? 'Продолжить' : `Продолжить «${currentQuiz?.title}»`}
+        confirmText={isSameQuiz ? 'Продолжить' : `Продолжить незавершенный`}
         onConfirm={handleContinue}
       >
         <p>
-          У вас есть незавершённый квиз <strong>«{currentQuiz?.title}»</strong>.
+          У вас есть незавершённый квиз <span className='text-(--loom-cyan)'>«{currentQuiz?.title}»</span>.
         </p>
         <p className="text-sm mt-2 text-gray-500">
           {isSameQuiz
             ? 'Продолжить с последнего вопроса или начать заново?'
-            : 'Начать новый квиз или вернуться к старому?'}
+            : 'Начать новый квиз или вернуться к незавершенному?'}
         </p>
       </Modal>
     </div>

@@ -1,14 +1,22 @@
-// src/components/ui/Skeleton.tsx
+// src/components/ui/feedback/Skeleton.tsx
 import { cn } from '@/lib/utils';
 
 interface SkeletonProps {
   className?: string;
+  variant?: 'default' | 'glitch';
 }
 
-export function Skeleton({ className }: SkeletonProps) {
+export function Skeleton({ className, variant = 'default' }: SkeletonProps) {
   return (
     <div
-      className={cn('animate-pulse bg-gray-200 rounded', className)}
+      className={cn(
+        'relative overflow-hidden rounded-xl',
+        variant === 'default' && 'bg-(--loom-white)/5',
+        variant === 'glitch' && 'bg-(--loom-cyan)/10',
+        'before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite]',
+        'before:bg-linear-to-r before:from-transparent before:via-(--loom-white)/10 before:to-transparent',
+        className
+      )}
     />
   );
 }
@@ -16,16 +24,12 @@ export function Skeleton({ className }: SkeletonProps) {
 // QuizCardSkeleton
 export function QuizCardSkeleton() {
   return (
-    <div className="rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden">
-      <Skeleton className="h-40 w-full" />
-      <div className="p-4 space-y-3">
+    <div className="glitch-border rounded-xl bg-(--loom-white)/5 p-4 overflow-hidden">
+      <Skeleton className="h-32 w-full mb-3" variant="glitch" />
+      <div className="space-y-2">
         <Skeleton className="h-6 w-3/4" />
         <Skeleton className="h-4 w-full" />
         <Skeleton className="h-4 w-2/3" />
-        <div className="flex justify-between items-center pt-2">
-          <Skeleton className="h-4 w-20" />
-          <Skeleton className="h-4 w-16" />
-        </div>
       </div>
     </div>
   );
@@ -34,7 +38,7 @@ export function QuizCardSkeleton() {
 // QuestionSkeleton
 export function QuestionSkeleton() {
   return (
-    <div className="rounded-lg border border-gray-200 bg-white shadow-sm p-6 space-y-4">
+    <div className="glitch-border rounded-xl bg-(--loom-black) p-6 space-y-4">
       <div className="space-y-2">
         <Skeleton className="h-4 w-24" />
         <Skeleton className="h-7 w-full" />
@@ -42,7 +46,7 @@ export function QuestionSkeleton() {
       <div className="space-y-3 pt-4">
         {[1, 2, 3, 4].map((i) => (
           <div key={i} className="flex items-center gap-3">
-            <Skeleton className="h-4 w-4 rounded" />
+            <Skeleton className="h-4 w-4 rounded-full" />
             <Skeleton className="h-5 w-full" />
           </div>
         ))}

@@ -128,6 +128,26 @@ h1, h2, h3, .font-display {
 }
 
 
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* браузерные артефакты на мобилке */
 * {
   -webkit-tap-highlight-color: transparent;

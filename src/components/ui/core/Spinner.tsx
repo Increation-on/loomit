@@ -1,33 +1,45 @@
-// src/components/ui/Spinner.tsx
+// src/components/ui/core/Spinner.tsx
 import { cn } from '@/lib/utils';
 
 interface SpinnerProps {
   size?: 'sm' | 'md' | 'lg';
+  color?: 'cyan' | 'yellow' | 'white';
   className?: string;
 }
 
 const sizeClasses = {
   sm: 'h-4 w-4 border-2',
-  md: 'h-8 w-8 border-3',
-  lg: 'h-12 w-12 border-4',
+  md: 'h-6 w-6 border-2',
+  lg: 'h-8 w-8 border-3',
 };
 
-export function Spinner({ size = 'md', className }: SpinnerProps) {
+const colorClasses = {
+  cyan: 'border-(--loom-cyan) border-t-transparent',
+  yellow: 'border-(--loom-yellow) border-t-transparent',
+  white: 'border-(--loom-white) border-t-transparent',
+};
+
+export function Spinner({ 
+  size = 'md', 
+  color = 'cyan', 
+  className 
+}: SpinnerProps) {
   return (
     <div
       className={cn(
-        'animate-spin rounded-full border-solid border-gray-300 border-t-blue-600',
+        'animate-spin rounded-full',
         sizeClasses[size],
+        colorClasses[color],
         className
       )}
     />
   );
 }
 
-export function Loader({ className }: { className?: string }) {
+export function Loader({ className, color = 'cyan' }: { className?: string; color?: 'cyan' | 'yellow' | 'white' }) {
   return (
     <div className={cn('flex justify-center items-center py-8', className)}>
-      <Spinner size="lg" />
+      <Spinner size="lg" color={color} />
     </div>
   );
 }

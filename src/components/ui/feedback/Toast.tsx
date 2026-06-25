@@ -1,4 +1,4 @@
-// src/components/ui/Toast.tsx
+// src/components/ui/feedback/Toast.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -13,18 +13,18 @@ interface ToastProps {
   onClose: () => void;
 }
 
-const typeStyles = {
-  success: 'bg-green-500 text-white',
-  error: 'bg-red-500 text-white',
-  info: 'bg-blue-500 text-white',
-  warning: 'bg-yellow-500 text-white',
-};
-
-const icons = {
+const iconMap = {
   success: '✓',
   error: '✗',
   info: 'ℹ',
   warning: '⚠',
+};
+
+const colorMap = {
+  success: 'text-(--loom-cyan)',
+  error: 'text-red-500',
+  info: 'text-(--loom-cyan)',
+  warning: 'text-(--loom-yellow)',
 };
 
 export function Toast({ message, type, duration = 3000, onClose }: ToastProps) {
@@ -33,7 +33,7 @@ export function Toast({ message, type, duration = 3000, onClose }: ToastProps) {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsVisible(false);
-      setTimeout(onClose, 300); // даём время на анимацию
+      setTimeout(onClose, 300);
     }, duration);
 
     return () => clearTimeout(timer);
@@ -42,15 +42,19 @@ export function Toast({ message, type, duration = 3000, onClose }: ToastProps) {
   return (
     <div
       className={cn(
-        'fixed bottom-4 right-4 z-50 flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg',
+        'fixed bottom-4 right-4 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg',
+        'bg-(--loom-black) glitch-border',
         'animate-slide-up transition-all duration-300',
-        typeStyles[type],
         !isVisible && 'opacity-0 translate-y-2'
       )}
       role="alert"
     >
-      <span className="text-lg font-bold">{icons[type]}</span>
-      <span className="text-sm">{message}</span>
+      <span className={cn('text-lg font-bold', colorMap[type])}>
+        {iconMap[type]}
+      </span>
+      <span className="text-sm text-(--loom-white)">
+        {message}
+      </span>
     </div>
   );
 }

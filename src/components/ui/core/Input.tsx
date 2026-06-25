@@ -1,49 +1,59 @@
-// src/components/ui/Input.tsx
+// src/components/ui/core/Input.tsx
 'use client';
 
-import { forwardRef, InputHTMLAttributes } from 'react';
+import { forwardRef, InputHTMLAttributes, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
+  leftIcon?: ReactNode;
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, label, error, id, ...props }, ref) => {
+  ({ className, label, error, id, leftIcon, ...props }, ref) => {
     const inputId = id || label?.toLowerCase().replace(/\s/g, '-');
 
     return (
-      <div className="space-y-1">
+      <div className="space-y-1 w-full">
         {label && (
           <label
             htmlFor={inputId}
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-(--loom-white)/80"
           >
             {label}
           </label>
         )}
         
-        <input
-          id={inputId}
-          className={cn(
-            'w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900',
-            'placeholder:text-gray-400',
-            'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-            'disabled:bg-gray-100 disabled:cursor-not-allowed',
-            error && 'border-red-500 focus:ring-red-500',
-            className
+        <div className="relative glitch-border rounded-xl bg-(--loom-white)/5 w-full">
+          {leftIcon && (
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-(--loom-white)/40">
+              {leftIcon}
+            </div>
           )}
-          ref={ref}
-          aria-invalid={!!error}
-          aria-describedby={error ? `${inputId}-error` : undefined}
-          {...props}
-        />
+          <input
+            id={inputId}
+            className={cn(
+              'w-full bg-transparent text-(--loom-white) rounded-xl px-4 py-3',
+              'placeholder:text-(--loom-white)/30',
+              leftIcon && 'pl-10',
+              'focus:outline-none',
+              'transition-all duration-200',
+              'disabled:opacity-50 disabled:cursor-not-allowed',
+              error && 'border-red-500 focus:border-red-500',
+              className
+            )}
+            ref={ref}
+            aria-invalid={!!error}
+            aria-describedby={error ? `${inputId}-error` : undefined}
+            {...props}
+          />
+        </div>
         
         {error && (
           <p
             id={`${inputId}-error`}
-            className="text-sm text-red-600"
+            className="text-sm text-red-500"
           >
             {error}
           </p>

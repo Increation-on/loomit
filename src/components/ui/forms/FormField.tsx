@@ -1,10 +1,10 @@
-// src/components/ui/FormField.tsx
+// src/components/ui/forms/FormField.tsx
 'use client';
 
 import { useFormContext } from 'react-hook-form';
 import { Input, InputProps } from '../core/Input';
 
-interface FormFieldProps extends InputProps {
+export interface FormFieldProps extends InputProps {
   name: string;
 }
 

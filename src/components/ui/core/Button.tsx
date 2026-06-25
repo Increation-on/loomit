@@ -1,27 +1,33 @@
-// src/components/ui/Button.tsx
 import { forwardRef, ButtonHTMLAttributes } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center rounded-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none min-h-[48px] px-4',
+  'inline-flex items-center justify-center rounded-xl text-sm font-bold transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:pointer-events-none',
   {
     variants: {
       variant: {
-        primary: 'bg-blue-600 text-white hover:bg-blue-700',
-        secondary: 'bg-gray-100 text-gray-900 hover:bg-gray-200',
-        outline: 'border border-gray-300 bg-transparent hover:bg-gray-50',
-        ghost: 'hover:bg-gray-100',
+        // Основная жёлтая кнопка с глитч-рамкой
+        glitch: 'bg-(--loom-yellow) text-black hover:opacity-90 glitch-border',
+        // Вторичная — для кнопок «Назад» и т.д.
+        secondary: 'bg-(--loom-white)/10 text-(--loom-white) hover:bg-(--loom-white)/20',
+        // Тёмная кнопка (например, для админки)
+        dark: 'bg-(--loom-purple) text-white hover:opacity-90',
+        // Без фона, с глитч-рамкой
+        outline: 'border border-(--loom-yellow) text-(--loom-yellow) hover:bg-(--loom-yellow)/10',
+        // Совсем без фона
+        ghost: 'bg-transparent text-(--loom-white) hover:bg-(--loom-white)/10',
       },
       size: {
-        sm: 'h-auto text-sm',
-        md: 'h-auto',
-        lg: 'h-auto text-lg',
+        sm: 'h-8 px-3 text-xs',
+        default: 'h-12 px-4 py-2',
+        lg: 'h-14 px-6 text-lg',
+        icon: 'h-10 w-10',
       },
     },
     defaultVariants: {
-      variant: 'primary',
-      size: 'md',
+      variant: 'glitch',
+      size: 'default',
     },
   }
 );

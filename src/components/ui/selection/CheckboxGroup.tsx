@@ -1,7 +1,7 @@
-// src/components/ui/CheckboxGroup.tsx
+// src/components/ui/selection/CheckboxGroup.tsx
 'use client';
 
-import { createContext, useContext, ReactNode } from 'react';
+import { createContext, useContext, ReactNode, useId } from 'react';
 import { cn } from '@/lib/utils';
 
 type CheckboxGroupContextType = {
@@ -39,7 +39,7 @@ export function CheckboxGroup({ value, onChange, name, children, className }: Ch
 
   return (
     <CheckboxGroupContext.Provider value={{ value, onChange, name }}>
-      <div role="group" className={cn('space-y-2', className)}>
+      <div role="group" className={cn('space-y-3', className)}>
         {children}
       </div>
     </CheckboxGroupContext.Provider>
@@ -50,42 +50,76 @@ interface CheckboxGroupItemProps {
   value: string;
   children: ReactNode;
   disabled?: boolean;
+  className?: string;
 }
 
-function CheckboxGroupItem({ value, children, disabled }: CheckboxGroupItemProps) {
-  const { value: selectedValues, name } = useCheckboxGroup();
+function CheckboxGroupItem({ value, children, disabled, className }: CheckboxGroupItemProps) {
+  const { value: selectedValues, onChange, name } = useCheckboxGroup();
   const isChecked = selectedValues.includes(value);
+  const id = useId();
 
   return (
-    <label className={cn(
-      'flex items-center gap-3 cursor-pointer',
-      disabled && 'opacity-50 cursor-not-allowed'
-    )}>
+    <label
+      htmlFor={id}
+      className={cn(
+        'relative flex items-center gap-3 p-4 cursor-pointer rounded-xl transition-all duration-200',
+        'bg-(--loom-white)/5 hover:bg-(--loom-white)/10',
+        isChecked ? 'glitch-border' : 'border border-(--loom-white)/10',
+        disabled && 'opacity-50 cursor-not-allowed',
+        className
+      )}
+    >
       <input
+        id={id}
         type="checkbox"
         name={name}
         value={value}
         checked={isChecked}
         onChange={(e) => {
           if (disabled) return;
-          const { checked } = e.target;
-          const { value: itemValue } = e.target;
-          
+          const checked = e.target.checked;
           if (checked) {
-            // Используем контекстный onChange
-            const { onChange, value: currentValue } = useCheckboxGroup();
-            onChange([...currentValue, itemValue]);
+            onChange([...selectedValues, value]);
           } else {
-            const { onChange, value: currentValue } = useCheckboxGroup();
-            onChange(currentValue.filter((v) => v !== itemValue));
+            onChange(selectedValues.filter((v) => v !== value));
           }
         }}
         disabled={disabled}
-        className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+        className="sr-only"
         aria-checked={isChecked}
         role="checkbox"
       />
-      <span className="text-gray-700">{children}</span>
+
+      {/* Кастомный квадрат */}
+      <div
+        className={cn(
+          'w-5 h-5 rounded shrink-0 transition-colors flex items-center justify-center',
+          isChecked ? 'border-(--loom-cyan) bg-(--loom-cyan)/20' : 'border-(--loom-white)/30 border'
+        )}
+      >
+        {isChecked && (
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="w-3.5 h-3.5 text-(--loom-cyan)"
+          >
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        )}
+      </div>
+
+      <span
+        className={cn(
+          'text-sm font-medium transition-colors',
+          isChecked ? 'text-(--loom-cyan)' : 'text-(--loom-white)'
+        )}
+      >
+        {children}
+      </span>
     </label>
   );
 }

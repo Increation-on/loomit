@@ -13,7 +13,7 @@ const spaceGrotesk = Space_Grotesk({
 })
 
 const inter = Inter({
-  subsets: ['latin'],
+  subsets: ['latin', 'cyrillic'],
   variable: '--font-body'
 })
 
@@ -31,6 +31,8 @@ export const metadata: Metadata = {
     title: "LoomIt",
   },
 };
+
+
 
 export default async function RootLayout({
   children,

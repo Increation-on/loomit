@@ -1,4 +1,4 @@
-// src/components/ui/Modal.tsx
+// src/components/ui/feedback/Modal.tsx
 'use client';
 
 import { useEffect, useRef, ReactNode } from 'react';
@@ -59,55 +59,63 @@ export function Modal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in">
       <div
         ref={modalRef}
         className={cn(
-          'bg-white rounded-lg shadow-xl w-full max-w-md mx-4',
+          'bg-(--loom-black) glitch-border rounded-xl shadow-[0_0_30px_rgba(0,204,204,0.15)] w-full max-w-md mx-4',
           'animate-slide-up'
         )}
         role="dialog"
         aria-modal="true"
         aria-labelledby={title ? 'modal-title' : undefined}
       >
-        {title && (
-          <div className="border-b px-6 py-4 flex items-center justify-between">
-            <h2 id="modal-title" className="text-xl font-semibold text-gray-900">
+        {/* Заголовок + крестик */}
+        <div className="px-6 pt-5 pb-2 flex items-center justify-between">
+          {title ? (
+            <h2 id="modal-title" className="text-xl font-bold text-(--loom-white)">
               {title}
             </h2>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 text-2xl leading-none p-1"
-              aria-label="Закрыть"
-            >
-              ×
-            </button>
-          </div>
-        )}
-        
-        <div className="px-6 py-4 text-gray-700">
+          ) : (
+            <div /> // пустой div для отступа, если нет заголовка
+          )}
+          <button
+            onClick={onClose}
+            className="text-(--loom-yellow) hover:text-(--loom-cyan) text-2xl leading-none p-1 transition-colors"
+            aria-label="Закрыть"
+          >
+            ×
+          </button>
+        </div>
+
+        {/* Контент */}
+        <div className="px-6 py-3 text-(--loom-white)/70">
           {children}
         </div>
-        
-        {(onConfirm || cancelText) && (
-          <div className="border-t px-6 py-4 flex justify-end gap-3">
-            <Button variant="outline" onClick={onCancel || onClose}>
-              {cancelText}
-            </Button>
-            {onConfirm && (
-              <Button
-                variant="primary"
-                className={variant === 'danger' ? 'bg-red-600 hover:bg-red-700' : ''}
-                onClick={() => {
-                  onConfirm();
-                  onClose();
-                }}
-              >
-                {confirmText}
-              </Button>
-            )}
-          </div>
+
+        {/* Кнопки */}
+       {(onConfirm || cancelText) && (
+  <div className="px-6 pb-5 pt-2 flex flex-wrap items-center justify-end gap-2">
+    <Button variant="secondary" onClick={onCancel || onClose} className="flex-1 min-w-20">
+      {cancelText}
+    </Button>
+    {onConfirm && (
+      <Button
+        variant="glitch"
+        className={cn(
+          "flex-1 min-w-20",
+          variant === 'danger' && 'bg-red-600 text-white border-red-600'
         )}
+        onClick={() => {
+          onConfirm();
+          onClose();
+        }}
+      >
+        {confirmText}
+      </Button>
+    )}
+  </div>
+)}
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-// src/components/ui/Card.tsx
+// src/components/ui/core/Card.tsx
 import { forwardRef, HTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -7,7 +7,7 @@ const Card = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
     <div
       ref={ref}
       className={cn(
-        'rounded-lg border border-gray-200 bg-white shadow-sm',
+        'bg-(--loom-white)/5 glitch-border rounded-xl p-4 text-(--loom-white)',
         className
       )}
       {...props}
@@ -20,7 +20,7 @@ const CardHeader = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn('flex flex-col space-y-1.5 p-6', className)}
+      className={cn('flex flex-col space-y-1.5', className)}
       {...props}
     />
   )
@@ -31,7 +31,7 @@ const CardTitle = forwardRef<HTMLParagraphElement, HTMLAttributes<HTMLHeadingEle
   ({ className, ...props }, ref) => (
     <h3
       ref={ref}
-      className={cn('text-lg font-semibold leading-none tracking-tight', className)}
+      className={cn('text-lg font-bold text-(--loom-white) leading-none tracking-tight', className)}
       {...props}
     />
   )
@@ -40,7 +40,7 @@ CardTitle.displayName = 'CardTitle';
 
 const CardContent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('p-6 pt-0', className)} {...props} />
+    <div ref={ref} className={cn('', className)} {...props} />
   )
 );
 CardContent.displayName = 'CardContent';

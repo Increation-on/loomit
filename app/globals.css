@@ -1,5 +1,18 @@
 @import "tailwindcss";
 
+@property --glitch-color {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: #00CCCC;
+}
+
+body {
+  font-family: var(--font-body), sans-serif;
+}
+h1, h2, h3, .font-display {
+  font-family: var(--font-display), sans-serif;
+}
+
 @layer base {
   :root {
     --loom-yellow: #D4A800;
@@ -11,6 +24,8 @@
     --glitch-pink: #D41976;
     --glitch-darkpurple: #871F78;
     --glitch-blue: #00BFFF;
+
+    --nav-bg: rgba(255, 255, 255, 0.01);
   }
 
   .dark {
@@ -23,6 +38,8 @@
     --glitch-pink: #FFC0CB;
     --glitch-darkpurple: #871F78;
     --glitch-blue: #00BFFF;
+
+     --nav-bg: rgba(0, 0, 0, 0.2);
   }
 
   body {
@@ -30,4 +47,127 @@
     color: var(--loom-white);
     font-family: 'Inter', sans-serif;
   }
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #FFD700, #00FFFF, #D41976);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Глитч-рамка (чистый внутренний эффект) */
+.glitch-border {
+  border: 1px solid #D4A800;
+  border-radius: 12px;
+  box-shadow: 
+    /* Основной жёлтый контур */
+    0 0 0 1px #D4A800,
+    
+    /* Тонкая циановая линия, разорванная сверху */
+    inset 0 1px 0 0 #00CCCC,
+    inset 0 -1px 0 0 transparent,
+    inset 1px 0 0 0 #00CCCC,
+    inset -1px 0 0 0 #00CCCC,
+    
+    /* Тонкая фиолетовая линия, разорванная снизу */
+    inset 0 1px 0 0 transparent,
+    inset 0 -1px 0 0 #6B00CC,
+    inset 1px 0 0 0 transparent,
+    inset -1px 0 0 0 transparent;
+}
+
+.glitch-border:focus-within {
+  outline: none !important;
+  box-shadow: 
+    /* Жёлтая основа */
+    0 0 0 1px #D4A800,
+    
+    /* При фокусе линии становятся чуть ярче и смещаются больше */
+    inset 0 2px 0 0 #00CCCC,
+    inset 0 -2px 0 0 transparent,
+    inset 2px 0 0 0 #00CCCC,
+    inset -2px 0 0 0 #00CCCC,
+    
+    inset 0 2px 0 0 transparent,
+    inset 0 -2px 0 0 #6B00CC,
+    inset 2px 0 0 0 transparent,
+    inset -2px 0 0 0 transparent;
+}
+
+@keyframes snake-border {
+  0% {
+    border-color: #00CCCC;
+    box-shadow: inset 0 0 0 1px #00CCCC;
+  }
+  25% {
+    border-color: #D4A800;
+    box-shadow: inset 0 0 0 1px #D4A800;
+  }
+  50% {
+    border-color: #6B00CC;
+    box-shadow: inset 0 0 0 1px #6B00CC;
+  }
+  75% {
+    border-color: #D4A800;
+    box-shadow: inset 0 0 0 1px #D4A800;
+  }
+  100% {
+    border-color: #00CCCC;
+    box-shadow: inset 0 0 0 1px #00CCCC;
+  }
+}
+
+.snake-active {
+  animation: snake-border 2.5s linear infinite;
+  border: 1px solid #00CCCC;
+  box-shadow: inset 0 0 0 1px #00CCCC;
+  transition: border-color 0.3s ease;
+}
+
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* браузерные артефакты на мобилке */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  touch-action: manipulation;
+  background-color: var(--loom-black);
+}
+
+input, textarea, button {
+  user-select: none;
+  -webkit-user-select: none;
 }

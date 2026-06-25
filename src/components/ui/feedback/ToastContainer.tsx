@@ -1,4 +1,4 @@
-// src/components/ui/ToastContainer.tsx
+// src/components/ui/feedback/ToastContainer.tsx
 'use client';
 
 import { createContext, useContext, useState, ReactNode, useCallback } from 'react';
@@ -48,14 +48,15 @@ export function ToastContainer({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={{ showToast, success, error, info, warning }}>
       {children}
-      <div className="fixed bottom-4 right-4 z-50 space-y-2">
+      <div className="fixed bottom-6 right-4 z-50 flex flex-col-reverse gap-3 max-w-sm w-full pointer-events-none">
         {toasts.map((toast) => (
-          <Toast
-            key={toast.id}
-            message={toast.message}
-            type={toast.type}
-            onClose={() => removeToast(toast.id)}
-          />
+          <div key={toast.id} className="pointer-events-auto w-full">
+            <Toast
+              message={toast.message}
+              type={toast.type}
+              onClose={() => removeToast(toast.id)}
+            />
+          </div>
         ))}
       </div>
     </ToastContext.Provider>

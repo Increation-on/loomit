@@ -1,7 +1,7 @@
-// src/components/ui/Badge.tsx
+// src/components/ui/core/Badge.tsx
 import { cn } from '@/lib/utils';
 
-type BadgeVariant = 'default' | 'success' | 'warning' | 'error' | 'info';
+type BadgeVariant = 'default' | 'cyan' | 'yellow' | 'purple' | 'outline';
 
 interface BadgeProps {
   children: React.ReactNode;
@@ -10,11 +10,11 @@ interface BadgeProps {
 }
 
 const variantStyles: Record<BadgeVariant, string> = {
-  default: 'bg-gray-100 text-gray-700',
-  success: 'bg-green-100 text-green-700',
-  warning: 'bg-yellow-100 text-yellow-700',
-  error: 'bg-red-100 text-red-700',
-  info: 'bg-blue-100 text-blue-700',
+  default: 'bg-(--loom-white)/10 text-(--loom-white)',
+  cyan: 'bg-(--loom-cyan)/20 text-(--loom-cyan)',
+  yellow: 'bg-(--loom-yellow)/20 text-(--loom-yellow)',
+  purple: 'bg-(--loom-purple)/20 text-(--loom-purple)',
+  outline: 'border border-(--loom-white)/20 text-(--loom-white)',
 };
 
 export function Badge({ children, variant = 'default', className }: BadgeProps) {

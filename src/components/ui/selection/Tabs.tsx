@@ -1,4 +1,4 @@
-// src/components/ui/Tabs.tsx
+// src/components/ui/core/Tabs.tsx
 'use client';
 
 import { createContext, useContext, ReactNode } from 'react';
@@ -29,7 +29,9 @@ interface TabsProps {
 export function Tabs({ value, onValueChange, children, className }: TabsProps) {
   return (
     <TabsContext.Provider value={{ value, onValueChange }}>
-      <div className={className}>{children}</div>
+      <div className={cn('glitch-border rounded-xl bg-(--loom-black) p-4', className)}>
+        {children}
+      </div>
     </TabsContext.Provider>
   );
 }
@@ -42,7 +44,7 @@ interface TabsListProps {
 export function TabsList({ children, className }: TabsListProps) {
   return (
     <div
-      className={cn('flex gap-1 border-b border-gray-200', className)}
+      className={cn('flex gap-2 border-b border-(--loom-white)/10 pb-3', className)}
       role="tablist"
     >
       {children}
@@ -66,11 +68,11 @@ export function TabsTrigger({ value, children, className }: TabsTriggerProps) {
       aria-selected={isSelected}
       onClick={() => onValueChange(value)}
       className={cn(
-        'px-4 py-2 text-sm font-medium transition-all',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500',
+        'px-4 py-2 text-sm font-medium transition-all rounded-lg',
+        'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-(--loom-cyan)',
         isSelected
-          ? 'border-b-2 border-blue-600 text-blue-600'
-          : 'text-gray-600 hover:text-gray-900',
+          ? 'bg-(--loom-white)/10 text-(--loom-cyan) glitch-border'
+          : 'text-(--loom-white)/50 hover:text-(--loom-white) hover:bg-(--loom-white)/5',
         className
       )}
     >

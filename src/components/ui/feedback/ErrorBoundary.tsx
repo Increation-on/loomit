@@ -1,12 +1,14 @@
-// src/components/ui/ErrorBoundary.tsx
+// src/components/ui/feedback/ErrorBoundary.tsx
 'use client';
 
 import { Component, ErrorInfo, ReactNode } from 'react';
 import { Button } from '../core/Button';
+import { cn } from '@/lib/utils';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
   fallback?: ReactNode;
+  className?: string;
 }
 
 interface ErrorBoundaryState {
@@ -39,15 +41,23 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       }
 
       return (
-        <div className="flex flex-col items-center justify-center min-h-100 p-8 text-center">
-          <div className="text-6xl mb-4">😵</div>
-          <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+        <div
+          className={cn(
+            'flex flex-col items-center justify-center min-h-80 p-8 text-center',
+            'bg-(--loom-black) glitch-border rounded-xl',
+            this.props.className
+          )}
+        >
+          <div className="text-5xl mb-4 text-(--loom-cyan) font-bold">
+            ⚡
+          </div>
+          <h2 className="text-xl font-bold text-(--loom-white) mb-2">
             Что-то пошло не так
           </h2>
-          <p className="text-gray-600 mb-6 max-w-md">
-            {this.state.error?.message || 'Произошла непредвиденная ошибка'}
+          <p className="text-(--loom-white)/60 mb-6 max-w-md">
+            {this.state.error?.message || 'Произошла непредвиденная ошибка. Попробуйте перезагрузить страницу.'}
           </p>
-          <Button onClick={this.handleReset}>
+          <Button variant="glitch" onClick={this.handleReset}>
             Попробовать снова
           </Button>
         </div>

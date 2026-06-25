@@ -149,65 +149,65 @@ export function QuizContent({ id }: { id: string }) {
           </h2>
 
           <div className="space-y-3">
-          {currentQuestion.options.map((opt: string, idx: number) => {
-  const isSelected = selectedOption === opt;
-  const isCorrectOption = currentQuestion.correctOptionId === opt;
+            {currentQuestion.options.map((opt: string, idx: number) => {
+              const isSelected = selectedOption === opt;
+              const isCorrectOption = currentQuestion.correctOptionId === opt;
 
-  // === Базовое состояние (градиент жёлтый → циан) ===
-  let borderClass = 'border-(--loom-white)/10 hover:border-(--loom-cyan)/40';
-  let letterClass = 'font-bold bg-gradient-to-r from-(--loom-yellow) to-(--loom-cyan) bg-clip-text text-transparent';
-  let textClass = 'text-(--loom-white)/70';
-  let icon = null;
+              // === Базовое состояние (градиент жёлтый → циан) ===
+              let borderClass = 'border-(--loom-white)/10 hover:border-(--loom-cyan)/40';
+              let letterClass = 'font-bold bg-gradient-to-r from-(--loom-yellow) to-(--loom-cyan) bg-clip-text text-transparent';
+              let textClass = 'text-(--loom-white)/70';
+              let icon = null;
 
-  // === Выбрано, но ещё не подтверждено ===
-  if (isSelected && !isCurrentConfirmed) {
-    borderClass = 'glitch-border';
-    letterClass = 'text-(--loom-yellow) font-bold';
-    textClass = 'text-(--loom-yellow)';
-  }
+              // === Выбрано, но ещё не подтверждено ===
+              if (isSelected && !isCurrentConfirmed) {
+                borderClass = 'glitch-border';
+                letterClass = 'text-(--loom-yellow) font-bold';
+                textClass = 'text-(--loom-yellow)';
+              }
 
-  // === Подтверждено ===
-  if (isCurrentConfirmed) {
-    if (isCorrectOption) {
-      // Правильный — чистый циан (как награда)
-      borderClass = 'border-(--loom-cyan)';
-      letterClass = 'text-(--loom-cyan) font-bold';
-      textClass = 'text-(--loom-cyan)';
-      icon = <Check size={18} className="text-(--loom-cyan) ml-auto" />;
-    } else if (currentAnswer?.selectedOptionId === opt && !currentAnswer?.isCorrect) {
-      // Неправильный — розовый
-      borderClass = 'border-(--glitch-pink)';
-      letterClass = 'text-(--glitch-pink) font-bold';
-      textClass = 'text-(--glitch-pink)/80';
-      icon = <X size={18} className="text-(--glitch-pink) ml-auto" />;
-    }
-  }
+              // === Подтверждено ===
+              if (isCurrentConfirmed) {
+                if (isCorrectOption) {
+                  // Правильный — чистый циан (как награда)
+                  borderClass = 'border-(--loom-cyan)';
+                  letterClass = 'text-(--loom-cyan) font-bold';
+                  textClass = 'text-(--loom-cyan)';
+                  icon = <Check size={18} className="text-(--loom-cyan) ml-auto" />;
+                } else if (currentAnswer?.selectedOptionId === opt && !currentAnswer?.isCorrect) {
+                  // Неправильный — розовый
+                  borderClass = 'border-(--glitch-pink)';
+                  letterClass = 'text-(--glitch-pink) font-bold';
+                  textClass = 'text-(--glitch-pink)/80';
+                  icon = <X size={18} className="text-(--glitch-pink) ml-auto" />;
+                }
+              }
 
-  return (
-    <motion.div
-      key={idx}
-      whileHover={!isCurrentConfirmed ? { scale: 1.01 } : {}}
-      whileTap={!isCurrentConfirmed ? { scale: 0.98 } : {}}
-      onClick={() => {
-        if (!isCurrentConfirmed) {
-          dispatch(selectOption(opt));
-        }
-      }}
-      className={cn(
-        'flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200',
-        'bg-(--loom-white)/5',
-        borderClass
-      )}
-    >
-      <span className={cn('text-lg font-bold w-6', letterClass)}>{optionLetters[idx]}</span>
-      <span className={cn('flex-1', textClass)}>{opt}</span>
-      {icon}
-    </motion.div>
-  );
-})}
+              return (
+                <motion.div
+                  key={idx}
+                  whileHover={!isCurrentConfirmed ? { scale: 1.01 } : {}}
+                  whileTap={!isCurrentConfirmed ? { scale: 0.98 } : {}}
+                  onClick={() => {
+                    if (!isCurrentConfirmed) {
+                      dispatch(selectOption(opt));
+                    }
+                  }}
+                  className={cn(
+                    'flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200',
+                    'bg-(--loom-white)/5',
+                    borderClass
+                  )}
+                >
+                  <span className={cn('text-lg font-bold w-6', letterClass)}>{optionLetters[idx]}</span>
+                  <span className={cn('flex-1', textClass)}>{opt}</span>
+                  {icon}
+                </motion.div>
+              );
+            })}
           </div>
 
-          {/* Кнопки управления (теперь компактные, без w-full) */}
+          {/* Кнопки управления */}
           <div className="flex flex-col items-center gap-2 pt-8">
             {!isCurrentConfirmed ? (
               <Button

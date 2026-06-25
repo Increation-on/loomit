@@ -127,27 +127,36 @@ export default function HomePage() {
               ref={scrollRef}
               className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory w-max max-w-full touch-pan-x try-it-scroll"
             >
-              {shuffledQuizzes.map((quiz: any, index: number) => {
-                const isActive = activeIndex === index;
-                const isClicked = clickedId === quiz.id;
-                return (
-                  <div
-                    key={quiz.id}
-                    id={quiz.id}
-                    onClick={() => {
-                      handleQuizClick(quiz.id);
-                      setClickedId(quiz.id);
-                      setTimeout(() => setClickedId(null), 1000);
-                    }}
-                    className={`w-48 h-36 shrink-0 snap-start bg-(--loom-cyan)/20 p-4 rounded-xl cursor-pointer relative transition-all duration-300 try-it-card ${isActive || isClicked ? 'snake-active' : ''
-                      }`}
-                  >
-                    <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-(--loom-yellow) shadow-[0_0_6px_var(--loom-yellow)]" />
-                    <h3 className="font-bold text-lg text-(--loom-white) truncate">{quiz.title}</h3>
-                    <p className="text-sm text-(--loom-white)/60 line-clamp-2">{quiz.description}</p>
-                  </div>
-                );
-              })}
+              {isLoading ? (
+                // Скелетоны для Try it
+                <>
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="w-48 h-36 shrink-0 rounded-xl bg-(--loom-white)/5 animate-pulse" />
+                  ))}
+                </>
+              ) : (
+                shuffledQuizzes.map((quiz: any, index: number) => {
+                  const isActive = activeIndex === index;
+                  const isClicked = clickedId === quiz.id;
+                  return (
+                    <div
+                      key={quiz.id}
+                      id={quiz.id}
+                      onClick={() => {
+                        handleQuizClick(quiz.id);
+                        setClickedId(quiz.id);
+                        setTimeout(() => setClickedId(null), 1000);
+                      }}
+                      className={`w-48 h-36 shrink-0 snap-start bg-(--loom-cyan)/20 p-4 rounded-xl cursor-pointer relative transition-all duration-300 try-it-card ${isActive || isClicked ? 'snake-active' : ''
+                        }`}
+                    >
+                      <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-(--loom-yellow) shadow-[0_0_6px_var(--loom-yellow)]" />
+                      <h3 className="font-bold text-lg text-(--loom-white) truncate">{quiz.title}</h3>
+                      <p className="text-sm text-(--loom-white)/60 line-clamp-2">{quiz.description}</p>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
         )}
@@ -162,22 +171,21 @@ export default function HomePage() {
           )}
         </div>
 
-        {isLoading && (
+        {isLoading ? (
+          // Скелетоны во время загрузки
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-16 bg-gray-800 rounded-xl animate-pulse" />
+              <div key={i} className="h-16 bg-(--loom-white)/5 rounded-xl animate-pulse" />
             ))}
           </div>
-        )}
-
-        {error && (
+        ) : error ? (
+          // Ошибка
           <div className="text-center py-10">
             <p className="text-red-400 mb-4">Не удалось загрузить квизы</p>
             <Button onClick={() => window.location.reload()}>Повторить</Button>
           </div>
-        )}
-
-        {quizzes && quizzes.length > 0 ? (
+        ) : quizzes && quizzes.length > 0 ? (
+          // Список категорий
           <div className="space-y-3">
             {quizzes.slice(0, quizzes.length > 4 ? 4 : quizzes.length).map((quiz: any) => (
               <div
@@ -187,13 +195,14 @@ export default function HomePage() {
               >
                 <div>
                   <h3 className="font-bold">{quiz.title}</h3>
-                  <p className="text-sm text-gray-400">{quiz._count?.questions} вопросов</p>
+                  <p className="text-sm text-(--loom-white)/60">{quiz._count?.questions} вопросов</p>
                 </div>
                 <div className="w-2 h-2 rounded-full bg-(--loom-yellow) shadow-[0_0_6px_var(--loom-yellow)]" />
               </div>
             ))}
           </div>
         ) : (
+          // Пустой список — только тогда показываем EmptyState
           <EmptyState
             title="Нет доступных квизов"
             description="Загляните позже, скоро здесь появятся новые квизы."

@@ -1,4 +1,5 @@
 'use client';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import {
@@ -11,7 +12,6 @@ import {
   selectOption,
   confirmAnswer,
   nextQuestion,
-  previousQuestion,
   finishQuiz,
 } from '@/store/slices/quizSlice';
 import { Button } from '@/components/ui/core/Button';
@@ -21,8 +21,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { persistor } from '@/store/store';
 import { useGetQuizByIdQuery } from '@/store/api/quizApi';
 import { useSession } from 'next-auth/react';
-import { useToast } from '../ui/feedback/ToastContainer';
-import { ArrowRight, Check, X } from 'lucide-react';
+import { useToast } from '@/components/ui/feedback/ToastContainer';
+import { Check, X } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export function QuizContent({ id }: { id: string }) {
   const dispatch = useDispatch();
@@ -38,7 +39,7 @@ export function QuizContent({ id }: { id: string }) {
   const isAuthenticated = status === 'authenticated';
   const { warning } = useToast();
 
-  // Загрузка квиза (без изменений)
+  // Загрузка квиза
   useEffect(() => {
     if (currentQuiz && currentQuiz.id !== id) {
       persistor.purge();
@@ -56,7 +57,7 @@ export function QuizContent({ id }: { id: string }) {
     }
   }, [quizData, currentQuiz, dispatch]);
 
-  // Сохранение (без изменений)
+  // Сохранение
   useEffect(() => {
     if (isFinished && questions.length > 0 && !savedRef.current) {
       savedRef.current = true;
@@ -77,7 +78,7 @@ export function QuizContent({ id }: { id: string }) {
     }
   }, [isFinished, questions, answers, id, saveAttempt, dispatch]);
 
-  // Экран результатов (стилизован)
+  // Экран результатов
   if (isFinished) {
     return (
       <div className="min-h-screen bg-(--loom-black) flex flex-col items-center justify-center p-6 text-center space-y-6">
@@ -114,7 +115,7 @@ export function QuizContent({ id }: { id: string }) {
   return (
     <div className="min-h-screen bg-(--loom-black) pt-8 pb-24 px-4 flex flex-col items-center max-w-2xl mx-auto">
 
-      {/* Прогресс и заголовок квиза */}
+      {/* Прогресс и заголовок */}
       <div className="w-full mb-6">
         {currentQuiz && (
           <h1 className="text-2xl font-bold text-(--loom-cyan) text-center mb-2">{currentQuiz.title}</h1>
@@ -148,87 +149,90 @@ export function QuizContent({ id }: { id: string }) {
           </h2>
 
           <div className="space-y-3">
-            {currentQuestion.options.map((opt: string, idx: number) => {
-              const isSelected = selectedOption === opt;
-              const isCorrectOption = currentQuestion.correctOptionId === opt;
+          {currentQuestion.options.map((opt: string, idx: number) => {
+  const isSelected = selectedOption === opt;
+  const isCorrectOption = currentQuestion.correctOptionId === opt;
 
-              let borderClass = 'border-(--loom-white)/20 hover:border-(--loom-cyan)/50';
-              let bgClass = 'bg-(--loom-white)/5';
-              let letterClass = 'text-(--loom-cyan) font-bold';
-              let textClass = 'text-(--loom-white)';
-              let icon = null;
+  // === Базовое состояние (градиент жёлтый → циан) ===
+  let borderClass = 'border-(--loom-white)/10 hover:border-(--loom-cyan)/40';
+  let letterClass = 'font-bold bg-gradient-to-r from-(--loom-yellow) to-(--loom-cyan) bg-clip-text text-transparent';
+  let textClass = 'text-(--loom-white)/70';
+  let icon = null;
 
-              if (isCurrentConfirmed) {
-                if (isCorrectOption) {
-                  borderClass = 'border-green-500';
-                  letterClass = 'text-green-300 font-bold';
-                  textClass = 'text-green-300';
-                  icon = <Check size={20} className="text-green-500 ml-auto" />;
-                } else if (currentAnswer?.selectedOptionId === opt && !currentAnswer?.isCorrect) {
-                  borderClass = 'border-red-500';
-                  letterClass = 'text-red-300 font-bold';
-                  textClass = 'text-red-300';
-                  icon = <X size={20} className="text-red-500 ml-auto" />;
-                }
-              } else if (isSelected) {
-                borderClass = 'border-(--loom-purple)';           // ✅ Рамка: фиолетовая
-                letterClass = 'text-(--loom-yellow) font-bold';    // Буква: жёлтая
-                textClass = 'text-(--loom-cyan)';                  // Текст: циан
-              }
+  // === Выбрано, но ещё не подтверждено ===
+  if (isSelected && !isCurrentConfirmed) {
+    borderClass = 'glitch-border';
+    letterClass = 'text-(--loom-yellow) font-bold';
+    textClass = 'text-(--loom-yellow)';
+  }
 
-              return (
-                <motion.div
-                  key={idx}
-                  whileHover={!isCurrentConfirmed ? { scale: 1.01 } : {}}
-                  whileTap={!isCurrentConfirmed ? { scale: 0.98 } : {}}
-                  onClick={() => {
-                    if (!isCurrentConfirmed) {
-                      dispatch(selectOption(opt));
-                    }
-                  }}
-                  className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 ${borderClass} ${bgClass}`}
-                >
-                  <span className={`text-lg font-bold w-6 ${letterClass}`}>{optionLetters[idx]}</span>
-                  <span className={`flex-1 ${textClass}`}>{opt}</span>
-                  {icon}
-                </motion.div>
-              );
-            })}
+  // === Подтверждено ===
+  if (isCurrentConfirmed) {
+    if (isCorrectOption) {
+      // Правильный — чистый циан (как награда)
+      borderClass = 'border-(--loom-cyan)';
+      letterClass = 'text-(--loom-cyan) font-bold';
+      textClass = 'text-(--loom-cyan)';
+      icon = <Check size={18} className="text-(--loom-cyan) ml-auto" />;
+    } else if (currentAnswer?.selectedOptionId === opt && !currentAnswer?.isCorrect) {
+      // Неправильный — розовый
+      borderClass = 'border-(--glitch-pink)';
+      letterClass = 'text-(--glitch-pink) font-bold';
+      textClass = 'text-(--glitch-pink)/80';
+      icon = <X size={18} className="text-(--glitch-pink) ml-auto" />;
+    }
+  }
+
+  return (
+    <motion.div
+      key={idx}
+      whileHover={!isCurrentConfirmed ? { scale: 1.01 } : {}}
+      whileTap={!isCurrentConfirmed ? { scale: 0.98 } : {}}
+      onClick={() => {
+        if (!isCurrentConfirmed) {
+          dispatch(selectOption(opt));
+        }
+      }}
+      className={cn(
+        'flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200',
+        'bg-(--loom-white)/5',
+        borderClass
+      )}
+    >
+      <span className={cn('text-lg font-bold w-6', letterClass)}>{optionLetters[idx]}</span>
+      <span className={cn('flex-1', textClass)}>{opt}</span>
+      {icon}
+    </motion.div>
+  );
+})}
           </div>
 
-          {/* Кнопки управления */}
-          <div className="flex flex-col gap-3 pt-4">
+          {/* Кнопки управления (теперь компактные, без w-full) */}
+          <div className="flex flex-col items-center gap-2 pt-8">
             {!isCurrentConfirmed ? (
               <Button
+                variant="glitch"
                 onClick={() => dispatch(confirmAnswer())}
                 disabled={!selectedOption}
-                className="w-full bg-(--loom-yellow) text-black font-bold text-lg py-4 rounded-xl hover:opacity-90 transition disabled:opacity-50"
+                className="px-12 py-2.5 text-base"
               >
                 Ответить
               </Button>
             ) : currentIndex === questions.length - 1 ? (
               <Button
+                variant="glitch"
                 onClick={() => dispatch(finishQuiz())}
-                className="w-full bg-(--loom-yellow) text-black font-bold text-lg py-4 rounded-xl hover:opacity-90 transition"
+                className="px-12 py-2.5 text-base"
               >
                 Завершить
               </Button>
             ) : (
               <Button
+                variant="glitch"
                 onClick={() => dispatch(nextQuestion())}
-                className="w-full bg-(--loom-yellow) text-black font-bold text-lg py-4 rounded-xl hover:opacity-90 transition flex items-center justify-center gap-2"
+                className="px-12 py-2.5 text-base"
               >
-                Далее <ArrowRight size={20} />
-              </Button>
-            )}
-
-            {isCurrentConfirmed && (
-              <Button
-                onClick={() => dispatch(previousQuestion())}
-                disabled={currentIndex === 0}
-                className="w-full bg-(--loom-white)/10 text-(--loom-white) py-3 rounded-xl hover:bg-(--loom-white)/20 transition disabled:opacity-50"
-              >
-                Назад
+                Далее
               </Button>
             )}
           </div>

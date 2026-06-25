@@ -49,6 +49,13 @@ h1, h2, h3, .font-display {
   }
 }
 
+.gradient-text {
+  background: linear-gradient(135deg, #FFD700, #00FFFF, #D41976);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }

@@ -28,6 +28,8 @@ export type QuizMinAggregateOutputType = {
   id: string | null
   title: string | null
   description: string | null
+  category_id: string | null
+  level: $Enums.Level | null
   created_at: Date | null
   updated_at: Date | null
 }
@@ -36,6 +38,8 @@ export type QuizMaxAggregateOutputType = {
   id: string | null
   title: string | null
   description: string | null
+  category_id: string | null
+  level: $Enums.Level | null
   created_at: Date | null
   updated_at: Date | null
 }
@@ -44,6 +48,8 @@ export type QuizCountAggregateOutputType = {
   id: number
   title: number
   description: number
+  category_id: number
+  level: number
   created_at: number
   updated_at: number
   _all: number
@@ -54,6 +60,8 @@ export type QuizMinAggregateInputType = {
   id?: true
   title?: true
   description?: true
+  category_id?: true
+  level?: true
   created_at?: true
   updated_at?: true
 }
@@ -62,6 +70,8 @@ export type QuizMaxAggregateInputType = {
   id?: true
   title?: true
   description?: true
+  category_id?: true
+  level?: true
   created_at?: true
   updated_at?: true
 }
@@ -70,6 +80,8 @@ export type QuizCountAggregateInputType = {
   id?: true
   title?: true
   description?: true
+  category_id?: true
+  level?: true
   created_at?: true
   updated_at?: true
   _all?: true
@@ -151,6 +163,8 @@ export type QuizGroupByOutputType = {
   id: string
   title: string
   description: string | null
+  category_id: string | null
+  level: $Enums.Level | null
   created_at: Date
   updated_at: Date
   _count: QuizCountAggregateOutputType | null
@@ -180,8 +194,11 @@ export type quizWhereInput = {
   id?: Prisma.StringFilter<"quiz"> | string
   title?: Prisma.StringFilter<"quiz"> | string
   description?: Prisma.StringNullableFilter<"quiz"> | string | null
+  category_id?: Prisma.StringNullableFilter<"quiz"> | string | null
+  level?: Prisma.EnumLevelNullableFilter<"quiz"> | $Enums.Level | null
   created_at?: Prisma.DateTimeFilter<"quiz"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"quiz"> | Date | string
+  category?: Prisma.XOR<Prisma.CategoryNullableScalarRelationFilter, Prisma.categoryWhereInput> | null
   attempts?: Prisma.AttemptListRelationFilter
   questions?: Prisma.QuestionListRelationFilter
 }
@@ -190,8 +207,11 @@ export type quizOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  category_id?: Prisma.SortOrderInput | Prisma.SortOrder
+  level?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
+  category?: Prisma.categoryOrderByWithRelationInput
   attempts?: Prisma.attemptOrderByRelationAggregateInput
   questions?: Prisma.questionOrderByRelationAggregateInput
 }
@@ -203,8 +223,11 @@ export type quizWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.quizWhereInput | Prisma.quizWhereInput[]
   title?: Prisma.StringFilter<"quiz"> | string
   description?: Prisma.StringNullableFilter<"quiz"> | string | null
+  category_id?: Prisma.StringNullableFilter<"quiz"> | string | null
+  level?: Prisma.EnumLevelNullableFilter<"quiz"> | $Enums.Level | null
   created_at?: Prisma.DateTimeFilter<"quiz"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"quiz"> | Date | string
+  category?: Prisma.XOR<Prisma.CategoryNullableScalarRelationFilter, Prisma.categoryWhereInput> | null
   attempts?: Prisma.AttemptListRelationFilter
   questions?: Prisma.QuestionListRelationFilter
 }, "id">
@@ -213,6 +236,8 @@ export type quizOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  category_id?: Prisma.SortOrderInput | Prisma.SortOrder
+  level?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
   _count?: Prisma.quizCountOrderByAggregateInput
@@ -227,6 +252,8 @@ export type quizScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"quiz"> | string
   title?: Prisma.StringWithAggregatesFilter<"quiz"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"quiz"> | string | null
+  category_id?: Prisma.StringNullableWithAggregatesFilter<"quiz"> | string | null
+  level?: Prisma.EnumLevelNullableWithAggregatesFilter<"quiz"> | $Enums.Level | null
   created_at?: Prisma.DateTimeWithAggregatesFilter<"quiz"> | Date | string
   updated_at?: Prisma.DateTimeWithAggregatesFilter<"quiz"> | Date | string
 }
@@ -235,8 +262,10 @@ export type quizCreateInput = {
   id?: string
   title: string
   description?: string | null
+  level?: $Enums.Level | null
   created_at?: Date | string
   updated_at: Date | string
+  category?: Prisma.categoryCreateNestedOneWithoutQuizzesInput
   attempts?: Prisma.attemptCreateNestedManyWithoutQuizInput
   questions?: Prisma.questionCreateNestedManyWithoutQuizInput
 }
@@ -245,6 +274,8 @@ export type quizUncheckedCreateInput = {
   id?: string
   title: string
   description?: string | null
+  category_id?: string | null
+  level?: $Enums.Level | null
   created_at?: Date | string
   updated_at: Date | string
   attempts?: Prisma.attemptUncheckedCreateNestedManyWithoutQuizInput
@@ -255,8 +286,10 @@ export type quizUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  level?: Prisma.NullableEnumLevelFieldUpdateOperationsInput | $Enums.Level | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  category?: Prisma.categoryUpdateOneWithoutQuizzesNestedInput
   attempts?: Prisma.attemptUpdateManyWithoutQuizNestedInput
   questions?: Prisma.questionUpdateManyWithoutQuizNestedInput
 }
@@ -265,6 +298,8 @@ export type quizUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  level?: Prisma.NullableEnumLevelFieldUpdateOperationsInput | $Enums.Level | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   attempts?: Prisma.attemptUncheckedUpdateManyWithoutQuizNestedInput
@@ -275,6 +310,8 @@ export type quizCreateManyInput = {
   id?: string
   title: string
   description?: string | null
+  category_id?: string | null
+  level?: $Enums.Level | null
   created_at?: Date | string
   updated_at: Date | string
 }
@@ -283,6 +320,7 @@ export type quizUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  level?: Prisma.NullableEnumLevelFieldUpdateOperationsInput | $Enums.Level | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -291,6 +329,8 @@ export type quizUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  level?: Prisma.NullableEnumLevelFieldUpdateOperationsInput | $Enums.Level | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -304,6 +344,8 @@ export type quizCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  category_id?: Prisma.SortOrder
+  level?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
 }
@@ -312,6 +354,8 @@ export type quizMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  category_id?: Prisma.SortOrder
+  level?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
 }
@@ -320,8 +364,20 @@ export type quizMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  category_id?: Prisma.SortOrder
+  level?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
+}
+
+export type QuizListRelationFilter = {
+  every?: Prisma.quizWhereInput
+  some?: Prisma.quizWhereInput
+  none?: Prisma.quizWhereInput
+}
+
+export type quizOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type quizCreateNestedOneWithoutAttemptsInput = {
@@ -352,12 +408,60 @@ export type quizUpdateOneRequiredWithoutQuestionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.quizUpdateToOneWithWhereWithoutQuestionsInput, Prisma.quizUpdateWithoutQuestionsInput>, Prisma.quizUncheckedUpdateWithoutQuestionsInput>
 }
 
+export type NullableEnumLevelFieldUpdateOperationsInput = {
+  set?: $Enums.Level | null
+}
+
+export type quizCreateNestedManyWithoutCategoryInput = {
+  create?: Prisma.XOR<Prisma.quizCreateWithoutCategoryInput, Prisma.quizUncheckedCreateWithoutCategoryInput> | Prisma.quizCreateWithoutCategoryInput[] | Prisma.quizUncheckedCreateWithoutCategoryInput[]
+  connectOrCreate?: Prisma.quizCreateOrConnectWithoutCategoryInput | Prisma.quizCreateOrConnectWithoutCategoryInput[]
+  createMany?: Prisma.quizCreateManyCategoryInputEnvelope
+  connect?: Prisma.quizWhereUniqueInput | Prisma.quizWhereUniqueInput[]
+}
+
+export type quizUncheckedCreateNestedManyWithoutCategoryInput = {
+  create?: Prisma.XOR<Prisma.quizCreateWithoutCategoryInput, Prisma.quizUncheckedCreateWithoutCategoryInput> | Prisma.quizCreateWithoutCategoryInput[] | Prisma.quizUncheckedCreateWithoutCategoryInput[]
+  connectOrCreate?: Prisma.quizCreateOrConnectWithoutCategoryInput | Prisma.quizCreateOrConnectWithoutCategoryInput[]
+  createMany?: Prisma.quizCreateManyCategoryInputEnvelope
+  connect?: Prisma.quizWhereUniqueInput | Prisma.quizWhereUniqueInput[]
+}
+
+export type quizUpdateManyWithoutCategoryNestedInput = {
+  create?: Prisma.XOR<Prisma.quizCreateWithoutCategoryInput, Prisma.quizUncheckedCreateWithoutCategoryInput> | Prisma.quizCreateWithoutCategoryInput[] | Prisma.quizUncheckedCreateWithoutCategoryInput[]
+  connectOrCreate?: Prisma.quizCreateOrConnectWithoutCategoryInput | Prisma.quizCreateOrConnectWithoutCategoryInput[]
+  upsert?: Prisma.quizUpsertWithWhereUniqueWithoutCategoryInput | Prisma.quizUpsertWithWhereUniqueWithoutCategoryInput[]
+  createMany?: Prisma.quizCreateManyCategoryInputEnvelope
+  set?: Prisma.quizWhereUniqueInput | Prisma.quizWhereUniqueInput[]
+  disconnect?: Prisma.quizWhereUniqueInput | Prisma.quizWhereUniqueInput[]
+  delete?: Prisma.quizWhereUniqueInput | Prisma.quizWhereUniqueInput[]
+  connect?: Prisma.quizWhereUniqueInput | Prisma.quizWhereUniqueInput[]
+  update?: Prisma.quizUpdateWithWhereUniqueWithoutCategoryInput | Prisma.quizUpdateWithWhereUniqueWithoutCategoryInput[]
+  updateMany?: Prisma.quizUpdateManyWithWhereWithoutCategoryInput | Prisma.quizUpdateManyWithWhereWithoutCategoryInput[]
+  deleteMany?: Prisma.quizScalarWhereInput | Prisma.quizScalarWhereInput[]
+}
+
+export type quizUncheckedUpdateManyWithoutCategoryNestedInput = {
+  create?: Prisma.XOR<Prisma.quizCreateWithoutCategoryInput, Prisma.quizUncheckedCreateWithoutCategoryInput> | Prisma.quizCreateWithoutCategoryInput[] | Prisma.quizUncheckedCreateWithoutCategoryInput[]
+  connectOrCreate?: Prisma.quizCreateOrConnectWithoutCategoryInput | Prisma.quizCreateOrConnectWithoutCategoryInput[]
+  upsert?: Prisma.quizUpsertWithWhereUniqueWithoutCategoryInput | Prisma.quizUpsertWithWhereUniqueWithoutCategoryInput[]
+  createMany?: Prisma.quizCreateManyCategoryInputEnvelope
+  set?: Prisma.quizWhereUniqueInput | Prisma.quizWhereUniqueInput[]
+  disconnect?: Prisma.quizWhereUniqueInput | Prisma.quizWhereUniqueInput[]
+  delete?: Prisma.quizWhereUniqueInput | Prisma.quizWhereUniqueInput[]
+  connect?: Prisma.quizWhereUniqueInput | Prisma.quizWhereUniqueInput[]
+  update?: Prisma.quizUpdateWithWhereUniqueWithoutCategoryInput | Prisma.quizUpdateWithWhereUniqueWithoutCategoryInput[]
+  updateMany?: Prisma.quizUpdateManyWithWhereWithoutCategoryInput | Prisma.quizUpdateManyWithWhereWithoutCategoryInput[]
+  deleteMany?: Prisma.quizScalarWhereInput | Prisma.quizScalarWhereInput[]
+}
+
 export type quizCreateWithoutAttemptsInput = {
   id?: string
   title: string
   description?: string | null
+  level?: $Enums.Level | null
   created_at?: Date | string
   updated_at: Date | string
+  category?: Prisma.categoryCreateNestedOneWithoutQuizzesInput
   questions?: Prisma.questionCreateNestedManyWithoutQuizInput
 }
 
@@ -365,6 +469,8 @@ export type quizUncheckedCreateWithoutAttemptsInput = {
   id?: string
   title: string
   description?: string | null
+  category_id?: string | null
+  level?: $Enums.Level | null
   created_at?: Date | string
   updated_at: Date | string
   questions?: Prisma.questionUncheckedCreateNestedManyWithoutQuizInput
@@ -390,8 +496,10 @@ export type quizUpdateWithoutAttemptsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  level?: Prisma.NullableEnumLevelFieldUpdateOperationsInput | $Enums.Level | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  category?: Prisma.categoryUpdateOneWithoutQuizzesNestedInput
   questions?: Prisma.questionUpdateManyWithoutQuizNestedInput
 }
 
@@ -399,6 +507,8 @@ export type quizUncheckedUpdateWithoutAttemptsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  level?: Prisma.NullableEnumLevelFieldUpdateOperationsInput | $Enums.Level | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   questions?: Prisma.questionUncheckedUpdateManyWithoutQuizNestedInput
@@ -408,8 +518,10 @@ export type quizCreateWithoutQuestionsInput = {
   id?: string
   title: string
   description?: string | null
+  level?: $Enums.Level | null
   created_at?: Date | string
   updated_at: Date | string
+  category?: Prisma.categoryCreateNestedOneWithoutQuizzesInput
   attempts?: Prisma.attemptCreateNestedManyWithoutQuizInput
 }
 
@@ -417,6 +529,8 @@ export type quizUncheckedCreateWithoutQuestionsInput = {
   id?: string
   title: string
   description?: string | null
+  category_id?: string | null
+  level?: $Enums.Level | null
   created_at?: Date | string
   updated_at: Date | string
   attempts?: Prisma.attemptUncheckedCreateNestedManyWithoutQuizInput
@@ -442,8 +556,10 @@ export type quizUpdateWithoutQuestionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  level?: Prisma.NullableEnumLevelFieldUpdateOperationsInput | $Enums.Level | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  category?: Prisma.categoryUpdateOneWithoutQuizzesNestedInput
   attempts?: Prisma.attemptUpdateManyWithoutQuizNestedInput
 }
 
@@ -451,9 +567,112 @@ export type quizUncheckedUpdateWithoutQuestionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  level?: Prisma.NullableEnumLevelFieldUpdateOperationsInput | $Enums.Level | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   attempts?: Prisma.attemptUncheckedUpdateManyWithoutQuizNestedInput
+}
+
+export type quizCreateWithoutCategoryInput = {
+  id?: string
+  title: string
+  description?: string | null
+  level?: $Enums.Level | null
+  created_at?: Date | string
+  updated_at: Date | string
+  attempts?: Prisma.attemptCreateNestedManyWithoutQuizInput
+  questions?: Prisma.questionCreateNestedManyWithoutQuizInput
+}
+
+export type quizUncheckedCreateWithoutCategoryInput = {
+  id?: string
+  title: string
+  description?: string | null
+  level?: $Enums.Level | null
+  created_at?: Date | string
+  updated_at: Date | string
+  attempts?: Prisma.attemptUncheckedCreateNestedManyWithoutQuizInput
+  questions?: Prisma.questionUncheckedCreateNestedManyWithoutQuizInput
+}
+
+export type quizCreateOrConnectWithoutCategoryInput = {
+  where: Prisma.quizWhereUniqueInput
+  create: Prisma.XOR<Prisma.quizCreateWithoutCategoryInput, Prisma.quizUncheckedCreateWithoutCategoryInput>
+}
+
+export type quizCreateManyCategoryInputEnvelope = {
+  data: Prisma.quizCreateManyCategoryInput | Prisma.quizCreateManyCategoryInput[]
+  skipDuplicates?: boolean
+}
+
+export type quizUpsertWithWhereUniqueWithoutCategoryInput = {
+  where: Prisma.quizWhereUniqueInput
+  update: Prisma.XOR<Prisma.quizUpdateWithoutCategoryInput, Prisma.quizUncheckedUpdateWithoutCategoryInput>
+  create: Prisma.XOR<Prisma.quizCreateWithoutCategoryInput, Prisma.quizUncheckedCreateWithoutCategoryInput>
+}
+
+export type quizUpdateWithWhereUniqueWithoutCategoryInput = {
+  where: Prisma.quizWhereUniqueInput
+  data: Prisma.XOR<Prisma.quizUpdateWithoutCategoryInput, Prisma.quizUncheckedUpdateWithoutCategoryInput>
+}
+
+export type quizUpdateManyWithWhereWithoutCategoryInput = {
+  where: Prisma.quizScalarWhereInput
+  data: Prisma.XOR<Prisma.quizUpdateManyMutationInput, Prisma.quizUncheckedUpdateManyWithoutCategoryInput>
+}
+
+export type quizScalarWhereInput = {
+  AND?: Prisma.quizScalarWhereInput | Prisma.quizScalarWhereInput[]
+  OR?: Prisma.quizScalarWhereInput[]
+  NOT?: Prisma.quizScalarWhereInput | Prisma.quizScalarWhereInput[]
+  id?: Prisma.StringFilter<"quiz"> | string
+  title?: Prisma.StringFilter<"quiz"> | string
+  description?: Prisma.StringNullableFilter<"quiz"> | string | null
+  category_id?: Prisma.StringNullableFilter<"quiz"> | string | null
+  level?: Prisma.EnumLevelNullableFilter<"quiz"> | $Enums.Level | null
+  created_at?: Prisma.DateTimeFilter<"quiz"> | Date | string
+  updated_at?: Prisma.DateTimeFilter<"quiz"> | Date | string
+}
+
+export type quizCreateManyCategoryInput = {
+  id?: string
+  title: string
+  description?: string | null
+  level?: $Enums.Level | null
+  created_at?: Date | string
+  updated_at: Date | string
+}
+
+export type quizUpdateWithoutCategoryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  level?: Prisma.NullableEnumLevelFieldUpdateOperationsInput | $Enums.Level | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  attempts?: Prisma.attemptUpdateManyWithoutQuizNestedInput
+  questions?: Prisma.questionUpdateManyWithoutQuizNestedInput
+}
+
+export type quizUncheckedUpdateWithoutCategoryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  level?: Prisma.NullableEnumLevelFieldUpdateOperationsInput | $Enums.Level | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  attempts?: Prisma.attemptUncheckedUpdateManyWithoutQuizNestedInput
+  questions?: Prisma.questionUncheckedUpdateManyWithoutQuizNestedInput
+}
+
+export type quizUncheckedUpdateManyWithoutCategoryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  level?: Prisma.NullableEnumLevelFieldUpdateOperationsInput | $Enums.Level | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -500,8 +719,11 @@ export type quizSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   id?: boolean
   title?: boolean
   description?: boolean
+  category_id?: boolean
+  level?: boolean
   created_at?: boolean
   updated_at?: boolean
+  category?: boolean | Prisma.quiz$categoryArgs<ExtArgs>
   attempts?: boolean | Prisma.quiz$attemptsArgs<ExtArgs>
   questions?: boolean | Prisma.quiz$questionsArgs<ExtArgs>
   _count?: boolean | Prisma.QuizCountOutputTypeDefaultArgs<ExtArgs>
@@ -511,38 +733,52 @@ export type quizSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   id?: boolean
   title?: boolean
   description?: boolean
+  category_id?: boolean
+  level?: boolean
   created_at?: boolean
   updated_at?: boolean
+  category?: boolean | Prisma.quiz$categoryArgs<ExtArgs>
 }, ExtArgs["result"]["quiz"]>
 
 export type quizSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   title?: boolean
   description?: boolean
+  category_id?: boolean
+  level?: boolean
   created_at?: boolean
   updated_at?: boolean
+  category?: boolean | Prisma.quiz$categoryArgs<ExtArgs>
 }, ExtArgs["result"]["quiz"]>
 
 export type quizSelectScalar = {
   id?: boolean
   title?: boolean
   description?: boolean
+  category_id?: boolean
+  level?: boolean
   created_at?: boolean
   updated_at?: boolean
 }
 
-export type quizOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "created_at" | "updated_at", ExtArgs["result"]["quiz"]>
+export type quizOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "category_id" | "level" | "created_at" | "updated_at", ExtArgs["result"]["quiz"]>
 export type quizInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  category?: boolean | Prisma.quiz$categoryArgs<ExtArgs>
   attempts?: boolean | Prisma.quiz$attemptsArgs<ExtArgs>
   questions?: boolean | Prisma.quiz$questionsArgs<ExtArgs>
   _count?: boolean | Prisma.QuizCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type quizIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type quizIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type quizIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  category?: boolean | Prisma.quiz$categoryArgs<ExtArgs>
+}
+export type quizIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  category?: boolean | Prisma.quiz$categoryArgs<ExtArgs>
+}
 
 export type $quizPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "quiz"
   objects: {
+    category: Prisma.$categoryPayload<ExtArgs> | null
     attempts: Prisma.$attemptPayload<ExtArgs>[]
     questions: Prisma.$questionPayload<ExtArgs>[]
   }
@@ -550,6 +786,8 @@ export type $quizPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     id: string
     title: string
     description: string | null
+    category_id: string | null
+    level: $Enums.Level | null
     created_at: Date
     updated_at: Date
   }, ExtArgs["result"]["quiz"]>
@@ -946,6 +1184,7 @@ readonly fields: quizFieldRefs;
  */
 export interface Prisma__quizClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  category<T extends Prisma.quiz$categoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.quiz$categoryArgs<ExtArgs>>): Prisma.Prisma__categoryClient<runtime.Types.Result.GetResult<Prisma.$categoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   attempts<T extends Prisma.quiz$attemptsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.quiz$attemptsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$attemptPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   questions<T extends Prisma.quiz$questionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.quiz$questionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$questionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -980,6 +1219,8 @@ export interface quizFieldRefs {
   readonly id: Prisma.FieldRef<"quiz", 'String'>
   readonly title: Prisma.FieldRef<"quiz", 'String'>
   readonly description: Prisma.FieldRef<"quiz", 'String'>
+  readonly category_id: Prisma.FieldRef<"quiz", 'String'>
+  readonly level: Prisma.FieldRef<"quiz", 'Level'>
   readonly created_at: Prisma.FieldRef<"quiz", 'DateTime'>
   readonly updated_at: Prisma.FieldRef<"quiz", 'DateTime'>
 }
@@ -1236,6 +1477,10 @@ export type quizCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions
    */
   data: Prisma.quizCreateManyInput | Prisma.quizCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.quizIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1306,6 +1551,10 @@ export type quizUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions
    * Limit how many quizzes to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.quizIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1372,6 +1621,25 @@ export type quizDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Limit how many quizzes to delete.
    */
   limit?: number
+}
+
+/**
+ * quiz.category
+ */
+export type quiz$categoryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the category
+   */
+  select?: Prisma.categorySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the category
+   */
+  omit?: Prisma.categoryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.categoryInclude<ExtArgs> | null
+  where?: Prisma.categoryWhereInput
 }
 
 /**

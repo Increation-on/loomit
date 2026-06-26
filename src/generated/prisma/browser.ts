@@ -52,3 +52,8 @@ export type user = Prisma.userModel
  * 
  */
 export type verificationToken = Prisma.verificationTokenModel
+/**
+ * Model category
+ * 
+ */
+export type category = Prisma.categoryModel

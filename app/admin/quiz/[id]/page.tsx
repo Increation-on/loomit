@@ -1,3 +1,5 @@
+// app\admin\quiz\[id]\page.tsx
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -28,18 +30,33 @@ export default function EditQuizPage() {
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [categoryId, setCategoryId] = useState('');
+  const [level, setLevel] = useState<'JUNIOR' | 'MIDDLE' | 'SENIOR'>('JUNIOR');
   const [questions, setQuestions] = useState<Question[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const { success, error: showError } = useToast();
 
+  // Загрузка квиза и категорий
   useEffect(() => {
-    fetch(`/api/admin/quizzes/${id}`)
-      .then(res => res.json())
-      .then(data => {
-        setTitle(data.title);
-        setDescription(data.description || '');
-        setQuestions(data.questions.map((q: any) => ({
+    const loadData = async () => {
+      try {
+        const [quizRes, categoriesRes] = await Promise.all([
+          fetch(`/api/admin/quizzes/${id}`),
+          fetch('/api/admin/categories'),
+        ]);
+
+        const quizData = await quizRes.json();
+        const categoriesData = await categoriesRes.json();
+
+        setTitle(quizData.title);
+        setDescription(quizData.description || '');
+        setCategoryId(quizData.categoryId || '');
+        setLevel(quizData.level || 'JUNIOR');
+        setCategories(categoriesData);
+
+        setQuestions(quizData.questions.map((q: any) => ({
           id: q.id,
           text: q.text,
           options: Array.isArray(q.options) ? q.options.map((o: any) =>
@@ -47,9 +64,16 @@ export default function EditQuizPage() {
           ) : [],
           correctOptionId: q.correct_option_id || q.correctOptionId || '',
         })));
+      } catch (err) {
+        console.error('Ошибка загрузки:', err);
+        showError('Не удалось загрузить данные');
+      } finally {
         setLoading(false);
-      });
-  }, [id]);
+      }
+    };
+
+    loadData();
+  }, [id, showError]);
 
   const addQuestion = () => {
     setQuestions([
@@ -102,7 +126,7 @@ export default function EditQuizPage() {
       const res = await fetch(`/api/admin/quizzes/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, description, questions }),
+        body: JSON.stringify({ title, description, categoryId, level, questions }),
       });
       if (!res.ok) throw new Error('Ошибка сохранения');
       success('Квиз обновлён!');
@@ -133,6 +157,40 @@ export default function EditQuizPage() {
           onChange={(e) => setDescription(e.target.value)}
           className="min-h-20 h-auto"
         />
+
+        {/* Категория */}
+        <div className="space-y-1">
+          <label className="text-sm font-medium text-(--loom-white)/80">Категория</label>
+          <select
+            value={categoryId}
+            onChange={(e) => setCategoryId(e.target.value)}
+            className="w-full bg-(--loom-white)/5 text-(--loom-white) rounded-xl px-4 py-3 glitch-border focus:outline-none"
+          >
+            <option value="">Без категории</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Уровень */}
+        <div className="space-y-1">
+          <label className="text-sm font-medium text-(--loom-white)/80">Уровень</label>
+          <div className="flex gap-2">
+            {['JUNIOR', 'MIDDLE', 'SENIOR'].map((lvl) => (
+              <Button
+                key={lvl}
+                variant={level === lvl ? 'glitch' : 'secondary'}
+                size="sm"
+                onClick={() => setLevel(lvl as any)}
+              >
+                {lvl.charAt(0) + lvl.slice(1).toLowerCase()}
+              </Button>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Список вопросов */}

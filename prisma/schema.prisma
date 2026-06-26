@@ -60,6 +60,9 @@ model quiz {
   id          String      @id @default(cuid())
   title       String
   description String?
+  category_id String?     // внешний ключ на категорию
+  category    category?   @relation(fields: [category_id], references: [id])
+  level       Level?      @default(JUNIOR)
   created_at  DateTime    @default(now())
   updated_at  DateTime
   attempts    attempt[]
@@ -94,4 +97,18 @@ model verificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+// === НОВЫЕ МОДЕЛИ И ENUM ===
+
+model category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  quizzes     quiz[]   // связь: одна категория — много квизов
+}
+
+enum Level {
+  JUNIOR
+  MIDDLE
+  SENIOR
 }

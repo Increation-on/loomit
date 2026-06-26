@@ -1,4 +1,3 @@
-// src/components/ui/core/Input.tsx
 'use client';
 
 import { forwardRef, InputHTMLAttributes, ReactNode } from 'react';
@@ -8,10 +7,11 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
   leftIcon?: ReactNode;
+  rightIcon?: ReactNode;
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, label, error, id, leftIcon, ...props }, ref) => {
+  ({ className, label, error, id, leftIcon, rightIcon, ...props }, ref) => {
     const inputId = id || label?.toLowerCase().replace(/\s/g, '-');
 
     return (
@@ -37,6 +37,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               'w-full bg-transparent text-(--loom-white) rounded-xl px-4 py-3',
               'placeholder:text-(--loom-white)/30',
               leftIcon && 'pl-10',
+              rightIcon && 'pr-10',
               'focus:outline-none',
               'transition-all duration-200',
               'disabled:opacity-50 disabled:cursor-not-allowed',
@@ -48,6 +49,11 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             aria-describedby={error ? `${inputId}-error` : undefined}
             {...props}
           />
+          {rightIcon && (
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-(--loom-white)/40">
+              {rightIcon}
+            </div>
+          )}
         </div>
         
         {error && (

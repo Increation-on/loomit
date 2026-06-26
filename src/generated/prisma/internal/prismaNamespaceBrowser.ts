@@ -57,7 +57,8 @@ export const ModelName = {
   quiz: 'quiz',
   session: 'session',
   user: 'user',
-  verificationToken: 'verificationToken'
+  verificationToken: 'verificationToken',
+  category: 'category'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -126,6 +127,8 @@ export const QuizScalarFieldEnum = {
   id: 'id',
   title: 'title',
   description: 'description',
+  category_id: 'category_id',
+  level: 'level',
   created_at: 'created_at',
   updated_at: 'updated_at'
 } as const
@@ -164,6 +167,14 @@ export const VerificationTokenScalarFieldEnum = {
 } as const
 
 export type VerificationTokenScalarFieldEnum = (typeof VerificationTokenScalarFieldEnum)[keyof typeof VerificationTokenScalarFieldEnum]
+
+
+export const CategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name'
+} as const
+
+export type CategoryScalarFieldEnum = (typeof CategoryScalarFieldEnum)[keyof typeof CategoryScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -23,6 +23,26 @@ export default function HomePage() {
   const answers = quizState.answers;
   const isFinished = quizState.isFinished;
   const [pendingQuizId, setPendingQuizId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (!quizzes || searchQuery.length < 1) {
+      setSuggestions([]);
+      setIsDropdownOpen(false);
+      return;
+    }
+
+    const filtered = quizzes
+      .filter((q: any) =>
+        q.title.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+      .slice(0, 5);
+
+    setSuggestions(filtered);
+    setIsDropdownOpen(true);
+  }, [searchQuery, quizzes]);
 
   // ✅ Фиксируем порядок карточек один раз при загрузке (не будет перескакивать)
   const [shuffledQuizzes, setShuffledQuizzes] = useState<any[]>([]);
@@ -95,12 +115,50 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-(--loom-black) text-(--loom-white) pb-24">
       {/* Поиск */}
-      <div className="p-4 mb-2">
+      <div className="relative px-4 mb-2">
         <Input
-          type="text"
           placeholder="Поиск квизов..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
           leftIcon={<Search size={20} />}
+          rightIcon={
+            searchQuery.length > 0 && (
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setIsDropdownOpen(false);
+                  setSuggestions([]);
+                }}
+                className="text-(--loom-white)/40 hover:text-(--loom-white) transition-colors"
+                aria-label="Очистить поиск"
+              >
+                ✕
+              </button>
+            )
+          }
+          onBlur={() => setTimeout(() => setIsDropdownOpen(false), 150)}
+          onFocus={() => searchQuery.length > 0 && setIsDropdownOpen(true)}
         />
+
+        {/* Выпадающее меню */}
+        {isDropdownOpen && suggestions.length > 0 && (
+          <div className="absolute top-full left-4 right-4 mt-2 z-30 glitch-border rounded-xl bg-(--loom-black) p-2 max-h-60 overflow-y-auto shadow-xl">
+            {suggestions.map((quiz: any) => (
+              <button
+                key={quiz.id}
+                onClick={() => {
+                  router.push(`/quiz/${quiz.id}`);
+                  setIsDropdownOpen(false);
+                  setSearchQuery('');
+                }}
+                className="w-full text-left px-3 py-2 text-sm text-(--loom-white) hover:bg-(--loom-white)/10 rounded-lg transition-colors flex justify-between items-center"
+              >
+                <span className="truncate">{quiz.title}</span>
+                <span className="text-(--loom-cyan) text-xs">Перейти</span>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Баннер "Продолжить" / Try it */}

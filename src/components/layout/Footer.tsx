@@ -11,9 +11,9 @@ export default function Footer() {
   const isDesktop = useMediaQuery('(min-width: 768px)');
 
   // Скрываем футер на странице админки
-  if (pathname?.startsWith('/admin')) {
-    return null;
-  }
+  if (pathname?.startsWith('/admin/quiz/')) {
+  return null;
+}
 
   // Десктопная версия (старый футер)
   if (isDesktop) {

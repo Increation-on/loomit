@@ -1,3 +1,5 @@
+// app\admin\quiz\[id]\page.tsx
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -28,18 +30,38 @@ export default function EditQuizPage() {
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [categoryId, setCategoryId] = useState('');
+  const [level, setLevel] = useState<'JUNIOR' | 'MIDDLE' | 'SENIOR'>('JUNIOR');
   const [questions, setQuestions] = useState<Question[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const { success, error: showError } = useToast();
 
+  // Загрузка квиза и категорий
   useEffect(() => {
-    fetch(`/api/admin/quizzes/${id}`)
-      .then(res => res.json())
-      .then(data => {
-        setTitle(data.title);
-        setDescription(data.description || '');
-        setQuestions(data.questions.map((q: any) => ({
+    const loadData = async () => {
+      try {
+        const [quizRes, categoriesRes] = await Promise.all([
+          fetch(`/api/admin/quizzes/${id}`),
+          fetch('/api/admin/categories'),
+        ]);
+
+        if (!quizRes.ok || !categoriesRes.ok) {
+          console.error('Один из запросов не удался');
+          return;
+        }
+
+        const quizData = await quizRes.json();
+        const categoriesData = await categoriesRes.json();
+
+        setTitle(quizData.title);
+        setDescription(quizData.description || '');
+        setCategoryId(quizData.category_id || '');
+        setLevel(quizData.level || 'JUNIOR');
+        setCategories(categoriesData); // ← сохраняем список категорий
+
+        setQuestions(quizData.questions.map((q: any) => ({
           id: q.id,
           text: q.text,
           options: Array.isArray(q.options) ? q.options.map((o: any) =>
@@ -47,9 +69,15 @@ export default function EditQuizPage() {
           ) : [],
           correctOptionId: q.correct_option_id || q.correctOptionId || '',
         })));
+      } catch (err) {
+        console.error('Ошибка загрузки:', err);
+      } finally {
         setLoading(false);
-      });
-  }, [id]);
+      }
+    };
+
+    loadData();
+  }, [id]); // без showError в зависимостях
 
   const addQuestion = () => {
     setQuestions([
@@ -95,14 +123,13 @@ export default function EditQuizPage() {
     updated[questionIndex].correctOptionId = optionId;
     setQuestions(updated);
   };
-
   const saveQuiz = async () => {
     setSaving(true);
     try {
       const res = await fetch(`/api/admin/quizzes/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, description, questions }),
+        body: JSON.stringify({ title, description, categoryId, level, questions }),
       });
       if (!res.ok) throw new Error('Ошибка сохранения');
       success('Квиз обновлён!');
@@ -122,17 +149,66 @@ export default function EditQuizPage() {
 
       {/* Основная информация */}
       <div className="space-y-4 mb-6">
+        <label className="text-xl font-medium text-(--loom-white)/80 block mb-2">Название квиза</label>
         <Input
           placeholder="Название квиза"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
-        <Input
-          placeholder="Описание"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className="min-h-20 h-auto"
-        />
+        <label className="text-xl font-medium text-(--loom-white)/80 block mb-2">Описание квиза</label>
+        <div className="glitch-border rounded-xl bg-(--loom-white)/5 w-full overflow-hidden">
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Описание квиза"
+            className="w-full bg-transparent text-(--loom-white) rounded-xl px-4 py-3 min-h-24 h-auto resize-y focus:outline-none placeholder:text-(--loom-white)/30"
+          />
+        </div>
+
+        {/* Категория */}
+        <div className="space-y-1">
+          <label className="text-sm font-medium text-(--loom-white)/80 block mb-2">Категория</label>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setCategoryId('')}
+              className={cn(
+                'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
+                !categoryId ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)' : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
+              )}
+            >
+              Без категории
+            </button>
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setCategoryId(cat.id)}
+                className={cn(
+                  'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
+                  categoryId === cat.id ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)' : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
+                )}
+              >
+                {cat.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Уровень */}
+        <div className="space-y-1">
+          <label className="text-sm font-medium text-(--loom-white)/80 block mb-2">Уровень</label>
+          <div className="flex gap-2">
+            {['JUNIOR', 'MIDDLE', 'SENIOR'].map((lvl) => (
+              <Button
+                key={lvl}
+                variant={level === lvl ? 'glitch' : 'secondary'}
+                size="sm"
+                onClick={() => setLevel(lvl as any)}
+              >
+                {lvl.charAt(0) + lvl.slice(1).toLowerCase()}
+              </Button>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Список вопросов */}

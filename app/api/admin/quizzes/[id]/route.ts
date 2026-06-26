@@ -1,4 +1,4 @@
-//app\api\admin\quizzes\[id]\route.ts
+// app\api\admin\quizzes\[id]\route.ts
 
 import { NextResponse } from 'next/server';
 import { authOptions } from 'app/api/auth/[...nextauth]/route';
@@ -21,6 +21,7 @@ export async function GET(
       questions: {
         orderBy: { order: 'asc' },
       },
+      category: true, // ✅ добавляем, чтобы получить имя категории
     },
   });
 
@@ -30,6 +31,9 @@ export async function GET(
 
   const formatted = {
     ...quiz,
+    category_id: quiz.category_id,   // ✅ явно возвращаем
+    category_name: quiz.category?.name, // ✅ имя категории
+    level: quiz.level,               // ✅ явно возвращаем
     questions: quiz.questions.map((q: any) => ({
       ...q,
       options: typeof q.options === 'string' ? JSON.parse(q.options) : q.options,
@@ -50,15 +54,20 @@ export async function PUT(
   }
 
   const body = await request.json();
-  const { title, description, questions } = body;
+  const { title, description, categoryId, level, questions } = body;
 
   await prisma.question.deleteMany({ where: { quiz_id: id } });
+
+  // ✅ Правильная обработка пустой строки → null
+  const finalCategoryId = categoryId && categoryId.trim() !== '' ? categoryId : null;
 
   const quiz = await prisma.quiz.update({
     where: { id },
     data: {
       title,
       description,
+      category_id: finalCategoryId, // ✅ null вместо ''
+      level,
       updated_at: new Date(),
       questions: {
         create: questions.map((q: any, index: number) => ({
@@ -70,7 +79,10 @@ export async function PUT(
         })),
       },
     },
-    include: { questions: true },
+    include: { 
+      questions: true,
+      category: true, // ✅ возвращаем категорию в ответе
+    },
   });
 
   return NextResponse.json(quiz);

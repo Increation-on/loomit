@@ -1,3 +1,5 @@
+// app\admin\quiz\new\page.tsx
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -122,38 +124,55 @@ export default function NewQuizPage() {
 
       {/* Основная информация */}
       <div className="space-y-4 mb-6">
+        <label className="text-xl font-medium text-(--loom-white)/80 mb-2 block">Название</label>
         <Input
           placeholder="Название квиза"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
+        <label className="block text-xl font-medium text-(--loom-white)/80 mb-2">Описание</label>
         <Input
-          placeholder="Описание"
+          placeholder="Описание квиза"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           className="min-h-20 h-auto"
         />
 
-        {/* Категория */}
+        {/* Категория (кнопки-чипсы) */}
         <div className="space-y-1">
-          <label className="text-sm font-medium text-(--loom-white)/80">Категория</label>
-          <select
-            value={categoryId}
-            onChange={(e) => setCategoryId(e.target.value)}
-            className="w-full bg-(--loom-white)/5 text-(--loom-white) rounded-xl px-4 py-3 glitch-border focus:outline-none"
-          >
-            <option value="">Без категории</option>
+          <label className="text-sm font-medium text-(--loom-white)/80 block mb-2">Категория</label>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setCategoryId('')}
+              className={cn(
+                'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
+                !categoryId
+                  ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
+                  : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
+              )}
+            >
+              Без категории
+            </button>
             {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>
+              <button
+                key={cat.id}
+                onClick={() => setCategoryId(cat.id)}
+                className={cn(
+                  'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
+                  categoryId === cat.id
+                    ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
+                    : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
+                )}
+              >
                 {cat.name}
-              </option>
+              </button>
             ))}
-          </select>
+          </div>
         </div>
 
         {/* Уровень */}
         <div className="space-y-1">
-          <label className="text-sm font-medium text-(--loom-white)/80">Уровень</label>
+          <label className="text-sm font-medium text-(--loom-white)/80 block mb-2">Уровень</label>
           <div className="flex gap-2">
             {['JUNIOR', 'MIDDLE', 'SENIOR'].map((lvl) => (
               <Button

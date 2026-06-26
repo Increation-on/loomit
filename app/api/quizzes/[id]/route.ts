@@ -25,14 +25,31 @@ export async function GET(
     const transformed = {
       ...quiz,
       questions: quiz.questions.map((q) => {
-        const originalOptions = q.options as Array<{ id: string; text: string }>;
-        const textOptions = originalOptions.map((opt) => opt.text);
-        const correctOption = originalOptions.find((opt) => opt.id === q.correct_option_id);
+        // 1. Парсим JSON, если это строка
+        const parsed = typeof q.options === 'string'
+          ? JSON.parse(q.options)
+          : q.options;
+
+        // 2. Приводим к массиву
+        const optionsArray = Array.isArray(parsed) ? parsed : [];
+
+        // 3. Если это массив строк — превращаем в объекты с id
+        const options = optionsArray.map((opt: any, idx: number) => {
+          if (typeof opt === 'string') {
+            return { id: String(idx + 1), text: opt };
+          }
+          return opt;
+        });
+
+        // 4. Находим правильный вариант по ID (если есть)
+        const correctOption = options.find(
+          (opt: any) => opt.id === q.correct_option_id
+        );
 
         return {
           ...q,
-          options: textOptions,
-          correctOptionId: correctOption?.text || q.correct_option_id,
+          options, // теперь всегда массив объектов { id, text }
+          correctOptionId: correctOption?.id || q.correct_option_id,
         };
       }),
     };

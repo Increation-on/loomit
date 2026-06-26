@@ -77,7 +77,7 @@ export function QuizContent({ id }: { id: string }) {
         });
     }
   }, [isFinished, questions, answers, id, saveAttempt, dispatch]);
-
+  console.log('🔥 currentQuestion:', currentQuestion);
   // Экран результатов
   if (isFinished) {
     return (
@@ -149,9 +149,12 @@ export function QuizContent({ id }: { id: string }) {
           </h2>
 
           <div className="space-y-3">
-            {currentQuestion.options.map((opt: string, idx: number) => {
-              const isSelected = selectedOption === opt;
-              const isCorrectOption = currentQuestion.correctOptionId === opt;
+            {currentQuestion.options.map((opt: any, idx: number) => {
+
+              if (!opt || typeof opt !== 'object') return null;
+
+              const isSelected = selectedOption === opt.id;
+              const isCorrectOption = currentQuestion.correctOptionId === opt.id;
 
               // === Базовое состояние (градиент жёлтый → циан) ===
               let borderClass = 'border-(--loom-white)/10 hover:border-(--loom-cyan)/40';
@@ -174,7 +177,7 @@ export function QuizContent({ id }: { id: string }) {
                   letterClass = 'text-(--loom-cyan) font-bold';
                   textClass = 'text-(--loom-cyan)';
                   icon = <Check size={18} className="text-(--loom-cyan) ml-auto" />;
-                } else if (currentAnswer?.selectedOptionId === opt && !currentAnswer?.isCorrect) {
+                } else if (currentAnswer?.selectedOptionId === opt.id && !currentAnswer?.isCorrect) {
                   // Неправильный — розовый
                   borderClass = 'border-(--glitch-pink)';
                   letterClass = 'text-(--glitch-pink) font-bold';
@@ -190,7 +193,7 @@ export function QuizContent({ id }: { id: string }) {
                   whileTap={!isCurrentConfirmed ? { scale: 0.98 } : {}}
                   onClick={() => {
                     if (!isCurrentConfirmed) {
-                      dispatch(selectOption(opt));
+                      dispatch(selectOption(opt.id));
                     }
                   }}
                   className={cn(
@@ -200,7 +203,7 @@ export function QuizContent({ id }: { id: string }) {
                   )}
                 >
                   <span className={cn('text-lg font-bold w-6', letterClass)}>{optionLetters[idx]}</span>
-                  <span className={cn('flex-1', textClass)}>{opt}</span>
+                  <span className={cn('flex-1', textClass)}>{opt.text}</span>
                   {icon}
                 </motion.div>
               );

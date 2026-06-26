@@ -39,50 +39,45 @@ export default function EditQuizPage() {
   const { success, error: showError } = useToast();
 
   // Загрузка квиза и категорий
- useEffect(() => {
-  const loadData = async () => {
-    try {
-      const [quizRes, categoriesRes] = await Promise.all([
-        fetch(`/api/admin/quizzes/${id}`),
-        fetch('/api/admin/categories'),
-      ]);
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [quizRes, categoriesRes] = await Promise.all([
+          fetch(`/api/admin/quizzes/${id}`),
+          fetch('/api/admin/categories'),
+        ]);
 
-      if (!quizRes.ok || !categoriesRes.ok) {
-        console.error('Один из запросов не удался');
-        return;
+        if (!quizRes.ok || !categoriesRes.ok) {
+          console.error('Один из запросов не удался');
+          return;
+        }
+
+        const quizData = await quizRes.json();
+        const categoriesData = await categoriesRes.json();
+
+        setTitle(quizData.title);
+        setDescription(quizData.description || '');
+        setCategoryId(quizData.category_id || '');
+        setLevel(quizData.level || 'JUNIOR');
+        setCategories(categoriesData); // ← сохраняем список категорий
+
+        setQuestions(quizData.questions.map((q: any) => ({
+          id: q.id,
+          text: q.text,
+          options: Array.isArray(q.options) ? q.options.map((o: any) =>
+            typeof o === 'string' ? { id: crypto.randomUUID(), text: o } : o
+          ) : [],
+          correctOptionId: q.correct_option_id || q.correctOptionId || '',
+        })));
+      } catch (err) {
+        console.error('Ошибка загрузки:', err);
+      } finally {
+        setLoading(false);
       }
+    };
 
-      const quizData = await quizRes.json();
-      const categoriesData = await categoriesRes.json();
-
-      console.log('🔥 QUIZ DATA:', quizData);
-      console.log('🔥 CATEGORIES DATA:', categoriesData); // ← смотрим, что тут
-      console.log('🔥 CATEGORY ID:', quizData.category_id);
-      console.log('🔥 LEVEL:', quizData.level);
-
-      setTitle(quizData.title);
-      setDescription(quizData.description || '');
-      setCategoryId(quizData.category_id || '');
-      setLevel(quizData.level || 'JUNIOR');
-      setCategories(categoriesData); // ← сохраняем список категорий
-
-      setQuestions(quizData.questions.map((q: any) => ({
-        id: q.id,
-        text: q.text,
-        options: Array.isArray(q.options) ? q.options.map((o: any) =>
-          typeof o === 'string' ? { id: crypto.randomUUID(), text: o } : o
-        ) : [],
-        correctOptionId: q.correct_option_id || q.correctOptionId || '',
-      })));
-    } catch (err) {
-      console.error('Ошибка загрузки:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  loadData();
-}, [id]); // без showError в зависимостях
+    loadData();
+  }, [id]); // без showError в зависимостях
 
   const addQuestion = () => {
     setQuestions([
@@ -128,7 +123,6 @@ export default function EditQuizPage() {
     updated[questionIndex].correctOptionId = optionId;
     setQuestions(updated);
   };
-console.log('Sending:', { title, description, categoryId, level, questions });
   const saveQuiz = async () => {
     setSaving(true);
     try {
@@ -162,40 +156,42 @@ console.log('Sending:', { title, description, categoryId, level, questions });
           onChange={(e) => setTitle(e.target.value)}
         />
         <label className="text-xl font-medium text-(--loom-white)/80 block mb-2">Описание квиза</label>
-        <Input
-          placeholder="Описание"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className="min-h-20 h-auto"
-        />
+        <div className="glitch-border rounded-xl bg-(--loom-white)/5 w-full overflow-hidden">
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Описание квиза"
+            className="w-full bg-transparent text-(--loom-white) rounded-xl px-4 py-3 min-h-24 h-auto resize-y focus:outline-none placeholder:text-(--loom-white)/30"
+          />
+        </div>
 
         {/* Категория */}
-       <div className="space-y-1">
-  <label className="text-sm font-medium text-(--loom-white)/80 block mb-2">Категория</label>
-  <div className="flex flex-wrap gap-2">
-    <button
-      onClick={() => setCategoryId('')}
-      className={cn(
-        'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
-        !categoryId ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)' : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
-      )}
-    >
-      Без категории
-    </button>
-    {categories.map((cat) => (
-      <button
-        key={cat.id}
-        onClick={() => setCategoryId(cat.id)}
-        className={cn(
-          'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
-          categoryId === cat.id ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)' : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
-        )}
-      >
-        {cat.name}
-      </button>
-    ))}
-  </div>
-</div>
+        <div className="space-y-1">
+          <label className="text-sm font-medium text-(--loom-white)/80 block mb-2">Категория</label>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setCategoryId('')}
+              className={cn(
+                'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
+                !categoryId ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)' : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
+              )}
+            >
+              Без категории
+            </button>
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setCategoryId(cat.id)}
+                className={cn(
+                  'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
+                  categoryId === cat.id ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)' : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
+                )}
+              >
+                {cat.name}
+              </button>
+            ))}
+          </div>
+        </div>
 
         {/* Уровень */}
         <div className="space-y-1">

@@ -131,17 +131,19 @@ export default function NewQuizPage() {
           onChange={(e) => setTitle(e.target.value)}
         />
         <label className="block text-xl font-medium text-(--loom-white)/80 mb-2">Описание</label>
-        <Input
-          placeholder="Описание квиза"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className="min-h-20 h-auto"
-        />
+        <div className="glitch-border rounded-xl bg-(--loom-white)/5 w-full overflow-hidden">
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Описание квиза"
+            className="w-full bg-transparent text-(--loom-white) rounded-xl px-4 py-3 min-h-24 h-auto resize-y focus:outline-none placeholder:text-(--loom-white)/30"
+          />
+        </div>
 
         {/* Категория (кнопки-чипсы) */}
         <div className="space-y-1">
           <label className="text-sm font-medium text-(--loom-white)/80 block mb-2">Категория</label>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
             <button
               onClick={() => setCategoryId('')}
               className={cn(

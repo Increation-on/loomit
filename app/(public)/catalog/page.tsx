@@ -7,7 +7,8 @@ import { Input } from '@/components/ui/core/Input';
 import { Search, Filter } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/core/Card';
 import { Button } from '@/components/ui/core/Button';
-import { cn, pluralize } from '@/lib/utils';
+import { cn } from '@/lib/utils';
+import { pluralize } from '@/lib/utils';
 
 export default function CatalogPage() {
   const router = useRouter();
@@ -22,7 +23,7 @@ export default function CatalogPage() {
   const [levelFilter, setLevelFilter] = useState('all');
   const [categories, setCategories] = useState<any[]>([]);
 
-  // Загрузка категорий для фильтра
+  // Загрузка категорий
   useEffect(() => {
     const loadCategories = async () => {
       try {
@@ -45,22 +46,20 @@ export default function CatalogPage() {
       setIsDropdownOpen(false);
       return;
     }
-
     const filtered = quizzes
       .filter((q: any) =>
         q.title.toLowerCase().includes(searchQuery.toLowerCase())
       )
       .slice(0, 5);
-
     setSuggestions(filtered);
     setIsDropdownOpen(true);
   }, [searchQuery, quizzes]);
 
-  // Фильтрация по категориям и уровням
+  // Фильтрация
   const filteredQuizzes = useMemo(() => {
     if (!quizzes) return [];
     return quizzes.filter((quiz: any) => {
-      const matchCategory = categoryFilter === 'all' || quiz.categoryId === categoryFilter;
+      const matchCategory = categoryFilter === 'all' || quiz.category?.id === categoryFilter;
       const matchLevel = levelFilter === 'all' || quiz.level === levelFilter;
       return matchCategory && matchLevel;
     });
@@ -98,7 +97,7 @@ export default function CatalogPage() {
     <div className="min-h-screen bg-(--loom-black) text-(--loom-white) pb-24 px-4 pt-6">
       <h1 className="text-2xl font-bold mb-6">Каталог квизов</h1>
 
-      {/* ПОИСК С ВЫПАДАЮЩИМ МЕНЮ */}
+      {/* ПОИСК */}
       <div className="relative mb-6">
         <Input
           placeholder="Поиск квизов..."
@@ -145,53 +144,71 @@ export default function CatalogPage() {
       </div>
 
       {/* ФИЛЬТР ПО КАТЕГОРИЯМ */}
-      <div className="flex gap-2 overflow-x-auto scrollbar-hide mb-3">
-        <button
-          onClick={() => setCategoryFilter('all')}
-          className={cn(
-            'px-3 py-1 text-xs rounded-full transition-colors whitespace-nowrap',
-            categoryFilter === 'all' ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)' : 'bg-(--loom-white)/5 text-(--loom-white)/60'
-          )}
-        >
-          Все
-        </button>
-        {categories.map((cat) => (
+      <div className="mb-4">
+        <div className="flex items-center gap-3 mb-2">
+          <span className="text-sm text-(--loom-white)/60">Категории:</span>
+        </div>
+        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
           <button
-            key={cat.id}
-            onClick={() => setCategoryFilter(cat.id)}
+            onClick={() => setCategoryFilter('all')}
             className={cn(
-              'px-3 py-1 text-xs rounded-full transition-colors whitespace-nowrap',
-              categoryFilter === cat.id ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)' : 'bg-(--loom-white)/5 text-(--loom-white)/60'
+              'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
+              categoryFilter === 'all'
+                ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
+                : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
             )}
           >
-            {cat.name}
+            Все
           </button>
-        ))}
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setCategoryFilter(cat.id)}
+              className={cn(
+                'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
+                categoryFilter === cat.id
+                  ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
+                  : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
+              )}
+            >
+              {cat.name}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* ФИЛЬТР ПО УРОВНЯМ */}
-      <div className="flex gap-2 overflow-x-auto scrollbar-hide mb-6">
-        <button
-          onClick={() => setLevelFilter('all')}
-          className={cn(
-            'px-3 py-1 text-xs rounded-full transition-colors whitespace-nowrap',
-            levelFilter === 'all' ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)' : 'bg-(--loom-white)/5 text-(--loom-white)/60'
-          )}
-        >
-          Все
-        </button>
-        {['JUNIOR', 'MIDDLE', 'SENIOR'].map((lvl) => (
+      <div className="mb-6">
+        <div className="flex items-center gap-3 mb-2">
+          <span className="text-sm text-(--loom-white)/60">Уровень:</span>
+        </div>
+        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
           <button
-            key={lvl}
-            onClick={() => setLevelFilter(lvl)}
+            onClick={() => setLevelFilter('all')}
             className={cn(
-              'px-3 py-1 text-xs rounded-full transition-colors whitespace-nowrap',
-              levelFilter === lvl ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)' : 'bg-(--loom-white)/5 text-(--loom-white)/60'
+              'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
+              levelFilter === 'all'
+                ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
+                : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
             )}
           >
-            {lvl.charAt(0) + lvl.slice(1).toLowerCase()}
+            Все
           </button>
-        ))}
+          {['JUNIOR', 'MIDDLE', 'SENIOR'].map((lvl) => (
+            <button
+              key={lvl}
+              onClick={() => setLevelFilter(lvl)}
+              className={cn(
+                'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
+                levelFilter === lvl
+                  ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
+                  : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
+              )}
+            >
+              {lvl.charAt(0) + lvl.slice(1).toLowerCase()}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* СОРТИРОВКА */}
@@ -240,7 +257,7 @@ export default function CatalogPage() {
                   <span>
                     {quiz._count?.questions || 0} {pluralize(quiz._count?.questions || 0, 'вопрос', 'вопроса', 'вопросов')}
                   </span>
-                  <span className="text-(--loom-cyan) text-sm font-medium">
+                  <span className="text-(--loom-cyan) text-xs font-medium">
                     {quiz.category?.name || 'Без категории'}
                   </span>
                 </div>

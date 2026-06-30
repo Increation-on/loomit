@@ -77,7 +77,7 @@ export function QuizContent({ id }: { id: string }) {
         });
     }
   }, [isFinished, questions, answers, id, saveAttempt, dispatch]);
-  console.log('🔥 currentQuestion:', currentQuestion);
+
   // Экран результатов
   if (isFinished) {
     return (

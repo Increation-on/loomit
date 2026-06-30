@@ -115,7 +115,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-(--loom-black) text-(--loom-white) pb-24">
       {/* Поиск */}
-      <div className="relative px-4 mb-2">
+      <div className="relative px-4 mb-4 mt-4">
         <Input
           placeholder="Поиск квизов..."
           value={searchQuery}

@@ -9,10 +9,13 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/core/C
 import { Button } from '@/components/ui/core/Button';
 import { cn } from '@/lib/utils';
 import { pluralize } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/feedback/Skeleton';
+import { useGetCategoriesQuery } from '@/store/api/categoryApi';
 
 export default function CatalogPage() {
   const router = useRouter();
-  const { data: quizzes, isLoading } = useGetQuizzesQuery({});
+  const { data: quizzes, isLoading: quizzesLoading } = useGetQuizzesQuery({});
+const { data: categories, isLoading: categoriesLoading } = useGetCategoriesQuery({});
   const [searchQuery, setSearchQuery] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [suggestions, setSuggestions] = useState<any[]>([]);
@@ -21,23 +24,6 @@ export default function CatalogPage() {
   // Фильтры
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [levelFilter, setLevelFilter] = useState('all');
-  const [categories, setCategories] = useState<any[]>([]);
-
-  // Загрузка категорий
-  useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        const res = await fetch('/api/admin/categories');
-        if (res.ok) {
-          const data = await res.json();
-          setCategories(data);
-        }
-      } catch (err) {
-        console.error('Ошибка загрузки категорий:', err);
-      }
-    };
-    loadCategories();
-  }, []);
 
   // Выпадающий поиск
   useEffect(() => {
@@ -80,7 +66,7 @@ export default function CatalogPage() {
     }
   }, [filteredQuizzes, sortBy]);
 
-  if (isLoading) {
+  if (quizzesLoading) {
     return (
       <div className="min-h-screen bg-(--loom-black) text-(--loom-white) pb-24 px-4 pt-6">
         <h1 className="text-2xl font-bold mb-6">Каталог квизов</h1>
@@ -149,32 +135,44 @@ export default function CatalogPage() {
           <span className="text-sm text-(--loom-white)/60">Категории:</span>
         </div>
         <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-          <button
-            onClick={() => setCategoryFilter('all')}
-            className={cn(
-              'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
-              categoryFilter === 'all'
-                ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
-                : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
-            )}
-          >
-            Все
-          </button>
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => setCategoryFilter(cat.id)}
-              className={cn(
-                'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
-                categoryFilter === cat.id
-                  ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
-                  : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
-              )}
-            >
-              {cat.name}
-            </button>
-          ))}
-        </div>
+  {categoriesLoading ? (
+    // Скелетоны (серые полоски)
+    <>
+      {[1, 2, 3, 4].map((i) => (
+        <Skeleton key={i} className="h-7 w-16 rounded-full shrink-0" />
+      ))}
+    </>
+  ) : (
+    // Кнопки категорий
+    <>
+      <button
+        onClick={() => setCategoryFilter('all')}
+        className={cn(
+          'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
+          categoryFilter === 'all'
+            ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
+            : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
+        )}
+      >
+        Все
+      </button>
+      {categories?.map((cat: any) => (
+        <button
+          key={cat.id}
+          onClick={() => setCategoryFilter(cat.id)}
+          className={cn(
+            'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
+            categoryFilter === cat.id
+              ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
+              : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
+          )}
+        >
+          {cat.name}
+        </button>
+      ))}
+    </>
+  )}
+</div>
       </div>
 
       {/* ФИЛЬТР ПО УРОВНЯМ */}

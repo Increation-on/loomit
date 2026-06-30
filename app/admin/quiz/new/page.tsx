@@ -10,6 +10,8 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/core/C
 import { useToast } from '@/components/ui/feedback/ToastContainer';
 import { Trash2, Plus, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/feedback/Skeleton';
+import { useGetCategoriesQuery } from '@/store/api/categoryApi';
 
 interface Option {
   id: string;
@@ -30,25 +32,12 @@ export default function NewQuizPage() {
   const [categoryId, setCategoryId] = useState('');
   const [level, setLevel] = useState<'JUNIOR' | 'MIDDLE' | 'SENIOR'>('JUNIOR');
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [categories, setCategories] = useState<any[]>([]);
   const [saving, setSaving] = useState(false);
   const { success, error: showError } = useToast();
+  const { data: categories, isLoading: categoriesLoading } = useGetCategoriesQuery({});
 
-  // Загрузка категорий при открытии страницы
-  useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        const res = await fetch('/api/admin/categories');
-        if (res.ok) {
-          const data = await res.json();
-          setCategories(data);
-        }
-      } catch (err) {
-        console.error('Ошибка загрузки категорий:', err);
-      }
-    };
-    loadCategories();
-  }, []);
+
+  
 
   const addQuestion = () => {
     setQuestions([
@@ -144,31 +133,41 @@ export default function NewQuizPage() {
         <div className="space-y-1">
           <label className="text-sm font-medium text-(--loom-white)/80 block mb-2">Категория</label>
           <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-            <button
-              onClick={() => setCategoryId('')}
-              className={cn(
-                'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
-                !categoryId
-                  ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
-                  : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
-              )}
-            >
-              Без категории
-            </button>
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setCategoryId(cat.id)}
-                className={cn(
-                  'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
-                  categoryId === cat.id
-                    ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
-                    : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
-                )}
-              >
-                {cat.name}
-              </button>
-            ))}
+            {categoriesLoading ? (
+              <>
+                {[1, 2, 3, 4].map((i) => (
+                  <Skeleton key={i} className="h-7 w-20 rounded-full shrink-0" />
+                ))}
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => setCategoryId('')}
+                  className={cn(
+                    'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
+                    !categoryId
+                      ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
+                      : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
+                  )}
+                >
+                  Без категории
+                </button>
+                {categories?.map((cat: any) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => setCategoryId(cat.id)}
+                    className={cn(
+                      'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
+                      categoryId === cat.id
+                        ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
+                        : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
+                    )}
+                  >
+                    {cat.name}
+                  </button>
+                ))}
+              </>
+            )}
           </div>
         </div>
 

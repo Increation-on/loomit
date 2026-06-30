@@ -11,11 +11,13 @@ import { Plus, Pencil, Eye, Trash2, Filter } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { pluralize } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
+import { useGetCategoriesQuery } from '@/store/api/categoryApi';
 
 export default function AdminDashboard() {
   const { data: quizzes, isLoading, refetch } = useGetQuizzesQuery({}, {
     refetchOnMountOrArgChange: true,
   });
+  const { data: categories, isLoading: categoriesLoading } = useGetCategoriesQuery({});
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const { success, error: showError } = useToast();
 
@@ -23,27 +25,7 @@ export default function AdminDashboard() {
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [levelFilter, setLevelFilter] = useState('all');
   const [sortBy, setSortBy] = useState('newest');
-  const [categories, setCategories] = useState<any[]>([]);
-  const [categoriesLoading, setCategoriesLoading] = useState(true);
 
-
-  // Загрузка категорий для фильтра
-  useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        const res = await fetch('/api/admin/categories');
-        if (res.ok) {
-          const data = await res.json();
-          setCategories(data);
-        }
-      } catch (err) {
-        console.error('Ошибка загрузки категорий:', err);
-      } finally {
-        setCategoriesLoading(false);
-      }
-    };
-    loadCategories();
-  }, []);
 
   const handleDelete = async () => {
     if (!deleteId) return;
@@ -141,7 +123,7 @@ export default function AdminDashboard() {
               >
                 Все
               </button>
-              {categories.map((cat) => (
+              {categories?.map((cat: any) => (
                 <button
                   key={cat.id}
                   onClick={() => setCategoryFilter(cat.id)}

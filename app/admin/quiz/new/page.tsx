@@ -11,6 +11,7 @@ import { useToast } from '@/components/ui/feedback/ToastContainer';
 import { Trash2, Plus, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
+import { useGetCategoriesQuery } from '@/store/api/categoryApi';
 
 interface Option {
   id: string;
@@ -31,28 +32,12 @@ export default function NewQuizPage() {
   const [categoryId, setCategoryId] = useState('');
   const [level, setLevel] = useState<'JUNIOR' | 'MIDDLE' | 'SENIOR'>('JUNIOR');
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [categories, setCategories] = useState<any[]>([]);
   const [saving, setSaving] = useState(false);
   const { success, error: showError } = useToast();
-  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const { data: categories, isLoading: categoriesLoading } = useGetCategoriesQuery({});
 
-  // Загрузка категорий при открытии страницы
-  useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        const res = await fetch('/api/admin/categories');
-        if (res.ok) {
-          const data = await res.json();
-          setCategories(data);
-        }
-      } catch (err) {
-        console.error('Ошибка загрузки категорий:', err);
-      } finally {
-        setCategoriesLoading(false);
-      }
-    };
-    loadCategories();
-  }, []);
+
+  
 
   const addQuestion = () => {
     setQuestions([
@@ -167,7 +152,7 @@ export default function NewQuizPage() {
                 >
                   Без категории
                 </button>
-                {categories.map((cat) => (
+                {categories?.map((cat: any) => (
                   <button
                     key={cat.id}
                     onClick={() => setCategoryId(cat.id)}

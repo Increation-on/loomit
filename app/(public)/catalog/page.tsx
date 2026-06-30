@@ -10,10 +10,12 @@ import { Button } from '@/components/ui/core/Button';
 import { cn } from '@/lib/utils';
 import { pluralize } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
+import { useGetCategoriesQuery } from '@/store/api/categoryApi';
 
 export default function CatalogPage() {
   const router = useRouter();
-  const { data: quizzes, isLoading } = useGetQuizzesQuery({});
+  const { data: quizzes, isLoading: quizzesLoading } = useGetQuizzesQuery({});
+const { data: categories, isLoading: categoriesLoading } = useGetCategoriesQuery({});
   const [searchQuery, setSearchQuery] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [suggestions, setSuggestions] = useState<any[]>([]);
@@ -22,26 +24,6 @@ export default function CatalogPage() {
   // Фильтры
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [levelFilter, setLevelFilter] = useState('all');
-  const [categories, setCategories] = useState<any[]>([]);
-  const [categoriesLoading, setCategoriesLoading] = useState(true);
-
-  // Загрузка категорий
-useEffect(() => {
-  const loadCategories = async () => {
-    try {
-      const res = await fetch('/api/admin/categories');
-      if (res.ok) {
-        const data = await res.json();
-        setCategories(data);
-      }
-    } catch (err) {
-      console.error('Ошибка загрузки категорий:', err);
-    } finally {
-      setCategoriesLoading(false);
-    }
-  };
-  loadCategories();
-}, []);
 
   // Выпадающий поиск
   useEffect(() => {
@@ -84,7 +66,7 @@ useEffect(() => {
     }
   }, [filteredQuizzes, sortBy]);
 
-  if (isLoading) {
+  if (quizzesLoading) {
     return (
       <div className="min-h-screen bg-(--loom-black) text-(--loom-white) pb-24 px-4 pt-6">
         <h1 className="text-2xl font-bold mb-6">Каталог квизов</h1>
@@ -174,7 +156,7 @@ useEffect(() => {
       >
         Все
       </button>
-      {categories.map((cat) => (
+      {categories?.map((cat: any) => (
         <button
           key={cat.id}
           onClick={() => setCategoryFilter(cat.id)}

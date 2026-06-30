@@ -10,6 +10,7 @@ import { useToast } from '@/components/ui/feedback/ToastContainer';
 import { Plus, Pencil, Eye, Trash2, Filter } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { pluralize } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/feedback/Skeleton';
 
 export default function AdminDashboard() {
   const { data: quizzes, isLoading, refetch } = useGetQuizzesQuery({}, {
@@ -23,6 +24,8 @@ export default function AdminDashboard() {
   const [levelFilter, setLevelFilter] = useState('all');
   const [sortBy, setSortBy] = useState('newest');
   const [categories, setCategories] = useState<any[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+
 
   // Загрузка категорий для фильтра
   useEffect(() => {
@@ -35,6 +38,8 @@ export default function AdminDashboard() {
         }
       } catch (err) {
         console.error('Ошибка загрузки категорий:', err);
+      } finally {
+        setCategoriesLoading(false);
       }
     };
     loadCategories();
@@ -117,31 +122,41 @@ export default function AdminDashboard() {
           <span className="text-sm text-(--loom-white)/60">Категории:</span>
         </div>
         <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-          <button
-            onClick={() => setCategoryFilter('all')}
-            className={cn(
-              'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
-              categoryFilter === 'all'
-                ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
-                : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
-            )}
-          >
-            Все
-          </button>
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => setCategoryFilter(cat.id)}
-              className={cn(
-                'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
-                categoryFilter === cat.id
-                  ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
-                  : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
-              )}
-            >
-              {cat.name}
-            </button>
-          ))}
+          {categoriesLoading ? (
+            <>
+              {[1, 2, 3, 4].map((i) => (
+                <Skeleton key={i} className="h-7 w-16 rounded-full shrink-0" />
+              ))}
+            </>
+          ) : (
+            <>
+              <button
+                onClick={() => setCategoryFilter('all')}
+                className={cn(
+                  'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
+                  categoryFilter === 'all'
+                    ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
+                    : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
+                )}
+              >
+                Все
+              </button>
+              {categories.map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => setCategoryFilter(cat.id)}
+                  className={cn(
+                    'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
+                    categoryFilter === cat.id
+                      ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
+                      : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
+                  )}
+                >
+                  {cat.name}
+                </button>
+              ))}
+            </>
+          )}
         </div>
       </div>
 

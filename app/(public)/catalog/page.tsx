@@ -9,6 +9,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/core/C
 import { Button } from '@/components/ui/core/Button';
 import { cn } from '@/lib/utils';
 import { pluralize } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/feedback/Skeleton';
 
 export default function CatalogPage() {
   const router = useRouter();
@@ -22,22 +23,25 @@ export default function CatalogPage() {
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [levelFilter, setLevelFilter] = useState('all');
   const [categories, setCategories] = useState<any[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
 
   // Загрузка категорий
-  useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        const res = await fetch('/api/admin/categories');
-        if (res.ok) {
-          const data = await res.json();
-          setCategories(data);
-        }
-      } catch (err) {
-        console.error('Ошибка загрузки категорий:', err);
+useEffect(() => {
+  const loadCategories = async () => {
+    try {
+      const res = await fetch('/api/admin/categories');
+      if (res.ok) {
+        const data = await res.json();
+        setCategories(data);
       }
-    };
-    loadCategories();
-  }, []);
+    } catch (err) {
+      console.error('Ошибка загрузки категорий:', err);
+    } finally {
+      setCategoriesLoading(false);
+    }
+  };
+  loadCategories();
+}, []);
 
   // Выпадающий поиск
   useEffect(() => {
@@ -149,32 +153,44 @@ export default function CatalogPage() {
           <span className="text-sm text-(--loom-white)/60">Категории:</span>
         </div>
         <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-          <button
-            onClick={() => setCategoryFilter('all')}
-            className={cn(
-              'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
-              categoryFilter === 'all'
-                ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
-                : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
-            )}
-          >
-            Все
-          </button>
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => setCategoryFilter(cat.id)}
-              className={cn(
-                'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
-                categoryFilter === cat.id
-                  ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
-                  : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
-              )}
-            >
-              {cat.name}
-            </button>
-          ))}
-        </div>
+  {categoriesLoading ? (
+    // Скелетоны (серые полоски)
+    <>
+      {[1, 2, 3, 4].map((i) => (
+        <Skeleton key={i} className="h-7 w-16 rounded-full shrink-0" />
+      ))}
+    </>
+  ) : (
+    // Кнопки категорий
+    <>
+      <button
+        onClick={() => setCategoryFilter('all')}
+        className={cn(
+          'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
+          categoryFilter === 'all'
+            ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
+            : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
+        )}
+      >
+        Все
+      </button>
+      {categories.map((cat) => (
+        <button
+          key={cat.id}
+          onClick={() => setCategoryFilter(cat.id)}
+          className={cn(
+            'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
+            categoryFilter === cat.id
+              ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
+              : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
+          )}
+        >
+          {cat.name}
+        </button>
+      ))}
+    </>
+  )}
+</div>
       </div>
 
       {/* ФИЛЬТР ПО УРОВНЯМ */}

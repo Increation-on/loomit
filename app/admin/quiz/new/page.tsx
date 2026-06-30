@@ -10,6 +10,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/core/C
 import { useToast } from '@/components/ui/feedback/ToastContainer';
 import { Trash2, Plus, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/feedback/Skeleton';
 
 interface Option {
   id: string;
@@ -33,6 +34,7 @@ export default function NewQuizPage() {
   const [categories, setCategories] = useState<any[]>([]);
   const [saving, setSaving] = useState(false);
   const { success, error: showError } = useToast();
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
 
   // Загрузка категорий при открытии страницы
   useEffect(() => {
@@ -45,6 +47,8 @@ export default function NewQuizPage() {
         }
       } catch (err) {
         console.error('Ошибка загрузки категорий:', err);
+      } finally {
+        setCategoriesLoading(false);
       }
     };
     loadCategories();
@@ -144,31 +148,41 @@ export default function NewQuizPage() {
         <div className="space-y-1">
           <label className="text-sm font-medium text-(--loom-white)/80 block mb-2">Категория</label>
           <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-            <button
-              onClick={() => setCategoryId('')}
-              className={cn(
-                'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
-                !categoryId
-                  ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
-                  : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
-              )}
-            >
-              Без категории
-            </button>
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setCategoryId(cat.id)}
-                className={cn(
-                  'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
-                  categoryId === cat.id
-                    ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
-                    : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
-                )}
-              >
-                {cat.name}
-              </button>
-            ))}
+            {categoriesLoading ? (
+              <>
+                {[1, 2, 3, 4].map((i) => (
+                  <Skeleton key={i} className="h-7 w-20 rounded-full shrink-0" />
+                ))}
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => setCategoryId('')}
+                  className={cn(
+                    'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
+                    !categoryId
+                      ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
+                      : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
+                  )}
+                >
+                  Без категории
+                </button>
+                {categories.map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => setCategoryId(cat.id)}
+                    className={cn(
+                      'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
+                      categoryId === cat.id
+                        ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
+                        : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
+                    )}
+                  >
+                    {cat.name}
+                  </button>
+                ))}
+              </>
+            )}
           </div>
         </div>
 

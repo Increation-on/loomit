@@ -8,16 +8,14 @@ import { Modal } from '@/components/ui/feedback/Modal';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/core/Card';
 import { useToast } from '@/components/ui/feedback/ToastContainer';
 import { Plus, Pencil, Eye, Trash2, Filter } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { pluralize } from '@/lib/utils';
-import { Skeleton } from '@/components/ui/feedback/Skeleton';
-import { useGetCategoriesQuery } from '@/store/api/categoryApi';
+import { Filters } from '@/components/ui/core/Filters';
 
 export default function AdminDashboard() {
   const { data: quizzes, isLoading, refetch } = useGetQuizzesQuery({}, {
     refetchOnMountOrArgChange: true,
   });
-  const { data: categories, isLoading: categoriesLoading } = useGetCategoriesQuery({});
+  
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const { success, error: showError } = useToast();
 
@@ -98,116 +96,23 @@ export default function AdminDashboard() {
         </Link>
       </div>
 
-      {/* ФИЛЬТРЫ ДЛЯ АДМИНКИ */}
-      <div className="mb-4">
-        <div className="flex items-center gap-3 mb-2">
-          <span className="text-sm text-(--loom-white)/60">Категории:</span>
-        </div>
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-          {categoriesLoading ? (
-            <>
-              {[1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} className="h-7 w-16 rounded-full shrink-0" />
-              ))}
-            </>
-          ) : (
-            <>
-              <button
-                onClick={() => setCategoryFilter('all')}
-                className={cn(
-                  'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
-                  categoryFilter === 'all'
-                    ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
-                    : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
-                )}
-              >
-                Все
-              </button>
-              {categories?.map((cat: any) => (
-                <button
-                  key={cat.id}
-                  onClick={() => setCategoryFilter(cat.id)}
-                  className={cn(
-                    'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
-                    categoryFilter === cat.id
-                      ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
-                      : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
-                  )}
-                >
-                  {cat.name}
-                </button>
-              ))}
-            </>
-          )}
-        </div>
-      </div>
-
-      <div className="mb-6">
-        <div className="flex items-center gap-3 mb-2">
-          <span className="text-sm text-(--loom-white)/60">Уровень:</span>
-        </div>
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-          <button
-            onClick={() => setLevelFilter('all')}
-            className={cn(
-              'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
-              levelFilter === 'all'
-                ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
-                : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
-            )}
-          >
-            Все
-          </button>
-          {['JUNIOR', 'MIDDLE', 'SENIOR'].map((lvl) => (
-            <button
-              key={lvl}
-              onClick={() => setLevelFilter(lvl)}
-              className={cn(
-                'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
-                levelFilter === lvl
-                  ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
-                  : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
-              )}
-            >
-              {lvl.charAt(0) + lvl.slice(1).toLowerCase()}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* СОРТИРОВКА */}
-      <div className="mb-6">
-        <div className="flex items-center gap-3 mb-2">
-          <span className="text-sm text-(--loom-white)/60 flex items-center gap-1">
-            <Filter size={16} /> Сортировка:
-          </span>
-        </div>
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide">
-          {['newest', 'popular', 'alphabetical'].map((option) => (
-            <Button
-              key={option}
-              variant={sortBy === option ? 'glitch' : 'secondary'}
-              size="sm"
-              onClick={() => setSortBy(option)}
-              className="px-4 py-1.5 text-xs shrink-0"
-            >
-              {option === 'newest' && 'Новые'}
-              {option === 'popular' && 'Популярные'}
-              {option === 'alphabetical' && 'По алфавиту'}
-            </Button>
-          ))}
-        </div>
-      </div>
-
+      <Filters
+        categoryFilter={categoryFilter}
+        setCategoryFilter={setCategoryFilter}
+        levelFilter={levelFilter}
+        setLevelFilter={setLevelFilter}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+      />
       {/* СПИСОК КВИЗОВ */}
       {sortedQuizzes.length === 0 ? (
-        <div className="text-center py-16 text-(--loom-white)/60">
+        <div className="text-center py-16 text-(--loom-white)/60 mt-3">
           <p>Нет квизов по выбранным фильтрам</p>
         </div>
       ) : (
         <div className="space-y-3">
           {sortedQuizzes.map((quiz: any) => (
-            <Card key={quiz.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <Card key={quiz.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 mt-3">
               <div className="flex-1">
                 <h2 className="text-(--loom-white) font-semibold text-lg">{quiz.title}</h2>
                 <div className="flex flex-wrap gap-2 text-sm text-(--loom-white)/60 mt-1">

@@ -6,16 +6,12 @@ import { useGetQuizzesQuery } from '@/store/api/quizApi';
 import { Input } from '@/components/ui/core/Input';
 import { Search, Filter } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/core/Card';
-import { Button } from '@/components/ui/core/Button';
-import { cn } from '@/lib/utils';
 import { pluralize } from '@/lib/utils';
-import { Skeleton } from '@/components/ui/feedback/Skeleton';
-import { useGetCategoriesQuery } from '@/store/api/categoryApi';
+import { Filters } from '@/components/ui/core/Filters';
 
 export default function CatalogPage() {
   const router = useRouter();
   const { data: quizzes, isLoading: quizzesLoading } = useGetQuizzesQuery({});
-const { data: categories, isLoading: categoriesLoading } = useGetCategoriesQuery({});
   const [searchQuery, setSearchQuery] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [suggestions, setSuggestions] = useState<any[]>([]);
@@ -129,109 +125,14 @@ const { data: categories, isLoading: categoriesLoading } = useGetCategoriesQuery
         )}
       </div>
 
-      {/* ФИЛЬТР ПО КАТЕГОРИЯМ */}
-      <div className="mb-4">
-        <div className="flex items-center gap-3 mb-2">
-          <span className="text-sm text-(--loom-white)/60">Категории:</span>
-        </div>
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-  {categoriesLoading ? (
-    // Скелетоны (серые полоски)
-    <>
-      {[1, 2, 3, 4].map((i) => (
-        <Skeleton key={i} className="h-7 w-16 rounded-full shrink-0" />
-      ))}
-    </>
-  ) : (
-    // Кнопки категорий
-    <>
-      <button
-        onClick={() => setCategoryFilter('all')}
-        className={cn(
-          'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
-          categoryFilter === 'all'
-            ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
-            : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
-        )}
-      >
-        Все
-      </button>
-      {categories?.map((cat: any) => (
-        <button
-          key={cat.id}
-          onClick={() => setCategoryFilter(cat.id)}
-          className={cn(
-            'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
-            categoryFilter === cat.id
-              ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
-              : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
-          )}
-        >
-          {cat.name}
-        </button>
-      ))}
-    </>
-  )}
-</div>
-      </div>
-
-      {/* ФИЛЬТР ПО УРОВНЯМ */}
-      <div className="mb-6">
-        <div className="flex items-center gap-3 mb-2">
-          <span className="text-sm text-(--loom-white)/60">Уровень:</span>
-        </div>
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-          <button
-            onClick={() => setLevelFilter('all')}
-            className={cn(
-              'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
-              levelFilter === 'all'
-                ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
-                : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
-            )}
-          >
-            Все
-          </button>
-          {['JUNIOR', 'MIDDLE', 'SENIOR'].map((lvl) => (
-            <button
-              key={lvl}
-              onClick={() => setLevelFilter(lvl)}
-              className={cn(
-                'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
-                levelFilter === lvl
-                  ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
-                  : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
-              )}
-            >
-              {lvl.charAt(0) + lvl.slice(1).toLowerCase()}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* СОРТИРОВКА */}
-      <div className="mb-6">
-        <div className="flex items-center gap-3 mb-2">
-          <span className="text-sm text-(--loom-white)/60 flex items-center gap-1">
-            <Filter size={16} /> Сортировка:
-          </span>
-        </div>
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide">
-          {['popular', 'newest', 'alphabetical'].map((option) => (
-            <Button
-              key={option}
-              variant={sortBy === option ? 'glitch' : 'secondary'}
-              size="sm"
-              onClick={() => setSortBy(option)}
-              className="px-4 py-1.5 text-xs shrink-0"
-            >
-              {option === 'popular' && 'Популярные'}
-              {option === 'newest' && 'Новые'}
-              {option === 'alphabetical' && 'По алфавиту'}
-            </Button>
-          ))}
-        </div>
-      </div>
+      <Filters
+        categoryFilter={categoryFilter}
+        setCategoryFilter={setCategoryFilter}
+        levelFilter={levelFilter}
+        setLevelFilter={setLevelFilter}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+      />
 
       {/* СЕТКА КАРТОЧЕК */}
       {sortedQuizzes.length === 0 ? (
@@ -240,7 +141,7 @@ const { data: categories, isLoading: categoriesLoading } = useGetCategoriesQuery
           <p className="text-sm mt-1">Попробуй изменить фильтры или поиск</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
           {sortedQuizzes.map((quiz: any) => (
             <Card
               key={quiz.id}

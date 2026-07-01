@@ -8,7 +8,7 @@ import { Modal } from '@/components/ui/feedback/Modal';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/core/Card';
 import { useToast } from '@/components/ui/feedback/ToastContainer';
 import { Plus, Pencil, Eye, Trash2, Filter } from 'lucide-react';
-import { pluralize } from '@/lib/utils';
+import { cn, pluralize } from '@/lib/utils';
 import { Filters } from '@/components/ui/core/Filters';
 
 export default function AdminDashboard() {
@@ -110,34 +110,41 @@ export default function AdminDashboard() {
           <p>Нет квизов по выбранным фильтрам</p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {sortedQuizzes.map((quiz: any) => (
-            <Card key={quiz.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 mt-3">
+            <Card key={quiz.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 mt-4">
               <div className="flex-1">
                 <h2 className="text-(--loom-white) font-semibold text-lg">{quiz.title}</h2>
                 <div className="flex flex-wrap gap-2 text-sm text-(--loom-white)/60 mt-1">
-                  <span>
-                    {quiz._count?.questions || 0} {pluralize(quiz._count?.questions || 0, 'вопрос', 'вопроса', 'вопросов')}
-                  </span>
-                  <span>•</span>
-                  <span>
-                    {quiz.created_at ? new Date(quiz.created_at).toLocaleDateString('ru') : '—'}
-                  </span>
-                  {quiz.category?.name && (
-                    <>
-                      <span>•</span>
-                      <span className="text-(--loom-cyan)">{quiz.category.name}</span>
-                    </>
-                  )}
-                  {quiz.level && (
-                    <>
-                      <span>•</span>
-                      <span className="text-(--glitch-pink)">
-                        {quiz.level.charAt(0) + quiz.level.slice(1).toLowerCase()}
-                      </span>
-                    </>
-                  )}
-                </div>
+  <span>
+    {quiz._count?.questions || 0} {pluralize(quiz._count?.questions || 0, 'вопрос', 'вопроса', 'вопросов')}
+  </span>
+  <span>•</span>
+  <span>
+    {quiz.created_at ? new Date(quiz.created_at).toLocaleDateString('ru') : '—'}
+  </span>
+  {quiz.category?.name && (
+    <>
+      <span>•</span>
+    <span className="text-(--loom-magenta)">{quiz.category.name}</span>
+    </>
+  )}
+  {quiz.level && (
+    <>
+      <span>•</span>
+      <span
+        className={cn(
+          'text-(--loom-white)/40',
+          quiz.level === 'JUNIOR' && 'text-(--loom-cyan)',
+          quiz.level === 'MIDDLE' && 'text-(--loom-yellow)',
+          quiz.level === 'SENIOR' && 'text-(--glitch-pink)'
+        )}
+      >
+        {quiz.level.charAt(0) + quiz.level.slice(1).toLowerCase()}
+      </span>
+    </>
+  )}
+</div>
               </div>
               <div className="flex gap-2 flex-wrap">
                 <Link href={`/quiz/${quiz.id}`}>

@@ -6,7 +6,7 @@ import { useGetQuizzesQuery } from '@/store/api/quizApi';
 import { Input } from '@/components/ui/core/Input';
 import { Search, Filter } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/core/Card';
-import { pluralize } from '@/lib/utils';
+import { cn, pluralize } from '@/lib/utils';
 import { Filters } from '@/components/ui/core/Filters';
 
 export default function CatalogPage() {
@@ -156,7 +156,7 @@ export default function CatalogPage() {
                   <span>
                     {quiz._count?.questions || 0} {pluralize(quiz._count?.questions || 0, 'вопрос', 'вопроса', 'вопросов')}
                   </span>
-                  <span className="text-(--loom-cyan) text-xs font-medium">
+                  <span className="text-(--loom-magenta) text-xs font-medium">
                     {quiz.category?.name || 'Без категории'}
                   </span>
                 </div>
@@ -165,7 +165,14 @@ export default function CatalogPage() {
                     {quiz.level ? quiz.level.charAt(0) + quiz.level.slice(1).toLowerCase() : 'Любой'}
                   </span>
                   {quiz.level && (
-                    <span className="w-1 h-1 rounded-full bg-(--glitch-pink)" />
+                    <span
+                      className={cn(
+                        'w-1.5 h-1.5 rounded-full',
+                        quiz.level === 'JUNIOR' && 'bg-(--loom-cyan)',
+                        quiz.level === 'MIDDLE' && 'bg-(--loom-yellow)',
+                        quiz.level === 'SENIOR' && 'bg-(--glitch-pink)'
+                      )}
+                    />
                   )}
                 </div>
               </CardContent>

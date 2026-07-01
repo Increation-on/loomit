@@ -41,7 +41,7 @@ export default function Header() {
             <p className="font-semibold text-loom-white">{userName}</p>
           </div>
           <Link href="/profile">
-            <div className="w-10 h-10 rounded-full bg-(--loom-purple) flex items-center justify-center font-bold text-lg text-loom-black">
+            <div className="w-10 h-10 rounded-full bg-(--loom-magenta) flex items-center justify-center font-bold text-lg text-loom-black">
               {userName?.[0] || '?'}
             </div>
           </Link>

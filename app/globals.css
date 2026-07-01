@@ -17,13 +17,11 @@ h1, h2, h3, .font-display {
   :root {
     --loom-yellow: #D4A800;
     --loom-cyan: #00CCCC;
-    --loom-purple: #6B00CC;
+    --loom-magenta: #cf23d6;
     --loom-black: #FFFFFF;
     --loom-white: #111111;
     
     --glitch-pink: #D41976;
-    --glitch-darkpurple: #871F78;
-    --glitch-blue: #00BFFF;
 
     --nav-bg: rgba(255, 255, 255, 0.01);
   }
@@ -31,13 +29,12 @@ h1, h2, h3, .font-display {
   .dark {
     --loom-yellow: #FFD700;
     --loom-cyan: #00FFFF;
-    --loom-purple: #8B00FF;
+    --loom-magenta: #cf23d6;
     --loom-black: #000000;
     --loom-white: #FFFFFF;
     
     --glitch-pink: #FFC0CB;
-    --glitch-darkpurple: #871F78;
-    --glitch-blue: #00BFFF;
+   
 
      --nav-bg: rgba(0, 0, 0, 0.2);
   }

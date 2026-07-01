@@ -23,17 +23,14 @@ export async function POST(req: Request) {
     }
 
     try {
-        const { name, iconUrl } = await req.json();
+        const { name } = await req.json();
 
         if (!name || typeof name !== 'string' || name.trim().length === 0) {
             return new NextResponse('Invalid category name', { status: 400 });
         }
 
         const category = await prisma.category.create({
-            data: { 
-                name: name.trim(),
-                iconUrl: iconUrl || null,
-            },
+            data: { name: name.trim() },
         });
 
         return NextResponse.json(category);
@@ -63,32 +60,5 @@ export async function DELETE(req: Request) {
         return new NextResponse('Category deleted', { status: 200 });
     } catch (error) {
         return new NextResponse('Failed to delete category', { status: 500 });
-    }
-}
-
-export async function PUT(req: Request) {
-    const session = await getServerSession(authOptions);
-    if (!session || session.user?.role !== 'admin') {
-        return new NextResponse('Unauthorized', { status: 401 });
-    }
-
-    try {
-        const { id, name, iconUrl } = await req.json();
-
-        if (!id || !name || typeof name !== 'string' || name.trim().length === 0) {
-            return new NextResponse('Invalid data', { status: 400 });
-        }
-
-        const category = await prisma.category.update({
-            where: { id },
-            data: {
-                name: name.trim(),
-                iconUrl: iconUrl || null,
-            },
-        });
-
-        return NextResponse.json(category);
-    } catch (error) {
-        return new NextResponse('Failed to update category', { status: 500 });
     }
 }

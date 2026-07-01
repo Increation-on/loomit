@@ -8,23 +8,6 @@ import bcrypt from 'bcryptjs'
 import type { JWT } from 'next-auth/jwt'
 import type { Session } from 'next-auth'
 
-// === ПРОВЕРКА КРИТИЧЕСКИХ ПЕРЕМЕННЫХ ===
-if (!process.env.NEXTAUTH_SECRET) {
-  throw new Error(
-    '❌ NEXTAUTH_SECRET is missing!\n' +
-    'Add it to your .env.local file and to Vercel Environment Variables.\n' +
-    'Make sure it is the SAME value on both local and Vercel.\n' +
-    'You can generate one with: openssl rand -base64 32'
-  );
-}
-
-if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
-  throw new Error(
-    '❌ Google OAuth credentials are missing!\n' +
-    'Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET to .env.local and Vercel.'
-  );
-}
-
 
 if (!prisma) {
   throw new Error('Prisma client not initialized')

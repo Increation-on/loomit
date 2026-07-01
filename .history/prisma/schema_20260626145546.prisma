@@ -99,13 +99,12 @@ model verificationToken {
   @@unique([identifier, token])
 }
 
-
+// === НОВЫЕ МОДЕЛИ И ENUM ===
 
 model category {
   id          String   @id @default(cuid())
   name        String   @unique
-  quizzes     quiz[]  
-  iconUrl String?
+  quizzes     quiz[]   // связь: одна категория — много квизов
 }
 
 enum Level {

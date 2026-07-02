@@ -1,16 +1,18 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
 import { useGetQuizzesQuery } from '@/store/api/quizApi';
 import { Input } from '@/components/ui/core/Input';
-import { Search, Filter } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/core/Card';
 import { cn, pluralize } from '@/lib/utils';
 import { Filters } from '@/components/ui/core/Filters';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function CatalogPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const categoryFromUrl = searchParams.get('category');
   const { data: quizzes, isLoading: quizzesLoading } = useGetQuizzesQuery({});
   const [searchQuery, setSearchQuery] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -18,7 +20,7 @@ export default function CatalogPage() {
   const [sortBy, setSortBy] = useState('popular');
 
   // Фильтры
-  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState(categoryFromUrl || 'all');
   const [levelFilter, setLevelFilter] = useState('all');
 
   // Выпадающий поиск
@@ -152,46 +154,46 @@ export default function CatalogPage() {
                 <CardTitle className="text-lg">{quiz.title}</CardTitle>
               </CardHeader>
               <CardContent className="p-0 flex flex-col gap-1 relative">
-  <div className="flex justify-between items-center text-sm text-(--loom-white)/60">
-    <span>
-      {quiz._count?.questions || 0} {pluralize(quiz._count?.questions || 0, 'вопрос', 'вопроса', 'вопросов')}
-    </span>
-    <div className="flex flex-col items-end relative">
-      {/* Иконка с абсолютным позиционированием */}
-      <div className="absolute -top-9 right-0">
-        {quiz.category?.iconUrl ? (
-          <img 
-            src={quiz.category.iconUrl} 
-            alt={quiz.category.name} 
-            className="w-7 h-7 rounded-full object-contain" 
-          />
-        ) : (
-          <div className="w-7 h-7 rounded-full bg-(--loom-cyan)/20 flex items-center justify-center text-s text-(--loom-cyan) font-bold">
-            {quiz.category?.name?.[0] || '?'}
-          </div>
-        )}
-      </div>
-      <span className="text-(--loom-magenta) text-l font-medium">
-        {quiz.category?.name || 'Без категории'}
-      </span>
-    </div>
-  </div>
-  <div className="flex items-center gap-2 text-xs">
-    <span className="text-(--loom-white)/40">
-      {quiz.level ? quiz.level.charAt(0) + quiz.level.slice(1).toLowerCase() : 'Любой'}
-    </span>
-    {quiz.level && (
-      <span
-        className={cn(
-          'w-1.5 h-1.5 rounded-full',
-          quiz.level === 'JUNIOR' && 'bg-(--loom-cyan)',
-          quiz.level === 'MIDDLE' && 'bg-(--loom-yellow)',
-          quiz.level === 'SENIOR' && 'bg-(--glitch-pink)'
-        )}
-      />
-    )}
-  </div>
-</CardContent>
+                <div className="flex justify-between items-center text-sm text-(--loom-white)/60">
+                  <span>
+                    {quiz._count?.questions || 0} {pluralize(quiz._count?.questions || 0, 'вопрос', 'вопроса', 'вопросов')}
+                  </span>
+                  <div className="flex flex-col items-end relative">
+                    {/* Иконка с абсолютным позиционированием */}
+                    <div className="absolute -top-9 right-0">
+                      {quiz.category?.iconUrl ? (
+                        <img
+                          src={quiz.category.iconUrl}
+                          alt={quiz.category.name}
+                          className="w-7 h-7 rounded-full object-contain"
+                        />
+                      ) : (
+                        <div className="w-7 h-7 rounded-full bg-(--loom-cyan)/20 flex items-center justify-center text-s text-(--loom-cyan) font-bold">
+                          {quiz.category?.name?.[0] || '?'}
+                        </div>
+                      )}
+                    </div>
+                    <span className="text-(--loom-magenta) text-l font-medium">
+                      {quiz.category?.name || 'Без категории'}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="text-(--loom-white)/40">
+                    {quiz.level ? quiz.level.charAt(0) + quiz.level.slice(1).toLowerCase() : 'Любой'}
+                  </span>
+                  {quiz.level && (
+                    <span
+                      className={cn(
+                        'w-1.5 h-1.5 rounded-full',
+                        quiz.level === 'JUNIOR' && 'bg-(--loom-cyan)',
+                        quiz.level === 'MIDDLE' && 'bg-(--loom-yellow)',
+                        quiz.level === 'SENIOR' && 'bg-(--glitch-pink)'
+                      )}
+                    />
+                  )}
+                </div>
+              </CardContent>
             </Card>
           ))}
         </div>

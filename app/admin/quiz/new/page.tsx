@@ -12,6 +12,7 @@ import { Trash2, Plus, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
 import { useGetCategoriesQuery } from '@/store/api/categoryApi';
+import { Filters } from '@/components/ui/core/Filters';
 
 interface Option {
   id: string;
@@ -30,14 +31,11 @@ export default function NewQuizPage() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [categoryId, setCategoryId] = useState('');
-  const [level, setLevel] = useState<'JUNIOR' | 'MIDDLE' | 'SENIOR'>('JUNIOR');
+  const [level, setLevel] = useState<'all' | 'JUNIOR' | 'MIDDLE' | 'SENIOR'>('JUNIOR');
   const [questions, setQuestions] = useState<Question[]>([]);
   const [saving, setSaving] = useState(false);
   const { success, error: showError } = useToast();
-  const { data: categories, isLoading: categoriesLoading } = useGetCategoriesQuery({});
 
-
-  
 
   const addQuestion = () => {
     setQuestions([
@@ -129,64 +127,13 @@ export default function NewQuizPage() {
           />
         </div>
 
-        {/* Категория (кнопки-чипсы) */}
-        <div className="space-y-1">
-          <label className="text-sm font-medium text-(--loom-white)/80 block mb-2">Категория</label>
-          <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-            {categoriesLoading ? (
-              <>
-                {[1, 2, 3, 4].map((i) => (
-                  <Skeleton key={i} className="h-7 w-20 rounded-full shrink-0" />
-                ))}
-              </>
-            ) : (
-              <>
-                <button
-                  onClick={() => setCategoryId('')}
-                  className={cn(
-                    'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
-                    !categoryId
-                      ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
-                      : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
-                  )}
-                >
-                  Без категории
-                </button>
-                {categories?.map((cat: any) => (
-                  <button
-                    key={cat.id}
-                    onClick={() => setCategoryId(cat.id)}
-                    className={cn(
-                      'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
-                      categoryId === cat.id
-                        ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
-                        : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
-                    )}
-                  >
-                    {cat.name}
-                  </button>
-                ))}
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Уровень */}
-        <div className="space-y-1">
-          <label className="text-sm font-medium text-(--loom-white)/80 block mb-2">Уровень</label>
-          <div className="flex gap-2">
-            {['JUNIOR', 'MIDDLE', 'SENIOR'].map((lvl) => (
-              <Button
-                key={lvl}
-                variant={level === lvl ? 'glitch' : 'secondary'}
-                size="sm"
-                onClick={() => setLevel(lvl as any)}
-              >
-                {lvl.charAt(0) + lvl.slice(1).toLowerCase()}
-              </Button>
-            ))}
-          </div>
-        </div>
+        <Filters
+          categoryFilter={categoryId}
+          setCategoryFilter={setCategoryId}
+          levelFilter={level}
+          setLevelFilter={setLevel}
+          showSort={false}
+        />
       </div>
 
       {/* Список вопросов */}

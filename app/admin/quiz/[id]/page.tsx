@@ -10,6 +10,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/core/C
 import { useToast } from '@/components/ui/feedback/ToastContainer';
 import { Trash2, Plus, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useUpdateQuizMutation } from '@/store/api/quizApi';
 
 interface Option {
   id: string;
@@ -37,6 +38,8 @@ export default function EditQuizPage() {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const { success, error: showError } = useToast();
+  const [updateQuiz, { isLoading: isUpdating }] = useUpdateQuizMutation();
+
 
   // Загрузка квиза и категорий
   useEffect(() => {
@@ -123,21 +126,21 @@ export default function EditQuizPage() {
     updated[questionIndex].correctOptionId = optionId;
     setQuestions(updated);
   };
+
   const saveQuiz = async () => {
-    setSaving(true);
     try {
-      const res = await fetch(`/api/admin/quizzes/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, description, categoryId, level, questions }),
-      });
-      if (!res.ok) throw new Error('Ошибка сохранения');
+      await updateQuiz({
+        id,
+        title,
+        description,
+        categoryId,
+        level,
+        questions,
+      }).unwrap();
       success('Квиз обновлён!');
       router.push('/admin');
     } catch (err: any) {
       showError(err.message);
-    } finally {
-      setSaving(false);
     }
   };
 
@@ -302,8 +305,8 @@ export default function EditQuizPage() {
         <Button variant="ghost" onClick={() => router.back()}>
           Отмена
         </Button>
-        <Button variant="glitch" onClick={saveQuiz} disabled={saving}>
-          {saving ? 'Сохранение...' : 'Сохранить'}
+        <Button variant="glitch" onClick={saveQuiz} disabled={isUpdating}>
+          {isUpdating ? 'Сохранение...' : 'Сохранить'}
         </Button>
       </div>
     </div>

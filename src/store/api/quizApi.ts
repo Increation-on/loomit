@@ -12,8 +12,18 @@ export const quizApi = createApi({
     }),
     getQuizById: builder.query({
       query: (id: string) => `/quizzes/${id}`,
+      providesTags: (result, error, id) => [{ type: 'Quizzes', id }],
+    }),
+    // ✅ Добавляем мутацию для обновления квиза
+    updateQuiz: builder.mutation({
+      query: ({ id, ...patch }) => ({
+        url: `/admin/quizzes/${id}`,
+        method: 'PUT',
+        body: patch,
+      }),
+      invalidatesTags: ['Quizzes'], // ✅ Говорим RTK: "кеш Quizzes устарел, перезапроси"
     }),
   }),
 });
 
-export const { useGetQuizzesQuery, useGetQuizByIdQuery } = quizApi;
+export const { useGetQuizzesQuery, useGetQuizByIdQuery, useUpdateQuizMutation } = quizApi;

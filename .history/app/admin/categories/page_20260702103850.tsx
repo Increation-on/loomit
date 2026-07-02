@@ -30,10 +30,6 @@ export default function CategoriesPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  // Состояния для удаления
-  const [deleteCategoryId, setDeleteCategoryId] = useState<string | null>(null);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-
   const loadCategories = async () => {
     try {
       const res = await fetch('/api/admin/categories');
@@ -90,49 +86,50 @@ export default function CategoriesPage() {
   };
 
   const addCategory = async () => {
-    if (!newCategoryName.trim()) return;
-    setIsCreating(true);
-    try {
-      let iconUrl = null;
-      if (iconFile) {
-        iconUrl = await uploadIcon(iconFile);
-        if (!iconUrl) {
-          showError('Не удалось загрузить иконку');
-          return;
-        }
+  if (!newCategoryName.trim()) return;
+  setIsCreating(true);
+  try {
+    let iconUrl = null;
+    if (iconFile) {
+      iconUrl = await uploadIcon(iconFile);
+      if (!iconUrl) {
+        showError('Не удалось загрузить иконку');
+        return;
       }
-      const res = await fetch('/api/admin/categories', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: newCategoryName.trim(),
-          iconUrl,
-        }),
-      });
-      if (res.ok) {
-        success('Категория добавлена');
-        setNewCategoryName('');
-        setIconFile(null);
-        setIconPreview(null);
-        loadCategories();
-      } else {
-        if (res.status === 409) {
-          showError('Категория с таким названием уже существует');
-        } else {
-          showError('Ошибка при добавлении');
-        }
-      }
-    } catch (err) {
-      showError('Ошибка сети');
-    } finally {
-      setIsCreating(false);
     }
-  };
+    const res = await fetch('/api/admin/categories', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: newCategoryName.trim(),
+        iconUrl,
+      }),
+    });
+    if (res.ok) {
+      success('Категория добавлена');
+      setNewCategoryName('');
+      setIconFile(null);
+      setIconPreview(null);
+      loadCategories();
+    } else {
+      // Если статус 409 — значит, категория уже существует
+      if (res.status === 409) {
+        showError('Категория с таким названием уже существует');
+      } else {
+        showError('Ошибка при добавлении');
+      }
+    }
+  } catch (err) {
+    showError('Ошибка сети');
+  } finally {
+    setIsCreating(false);
+  }
+};
 
-  const deleteCategory = async () => {
-    if (!deleteCategoryId) return;
+  const deleteCategory = async (id: string) => {
+    if (!confirm('Удалить категорию?')) return;
     try {
-      const res = await fetch(`/api/admin/categories?id=${deleteCategoryId}`, {
+      const res = await fetch(`/api/admin/categories?id=${id}`, {
         method: 'DELETE',
       });
       if (res.ok) {
@@ -143,9 +140,6 @@ export default function CategoriesPage() {
       }
     } catch (err) {
       showError('Ошибка сети');
-    } finally {
-      setIsDeleteModalOpen(false);
-      setDeleteCategoryId(null);
     }
   };
 
@@ -289,10 +283,7 @@ export default function CategoriesPage() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => {
-                    setDeleteCategoryId(cat.id);
-                    setIsDeleteModalOpen(true);
-                  }}
+                  onClick={() => deleteCategory(cat.id)}
                   className="h-8 w-8 text-red-400 hover:text-red-300 hover:bg-red-400/10"
                 >
                   <Trash2 size={14} />
@@ -302,29 +293,6 @@ export default function CategoriesPage() {
           ))
         )}
       </div>
-
-      {/* Модалка удаления */}
-      <Modal
-        isOpen={isDeleteModalOpen}
-        onClose={() => {
-          setIsDeleteModalOpen(false);
-          setDeleteCategoryId(null);
-        }}
-        title="Удалить категорию?"
-        confirmText="Удалить"
-        cancelText="Отмена"
-        onConfirm={deleteCategory}
-        onCancel={() => {
-          setIsDeleteModalOpen(false);
-          setDeleteCategoryId(null);
-        }}
-      >
-        <p className="text-(--loom-white)/70">
-          Вы уверены, что хотите удалить категорию?
-          <br />
-          Это действие нельзя отменить.
-        </p>
-      </Modal>
 
       {/* Модалка редактирования */}
       <Modal

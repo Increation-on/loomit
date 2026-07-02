@@ -126,23 +126,23 @@ export default function EditQuizPage() {
     updated[questionIndex].correctOptionId = optionId;
     setQuestions(updated);
   };
-
+  
   const saveQuiz = async () => {
-    try {
-      await updateQuiz({
-        id,
-        title,
-        description,
-        categoryId,
-        level,
-        questions,
-      }).unwrap();
-      success('Квиз обновлён!');
-      router.push('/admin');
-    } catch (err: any) {
-      showError(err.message);
-    }
-  };
+  try {
+    await updateQuiz({
+      id,
+      title,
+      description,
+      categoryId,
+      level,
+      questions,
+    }).unwrap();
+    success('Квиз обновлён!');
+    router.push('/admin');
+  } catch (err: any) {
+    showError(err.message);
+  }
+};
 
   if (loading) return <p className="text-(--loom-white) p-4">Загрузка...</p>;
 
@@ -305,8 +305,8 @@ export default function EditQuizPage() {
         <Button variant="ghost" onClick={() => router.back()}>
           Отмена
         </Button>
-        <Button variant="glitch" onClick={saveQuiz} disabled={isUpdating}>
-          {isUpdating ? 'Сохранение...' : 'Сохранить'}
+        <Button variant="glitch" onClick={saveQuiz} disabled={saving}>
+          {saving ? 'Сохранение...' : 'Сохранить'}
         </Button>
       </div>
     </div>

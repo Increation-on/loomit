@@ -11,14 +11,6 @@ export async function GET() {
 
     const categories = await prisma.category.findMany({
         orderBy: { name: 'asc' },
-        select: {
-            id: true,
-            name: true,
-            iconUrl: true, // ✅ добавляем
-            _count: {
-                select: { quizzes: true },
-            },
-        },
     });
 
     return NextResponse.json(categories, {
@@ -39,14 +31,6 @@ export async function POST(req: Request) {
 
         if (!name || typeof name !== 'string' || name.trim().length === 0) {
             return new NextResponse('Invalid category name', { status: 400 });
-        }
-
-        // Проверяем, есть ли уже категория с таким именем
-        const existing = await prisma.category.findUnique({
-            where: { name: name.trim() },
-        });
-        if (existing) {
-            return new NextResponse('Category already exists', { status: 409 });
         }
 
         const category = await prisma.category.create({

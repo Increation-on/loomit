@@ -140,48 +140,49 @@ export default function HomePage() {
                   const isActive = activeIndex === index;
                   const isClicked = clickedId === quiz.id;
                   return (
-                    <div
-                      key={quiz.id}
-                      id={quiz.id}
-                      onClick={() => {
-                        handleQuizClick(quiz.id);
-                        setClickedId(quiz.id);
-                        setTimeout(() => setClickedId(null), 1000);
-                      }}
-                      className={`w-50 h-46 shrink-0 snap-start bg-(--loom-cyan)/20 p-4 rounded-xl cursor-pointer relative transition-all duration-300 try-it-card flex flex-col ${isActive || isClicked ? 'snake-active' : ''
-                        }`}
-                    >
-                      {/* Верхняя строка: иконка + уровень */}
-                      <div className="flex items-center justify-between mb-1.5">
-                        <div className="flex items-center gap-2">
-                          {quiz.category?.iconUrl ? (
-                            <img src={quiz.category.iconUrl} alt="" className="w-7 h-7 rounded-full object-contain" />
-                          ) : (
-                            <div className="w-7 h-7 rounded-full bg-(--loom-cyan)/20 flex items-center justify-center text-(--loom-cyan) text-xs font-bold">
-                              {quiz.category?.name?.[0] || '?'}
-                            </div>
-                          )}
-                        </div>
-                        {quiz.level && (
-                          <span
-                            className={cn(
-                              'text-xs font-semibold',
-                              quiz.level === 'JUNIOR' && 'text-(--loom-cyan)',
-                              quiz.level === 'MIDDLE' && 'text-(--loom-yellow)',
-                              quiz.level === 'SENIOR' && 'text-(--glitch-pink)'
-                            )}
-                          >
-                            {quiz.level.charAt(0) + quiz.level.slice(1).toLowerCase()}
-                          </span>
-                        )}
-                      </div>
+                  <div
+  key={quiz.id}
+  id={quiz.id}
+  onClick={() => {
+    handleQuizClick(quiz.id);
+    setClickedId(quiz.id);
+    setTimeout(() => setClickedId(null), 1000);
+  }}
+  className={`w-50 h-46 shrink-0 snap-start bg-(--loom-cyan)/20 p-4 rounded-xl cursor-pointer relative transition-all duration-300 try-it-card flex flex-col ${
+    isActive || isClicked ? 'snake-active' : ''
+  }`}
+>
+  {/* Верхняя строка: иконка + уровень */}
+  <div className="flex items-center justify-between mb-1.5">
+    <div className="flex items-center gap-2">
+      {quiz.category?.iconUrl ? (
+        <img src={quiz.category.iconUrl} alt="" className="w-7 h-7 rounded-full object-contain" />
+      ) : (
+        <div className="w-7 h-7 rounded-full bg-(--loom-cyan)/20 flex items-center justify-center text-(--loom-cyan) text-xs font-bold">
+          {quiz.category?.name?.[0] || '?'}
+        </div>
+      )}
+    </div>
+    {quiz.level && (
+      <span
+        className={cn(
+          'text-xs font-semibold',
+          quiz.level === 'JUNIOR' && 'text-(--loom-cyan)',
+          quiz.level === 'MIDDLE' && 'text-(--loom-yellow)',
+          quiz.level === 'SENIOR' && 'text-(--glitch-pink)'
+        )}
+      >
+        {quiz.level.charAt(0) + quiz.level.slice(1).toLowerCase()}
+      </span>
+    )}
+  </div>
 
-                      {/* Название */}
-                      <h3 className="font-bold text-lg text-(--loom-white) truncate leading-tight mt-1">{quiz.title}</h3>
+  {/* Название */}
+  <h3 className="font-bold text-lg text-(--loom-white) truncate leading-tight mt-1">{quiz.title}</h3>
 
-                      {/* Описание (заполняет низ) */}
-                      <p className="flex-1 text-sm text-(--loom-white)/60 mt-1">{quiz.description}</p>
-                    </div>
+  {/* Описание (заполняет низ) */}
+  <p className="flex-1 text-sm text-(--loom-white)/60 mt-1">{quiz.description}</p>
+</div>
                   );
                 })
               )}
@@ -221,9 +222,9 @@ export default function HomePage() {
                 </div>
                 <div>
                   {cat.iconUrl ? (
-                    <img src={cat.iconUrl} alt={cat.name} className="w-10 h-10 rounded-full object-contain" />
+                    <img src={cat.iconUrl} alt={cat.name} className="w-10 h-10 rounded-lg object-contain" />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-(--loom-cyan)/20 flex items-center justify-center text-(--loom-cyan) font-bold">
+                    <div className="w-10 h-10 rounded-lg bg-(--loom-cyan)/20 flex items-center justify-center text-(--loom-cyan) font-bold text-lg">
                       {cat.name[0]}
                     </div>
                   )}

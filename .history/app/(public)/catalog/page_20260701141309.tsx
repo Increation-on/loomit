@@ -151,47 +151,31 @@ export default function CatalogPage() {
               <CardHeader className="p-0 pb-2">
                 <CardTitle className="text-lg">{quiz.title}</CardTitle>
               </CardHeader>
-              <CardContent className="p-0 flex flex-col gap-1 relative">
-  <div className="flex justify-between items-center text-sm text-(--loom-white)/60">
-    <span>
-      {quiz._count?.questions || 0} {pluralize(quiz._count?.questions || 0, 'вопрос', 'вопроса', 'вопросов')}
-    </span>
-    <div className="flex flex-col items-end relative">
-      {/* Иконка с абсолютным позиционированием */}
-      <div className="absolute -top-9 right-0">
-        {quiz.category?.iconUrl ? (
-          <img 
-            src={quiz.category.iconUrl} 
-            alt={quiz.category.name} 
-            className="w-7 h-7 rounded-full object-contain" 
-          />
-        ) : (
-          <div className="w-7 h-7 rounded-full bg-(--loom-cyan)/20 flex items-center justify-center text-s text-(--loom-cyan) font-bold">
-            {quiz.category?.name?.[0] || '?'}
-          </div>
-        )}
-      </div>
-      <span className="text-(--loom-magenta) text-l font-medium">
-        {quiz.category?.name || 'Без категории'}
-      </span>
-    </div>
-  </div>
-  <div className="flex items-center gap-2 text-xs">
-    <span className="text-(--loom-white)/40">
-      {quiz.level ? quiz.level.charAt(0) + quiz.level.slice(1).toLowerCase() : 'Любой'}
-    </span>
-    {quiz.level && (
-      <span
-        className={cn(
-          'w-1.5 h-1.5 rounded-full',
-          quiz.level === 'JUNIOR' && 'bg-(--loom-cyan)',
-          quiz.level === 'MIDDLE' && 'bg-(--loom-yellow)',
-          quiz.level === 'SENIOR' && 'bg-(--glitch-pink)'
-        )}
-      />
-    )}
-  </div>
-</CardContent>
+              <CardContent className="p-0 flex flex-col gap-1">
+                <div className="flex justify-between items-center text-sm text-(--loom-white)/60">
+                  <span>
+                    {quiz._count?.questions || 0} {pluralize(quiz._count?.questions || 0, 'вопрос', 'вопроса', 'вопросов')}
+                  </span>
+                  <span className="text-(--loom-magenta) text-xs font-medium">
+                    {quiz.category?.name || 'Без категории'}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="text-(--loom-white)/40">
+                    {quiz.level ? quiz.level.charAt(0) + quiz.level.slice(1).toLowerCase() : 'Любой'}
+                  </span>
+                  {quiz.level && (
+                    <span
+                      className={cn(
+                        'w-1.5 h-1.5 rounded-full',
+                        quiz.level === 'JUNIOR' && 'bg-(--loom-cyan)',
+                        quiz.level === 'MIDDLE' && 'bg-(--loom-yellow)',
+                        quiz.level === 'SENIOR' && 'bg-(--glitch-pink)'
+                      )}
+                    />
+                  )}
+                </div>
+              </CardContent>
             </Card>
           ))}
         </div>

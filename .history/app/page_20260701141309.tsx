@@ -5,19 +5,17 @@ import { useRouter } from 'next/navigation';
 import { useSelector, useDispatch } from 'react-redux';
 import Link from 'next/link';
 import { useGetQuizzesQuery } from '@/store/api/quizApi';
-import { useGetCategoriesQuery } from '@/store/api/categoryApi';
 import { selectQuizState, resetQuiz } from '@/store/slices/quizSlice';
 import { persistor } from '@/store/store';
 import { Modal } from '@/components/ui/feedback/Modal';
 import { EmptyState } from '@/components/ui/feedback/EmptyState';
 import { Button } from '@/components/ui/core/Button';
-import { ArrowRight, Search } from 'lucide-react';
-import { cn, pluralize } from '@/lib/utils';
+import { Search } from 'lucide-react';
+import { pluralize } from '@/lib/utils';
 import { Input } from '@/components/ui/core/Input';
 
 export default function HomePage() {
-  const { data: quizzes, isLoading: isQuizzesLoading } = useGetQuizzesQuery({});
-  const { data: categories, isLoading: isCategoriesLoading } = useGetCategoriesQuery({});
+  const { data: quizzes, isLoading, error } = useGetQuizzesQuery({});
   const router = useRouter();
   const dispatch = useDispatch();
   const quizState = useSelector(selectQuizState);
@@ -25,6 +23,26 @@ export default function HomePage() {
   const answers = quizState.answers;
   const isFinished = quizState.isFinished;
   const [pendingQuizId, setPendingQuizId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (!quizzes || searchQuery.length < 1) {
+      setSuggestions([]);
+      setIsDropdownOpen(false);
+      return;
+    }
+
+    const filtered = quizzes
+      .filter((q: any) =>
+        q.title.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+      .slice(0, 5);
+
+    setSuggestions(filtered);
+    setIsDropdownOpen(true);
+  }, [searchQuery, quizzes]);
 
   // ✅ Фиксируем порядок карточек один раз при загрузке (не будет перескакивать)
   const [shuffledQuizzes, setShuffledQuizzes] = useState<any[]>([]);
@@ -97,12 +115,50 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-(--loom-black) text-(--loom-white) pb-24">
       {/* Поиск */}
-      <div className="p-4 mb-2">
+      <div className="relative px-4 mb-4 mt-4">
         <Input
-          type="text"
           placeholder="Поиск квизов..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
           leftIcon={<Search size={20} />}
+          rightIcon={
+            searchQuery.length > 0 && (
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setIsDropdownOpen(false);
+                  setSuggestions([]);
+                }}
+                className="text-(--loom-white)/40 hover:text-(--loom-white) transition-colors"
+                aria-label="Очистить поиск"
+              >
+                ✕
+              </button>
+            )
+          }
+          onBlur={() => setTimeout(() => setIsDropdownOpen(false), 150)}
+          onFocus={() => searchQuery.length > 0 && setIsDropdownOpen(true)}
         />
+
+        {/* Выпадающее меню */}
+        {isDropdownOpen && suggestions.length > 0 && (
+          <div className="absolute top-full left-4 right-4 mt-2 z-30 glitch-border rounded-xl bg-(--loom-black) p-2 max-h-60 overflow-y-auto shadow-xl">
+            {suggestions.map((quiz: any) => (
+              <button
+                key={quiz.id}
+                onClick={() => {
+                  router.push(`/quiz/${quiz.id}`);
+                  setIsDropdownOpen(false);
+                  setSearchQuery('');
+                }}
+                className="w-full text-left px-3 py-2 text-sm text-(--loom-white) hover:bg-(--loom-white)/10 rounded-lg transition-colors flex justify-between items-center"
+              >
+                <span className="truncate">{quiz.title}</span>
+                <span className="text-(--loom-cyan) text-xs">Перейти</span>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Баннер "Продолжить" / Try it */}
@@ -129,9 +185,10 @@ export default function HomePage() {
               ref={scrollRef}
               className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory w-max max-w-full touch-pan-x try-it-scroll"
             >
-              {isQuizzesLoading ? (
+              {isLoading ? (
+                // Скелетоны для Try it
                 <>
-                  {[1, 2, 3, 4].map((i) => (
+                  {[1, 2, 3].map((i) => (
                     <div key={i} className="w-48 h-36 shrink-0 rounded-xl bg-(--loom-white)/5 animate-pulse" />
                   ))}
                 </>
@@ -148,39 +205,12 @@ export default function HomePage() {
                         setClickedId(quiz.id);
                         setTimeout(() => setClickedId(null), 1000);
                       }}
-                      className={`w-50 h-46 shrink-0 snap-start bg-(--loom-cyan)/20 p-4 rounded-xl cursor-pointer relative transition-all duration-300 try-it-card flex flex-col ${isActive || isClicked ? 'snake-active' : ''
+                      className={`w-48 h-36 shrink-0 snap-start bg-(--loom-cyan)/20 p-4 rounded-xl cursor-pointer relative transition-all duration-300 try-it-card ${isActive || isClicked ? 'snake-active' : ''
                         }`}
                     >
-                      {/* Верхняя строка: иконка + уровень */}
-                      <div className="flex items-center justify-between mb-1.5">
-                        <div className="flex items-center gap-2">
-                          {quiz.category?.iconUrl ? (
-                            <img src={quiz.category.iconUrl} alt="" className="w-7 h-7 rounded-full object-contain" />
-                          ) : (
-                            <div className="w-7 h-7 rounded-full bg-(--loom-cyan)/20 flex items-center justify-center text-(--loom-cyan) text-xs font-bold">
-                              {quiz.category?.name?.[0] || '?'}
-                            </div>
-                          )}
-                        </div>
-                        {quiz.level && (
-                          <span
-                            className={cn(
-                              'text-xs font-semibold',
-                              quiz.level === 'JUNIOR' && 'text-(--loom-cyan)',
-                              quiz.level === 'MIDDLE' && 'text-(--loom-yellow)',
-                              quiz.level === 'SENIOR' && 'text-(--glitch-pink)'
-                            )}
-                          >
-                            {quiz.level.charAt(0) + quiz.level.slice(1).toLowerCase()}
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Название */}
-                      <h3 className="font-bold text-lg text-(--loom-white) truncate leading-tight mt-1">{quiz.title}</h3>
-
-                      {/* Описание (заполняет низ) */}
-                      <p className="flex-1 text-sm text-(--loom-white)/60 mt-1">{quiz.description}</p>
+                      <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-(--loom-yellow) shadow-[0_0_6px_var(--loom-yellow)]" />
+                      <h3 className="font-bold text-lg text-(--loom-white) truncate">{quiz.title}</h3>
+                      <p className="text-sm text-(--loom-white)/60 line-clamp-2">{quiz.description}</p>
                     </div>
                   );
                 })
@@ -191,50 +221,49 @@ export default function HomePage() {
       </div>
 
       {/* Категории */}
-      <div className="px-4 mt-6">
+      <div className="px-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-bold">Категории</h2>
-          {categories && categories.length > 4 && (
+          {quizzes && quizzes.length > 4 && (
             <Link href="/catalog" className="text-sm text-(--loom-yellow)">Все категории →</Link>
           )}
         </div>
 
-        {isCategoriesLoading ? (
+        {isLoading ? (
+          // Скелетоны во время загрузки
           <div className="space-y-3">
-            {[1, 2, 3, 4].map((i) => (
+            {[1, 2, 3].map((i) => (
               <div key={i} className="h-16 bg-(--loom-white)/5 rounded-xl animate-pulse" />
             ))}
           </div>
-        ) : categories && categories.length > 0 ? (
+        ) : error ? (
+          // Ошибка
+          <div className="text-center py-10">
+            <p className="text-red-400 mb-4">Не удалось загрузить квизы</p>
+            <Button onClick={() => window.location.reload()}>Повторить</Button>
+          </div>
+        ) : quizzes && quizzes.length > 0 ? (
+          // Список категорий
           <div className="space-y-3">
-            {categories.slice(0, 4).map((cat: any) => (
+            {quizzes.slice(0, quizzes.length > 4 ? 4 : quizzes.length).map((quiz: any) => (
               <div
-                key={cat.id}
-                onClick={() => router.push(`/catalog?category=${cat.id}`)}
-                className="bg-(--loom-white)/5 rounded-2xl p-5 cursor-pointer flex justify-between items-center relative glitch-border hover:bg-(--loom-white)/10 transition-colors"
+                key={quiz.id}
+                onClick={() => handleQuizClick(quiz.id)}
+                className="bg-(--loom-white)/5 rounded-2xl p-4 cursor-pointer flex justify-between items-center relative glitch-border"
               >
                 <div>
-                  <h3 className="font-bold text-lg text-(--loom-magenta)">{cat.name}</h3>
-                  <p className="text-sm text-(--loom-white)/60">
-                    {cat._count?.quizzes || 0} {pluralize(cat._count?.quizzes || 0, 'квиз', 'квиза', 'квизов')}
-                  </p>
+                  <h3 className="font-bold">{quiz.title}</h3>
+                  <p className="text-sm text-(--loom-white)/60">{quiz._count?.questions} вопросов</p>
                 </div>
-                <div>
-                  {cat.iconUrl ? (
-                    <img src={cat.iconUrl} alt={cat.name} className="w-10 h-10 rounded-full object-contain" />
-                  ) : (
-                    <div className="w-10 h-10 rounded-full bg-(--loom-cyan)/20 flex items-center justify-center text-(--loom-cyan) font-bold">
-                      {cat.name[0]}
-                    </div>
-                  )}
-                </div>
+                <div className="w-2 h-2 rounded-full bg-(--loom-yellow) shadow-[0_0_6px_var(--loom-yellow)]" />
               </div>
             ))}
           </div>
         ) : (
+          // Пустой список — только тогда показываем EmptyState
           <EmptyState
-            title="Нет доступных категорий"
-            description="Создайте первую категорию в админке."
+            title="Нет доступных квизов"
+            description="Загляните позже, скоро здесь появятся новые квизы."
           />
         )}
       </div>
@@ -246,16 +275,16 @@ export default function HomePage() {
         onCancel={handleStartNew}
         title="Незавершённый квиз"
         cancelText={isSameQuiz ? 'Начать заново' : 'Начать новый квиз'}
-        confirmText={isSameQuiz ? 'Продолжить' : 'Продолжить'}
+        confirmText={isSameQuiz ? 'Продолжить' : `Продолжить незавершенный`}
         onConfirm={handleContinue}
       >
         <p>
-          У вас есть незавершённый квиз <span className="text-(--loom-cyan)">«{currentQuiz?.title}»</span>.
+          У вас есть незавершённый квиз <span className='text-(--loom-cyan)'>«{currentQuiz?.title}»</span>.
         </p>
-        <p className="text-sm mt-2 text-(--loom-white)/50">
+        <p className="text-sm mt-2 text-gray-500">
           {isSameQuiz
             ? 'Продолжить с последнего вопроса или начать заново?'
-            : 'Начать новый квиз или вернуться к незавершённому?'}
+            : 'Начать новый квиз или вернуться к незавершенному?'}
         </p>
       </Modal>
     </div>

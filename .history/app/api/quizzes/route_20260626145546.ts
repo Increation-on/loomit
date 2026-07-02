@@ -42,12 +42,11 @@ export async function GET() {
         title: true,
         description: true,
         created_at: true,
-        level: true,
-        category: {
+        level: true,              // ✅ добавляем уровень
+        category: {               // ✅ добавляем категорию (связь)
           select: {
             id: true,
             name: true,
-            iconUrl: true, // ✅ добавлено
           },
         },
         _count: {

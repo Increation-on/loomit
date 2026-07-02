@@ -11,10 +11,7 @@ export async function GET() {
 
     const categories = await prisma.category.findMany({
         orderBy: { name: 'asc' },
-        select: {
-            id: true,
-            name: true,
-            iconUrl: true, // ✅ добавляем
+        include: {
             _count: {
                 select: { quizzes: true },
             },

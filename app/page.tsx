@@ -155,9 +155,9 @@ export default function HomePage() {
                       <div className="flex items-center justify-between mb-1.5">
                         <div className="flex items-center gap-2">
                           {quiz.category?.iconUrl ? (
-                            <img src={quiz.category.iconUrl} alt="" className="w-7 h-7 rounded-full object-contain" />
+                            <img src={quiz.category.iconUrl} alt="" className="w-9 h-9 rounded-full object-contain" />
                           ) : (
-                            <div className="w-7 h-7 rounded-full bg-(--loom-cyan)/20 flex items-center justify-center text-(--loom-cyan) text-xs font-bold">
+                            <div className="w-9 h-9 rounded-full bg-(--loom-cyan)/20 flex items-center justify-center text-(--loom-cyan) text-l font-bold">
                               {quiz.category?.name?.[0] || '?'}
                             </div>
                           )}

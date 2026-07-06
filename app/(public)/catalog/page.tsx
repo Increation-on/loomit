@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useGetQuizzesQuery } from '@/store/api/quizApi';
+import { useGetCategoriesQuery } from '@/store/api/categoryApi';
 import { Input } from '@/components/ui/core/Input';
 import { Search } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/core/Card';
@@ -14,6 +15,8 @@ export default function CatalogPage() {
   const searchParams = useSearchParams();
   const categoryFromUrl = searchParams.get('category');
   const { data: quizzes, isLoading: quizzesLoading } = useGetQuizzesQuery({});
+  const { data: categories } = useGetCategoriesQuery({});
+
   const [searchQuery, setSearchQuery] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [suggestions, setSuggestions] = useState<any[]>([]);
@@ -22,6 +25,19 @@ export default function CatalogPage() {
   // Фильтры
   const [categoryFilter, setCategoryFilter] = useState(categoryFromUrl || 'all');
   const [levelFilter, setLevelFilter] = useState('all');
+
+  // Опции для фильтров
+  const categoryOptions = [
+    { value: 'all', label: 'Все' },
+    ...(categories?.map((cat: any) => ({ value: cat.id, label: cat.name })) || []),
+  ];
+
+  const levelOptions = [
+    { value: 'all', label: 'Все' },
+    { value: 'JUNIOR', label: 'Junior' },
+    { value: 'MIDDLE', label: 'Middle' },
+    { value: 'SENIOR', label: 'Senior' },
+  ];
 
   // Выпадающий поиск
   useEffect(() => {
@@ -159,7 +175,6 @@ export default function CatalogPage() {
                     {quiz._count?.questions || 0} {pluralize(quiz._count?.questions || 0, 'вопрос', 'вопроса', 'вопросов')}
                   </span>
                   <div className="flex flex-col items-end relative">
-                    {/* Иконка с абсолютным позиционированием */}
                     <div className="absolute -top-9 right-0">
                       {quiz.category?.iconUrl ? (
                         <img

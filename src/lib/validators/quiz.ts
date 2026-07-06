@@ -19,6 +19,8 @@ export const updateQuizSchema = createQuizSchema.partial()
 export const adminQuizCreateSchema = z.object({
   title: z.string().min(1, 'Название обязательно').max(200),
   description: z.string().max(1000).optional(),
+  categoryId: z.string().min(1, 'Категория обязательна'),
+  level: z.enum(['JUNIOR', 'MIDDLE', 'SENIOR']).default('JUNIOR'),
   questions: z.array(
     z.object({
       text: z.string().min(1, 'Текст вопроса обязателен'),

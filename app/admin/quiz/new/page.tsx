@@ -1,5 +1,3 @@
-// app\admin\quiz\new\page.tsx
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -10,7 +8,6 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/core/C
 import { useToast } from '@/components/ui/feedback/ToastContainer';
 import { Trash2, Plus, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Skeleton } from '@/components/ui/feedback/Skeleton';
 import { useGetCategoriesQuery } from '@/store/api/categoryApi';
 import { Filters } from '@/components/ui/core/Filters';
 
@@ -31,11 +28,18 @@ export default function NewQuizPage() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [categoryId, setCategoryId] = useState('');
-  const [level, setLevel] = useState<'all' | 'JUNIOR' | 'MIDDLE' | 'SENIOR'>('JUNIOR');
+  const [level, setLevel] = useState<'JUNIOR' | 'MIDDLE' | 'SENIOR'>('JUNIOR');
   const [questions, setQuestions] = useState<Question[]>([]);
   const [saving, setSaving] = useState(false);
   const { success, error: showError } = useToast();
+  const { data: categories } = useGetCategoriesQuery({});
 
+  const categoryOptions = categories?.map((cat: any) => ({ value: cat.id, label: cat.name })) || [];
+  const levelOptions = [
+    { value: 'JUNIOR', label: 'Junior' },
+    { value: 'MIDDLE', label: 'Middle' },
+    { value: 'SENIOR', label: 'Senior' },
+  ];
 
   const addQuestion = () => {
     setQuestions([
@@ -83,6 +87,11 @@ export default function NewQuizPage() {
   };
 
   const saveQuiz = async () => {
+    if (!categoryId) {
+      showError('Выберите категорию');
+      return;
+    }
+
     setSaving(true);
     try {
       const res = await fetch('/api/admin/quizzes', {
@@ -130,8 +139,10 @@ export default function NewQuizPage() {
         <Filters
           categoryFilter={categoryId}
           setCategoryFilter={setCategoryId}
+          disableAllOption={true}
           levelFilter={level}
           setLevelFilter={setLevel}
+          includeLevelAll={false}
           showSort={false}
         />
       </div>

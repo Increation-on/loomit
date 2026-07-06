@@ -163,7 +163,7 @@ export type QuizGroupByOutputType = {
   id: string
   title: string
   description: string | null
-  category_id: string | null
+  category_id: string
   level: $Enums.Level | null
   created_at: Date
   updated_at: Date
@@ -194,7 +194,7 @@ export type quizWhereInput = {
   id?: Prisma.StringFilter<"quiz"> | string
   title?: Prisma.StringFilter<"quiz"> | string
   description?: Prisma.StringNullableFilter<"quiz"> | string | null
-  category_id?: Prisma.StringNullableFilter<"quiz"> | string | null
+  category_id?: Prisma.StringFilter<"quiz"> | string
   level?: Prisma.EnumLevelNullableFilter<"quiz"> | $Enums.Level | null
   created_at?: Prisma.DateTimeFilter<"quiz"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"quiz"> | Date | string
@@ -207,7 +207,7 @@ export type quizOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
-  category_id?: Prisma.SortOrderInput | Prisma.SortOrder
+  category_id?: Prisma.SortOrder
   level?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
@@ -223,7 +223,7 @@ export type quizWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.quizWhereInput | Prisma.quizWhereInput[]
   title?: Prisma.StringFilter<"quiz"> | string
   description?: Prisma.StringNullableFilter<"quiz"> | string | null
-  category_id?: Prisma.StringNullableFilter<"quiz"> | string | null
+  category_id?: Prisma.StringFilter<"quiz"> | string
   level?: Prisma.EnumLevelNullableFilter<"quiz"> | $Enums.Level | null
   created_at?: Prisma.DateTimeFilter<"quiz"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"quiz"> | Date | string
@@ -236,7 +236,7 @@ export type quizOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
-  category_id?: Prisma.SortOrderInput | Prisma.SortOrder
+  category_id?: Prisma.SortOrder
   level?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
@@ -252,7 +252,7 @@ export type quizScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"quiz"> | string
   title?: Prisma.StringWithAggregatesFilter<"quiz"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"quiz"> | string | null
-  category_id?: Prisma.StringNullableWithAggregatesFilter<"quiz"> | string | null
+  category_id?: Prisma.StringWithAggregatesFilter<"quiz"> | string
   level?: Prisma.EnumLevelNullableWithAggregatesFilter<"quiz"> | $Enums.Level | null
   created_at?: Prisma.DateTimeWithAggregatesFilter<"quiz"> | Date | string
   updated_at?: Prisma.DateTimeWithAggregatesFilter<"quiz"> | Date | string
@@ -274,7 +274,7 @@ export type quizUncheckedCreateInput = {
   id?: string
   title: string
   description?: string | null
-  category_id?: string | null
+  category_id: string
   level?: $Enums.Level | null
   created_at?: Date | string
   updated_at: Date | string
@@ -298,7 +298,7 @@ export type quizUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category_id?: Prisma.StringFieldUpdateOperationsInput | string
   level?: Prisma.NullableEnumLevelFieldUpdateOperationsInput | $Enums.Level | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -310,7 +310,7 @@ export type quizCreateManyInput = {
   id?: string
   title: string
   description?: string | null
-  category_id?: string | null
+  category_id: string
   level?: $Enums.Level | null
   created_at?: Date | string
   updated_at: Date | string
@@ -329,7 +329,7 @@ export type quizUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category_id?: Prisma.StringFieldUpdateOperationsInput | string
   level?: Prisma.NullableEnumLevelFieldUpdateOperationsInput | $Enums.Level | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -469,7 +469,7 @@ export type quizUncheckedCreateWithoutAttemptsInput = {
   id?: string
   title: string
   description?: string | null
-  category_id?: string | null
+  category_id: string
   level?: $Enums.Level | null
   created_at?: Date | string
   updated_at: Date | string
@@ -507,7 +507,7 @@ export type quizUncheckedUpdateWithoutAttemptsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category_id?: Prisma.StringFieldUpdateOperationsInput | string
   level?: Prisma.NullableEnumLevelFieldUpdateOperationsInput | $Enums.Level | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -529,7 +529,7 @@ export type quizUncheckedCreateWithoutQuestionsInput = {
   id?: string
   title: string
   description?: string | null
-  category_id?: string | null
+  category_id: string
   level?: $Enums.Level | null
   created_at?: Date | string
   updated_at: Date | string
@@ -567,7 +567,7 @@ export type quizUncheckedUpdateWithoutQuestionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category_id?: Prisma.StringFieldUpdateOperationsInput | string
   level?: Prisma.NullableEnumLevelFieldUpdateOperationsInput | $Enums.Level | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -629,7 +629,7 @@ export type quizScalarWhereInput = {
   id?: Prisma.StringFilter<"quiz"> | string
   title?: Prisma.StringFilter<"quiz"> | string
   description?: Prisma.StringNullableFilter<"quiz"> | string | null
-  category_id?: Prisma.StringNullableFilter<"quiz"> | string | null
+  category_id?: Prisma.StringFilter<"quiz"> | string
   level?: Prisma.EnumLevelNullableFilter<"quiz"> | $Enums.Level | null
   created_at?: Prisma.DateTimeFilter<"quiz"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"quiz"> | Date | string
@@ -786,7 +786,7 @@ export type $quizPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     id: string
     title: string
     description: string | null
-    category_id: string | null
+    category_id: string
     level: $Enums.Level | null
     created_at: Date
     updated_at: Date

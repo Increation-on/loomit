@@ -60,7 +60,7 @@ model quiz {
   id          String      @id @default(cuid())
   title       String
   description String?
-  category_id String?     // внешний ключ на категорию
+  category_id String     // внешний ключ на категорию
   category    category?   @relation(fields: [category_id], references: [id])
   level       Level?      @default(JUNIOR)
   created_at  DateTime    @default(now())

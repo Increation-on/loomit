@@ -1,5 +1,3 @@
-// app\admin\quiz\[id]\page.tsx
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -10,6 +8,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/core/C
 import { useToast } from '@/components/ui/feedback/ToastContainer';
 import { Trash2, Plus, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Filters } from '@/components/ui/core/Filters';
 import { useUpdateQuizMutation } from '@/store/api/quizApi';
 
 interface Option {
@@ -34,37 +33,24 @@ export default function EditQuizPage() {
   const [categoryId, setCategoryId] = useState('');
   const [level, setLevel] = useState<'JUNIOR' | 'MIDDLE' | 'SENIOR'>('JUNIOR');
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [categories, setCategories] = useState<any[]>([]);
-  const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const { success, error: showError } = useToast();
+
   const [updateQuiz, { isLoading: isUpdating }] = useUpdateQuizMutation();
 
-
-  // Загрузка квиза и категорий
+  // Загрузка квиза
   useEffect(() => {
-    const loadData = async () => {
+    const loadQuiz = async () => {
       try {
-        const [quizRes, categoriesRes] = await Promise.all([
-          fetch(`/api/admin/quizzes/${id}`),
-          fetch('/api/admin/categories'),
-        ]);
+        const res = await fetch(`/api/admin/quizzes/${id}`);
+        if (!res.ok) throw new Error('Ошибка загрузки');
+        const data = await res.json();
 
-        if (!quizRes.ok || !categoriesRes.ok) {
-          console.error('Один из запросов не удался');
-          return;
-        }
-
-        const quizData = await quizRes.json();
-        const categoriesData = await categoriesRes.json();
-
-        setTitle(quizData.title);
-        setDescription(quizData.description || '');
-        setCategoryId(quizData.category_id || '');
-        setLevel(quizData.level || 'JUNIOR');
-        setCategories(categoriesData); // ← сохраняем список категорий
-
-        setQuestions(quizData.questions.map((q: any) => ({
+        setTitle(data.title);
+        setDescription(data.description || '');
+        setCategoryId(data.category_id || '');
+        setLevel(data.level || 'JUNIOR');
+        setQuestions(data.questions.map((q: any) => ({
           id: q.id,
           text: q.text,
           options: Array.isArray(q.options) ? q.options.map((o: any) =>
@@ -74,13 +60,14 @@ export default function EditQuizPage() {
         })));
       } catch (err) {
         console.error('Ошибка загрузки:', err);
+        showError('Не удалось загрузить квиз');
       } finally {
         setLoading(false);
       }
     };
 
-    loadData();
-  }, [id]); // без showError в зависимостях
+    loadQuiz();
+  }, [id, showError]);
 
   const addQuestion = () => {
     setQuestions([
@@ -128,6 +115,11 @@ export default function EditQuizPage() {
   };
 
   const saveQuiz = async () => {
+    if (!categoryId) {
+      showError('Выберите категорию');
+      return;
+    }
+
     try {
       await updateQuiz({
         id,
@@ -144,7 +136,13 @@ export default function EditQuizPage() {
     }
   };
 
-  if (loading) return <p className="text-(--loom-white) p-4">Загрузка...</p>;
+  if (loading) {
+    return (
+      <div className="p-4 max-w-2xl mx-auto">
+        <div className="h-40 bg-(--loom-white)/5 rounded-xl animate-pulse" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 max-w-2xl mx-auto pb-24">
@@ -152,13 +150,14 @@ export default function EditQuizPage() {
 
       {/* Основная информация */}
       <div className="space-y-4 mb-6">
-        <label className="text-xl font-medium text-(--loom-white)/80 block mb-2">Название квиза</label>
+        <label className="text-xl font-medium text-(--loom-white)/80 mb-2 block">Название</label>
         <Input
           placeholder="Название квиза"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
-        <label className="text-xl font-medium text-(--loom-white)/80 block mb-2">Описание квиза</label>
+        
+        <label className="block text-xl font-medium text-(--loom-white)/80 mb-2">Описание</label>
         <div className="glitch-border rounded-xl bg-(--loom-white)/5 w-full overflow-hidden">
           <textarea
             value={description}
@@ -168,50 +167,15 @@ export default function EditQuizPage() {
           />
         </div>
 
-        {/* Категория */}
-        <div className="space-y-1">
-          <label className="text-sm font-medium text-(--loom-white)/80 block mb-2">Категория</label>
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => setCategoryId('')}
-              className={cn(
-                'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
-                !categoryId ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)' : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
-              )}
-            >
-              Без категории
-            </button>
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setCategoryId(cat.id)}
-                className={cn(
-                  'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
-                  categoryId === cat.id ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)' : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
-                )}
-              >
-                {cat.name}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Уровень */}
-        <div className="space-y-1">
-          <label className="text-sm font-medium text-(--loom-white)/80 block mb-2">Уровень</label>
-          <div className="flex gap-2">
-            {['JUNIOR', 'MIDDLE', 'SENIOR'].map((lvl) => (
-              <Button
-                key={lvl}
-                variant={level === lvl ? 'glitch' : 'secondary'}
-                size="sm"
-                onClick={() => setLevel(lvl as any)}
-              >
-                {lvl.charAt(0) + lvl.slice(1).toLowerCase()}
-              </Button>
-            ))}
-          </div>
-        </div>
+        <Filters
+          categoryFilter={categoryId}
+          setCategoryFilter={setCategoryId}
+          levelFilter={level}
+          setLevelFilter={setLevel}
+          disableAllOption={true}
+          includeLevelAll={false}
+          showSort={false}
+        />
       </div>
 
       {/* Список вопросов */}

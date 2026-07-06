@@ -1,9 +1,9 @@
-// app\api\admin\quizzes\[id]\route.ts
-
 import { NextResponse } from 'next/server';
 import { authOptions } from 'app/api/auth/[...nextauth]/route';
 import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/prisma';
+import { z } from 'zod';
+import { adminQuizCreateSchema } from '@/lib/validators/quiz';
 
 export async function GET(
   _request: Request,
@@ -21,7 +21,7 @@ export async function GET(
       questions: {
         orderBy: { order: 'asc' },
       },
-      category: true, // ✅ добавляем, чтобы получить имя категории
+      category: true,
     },
   });
 
@@ -31,9 +31,9 @@ export async function GET(
 
   const formatted = {
     ...quiz,
-    category_id: quiz.category_id,   // ✅ явно возвращаем
-    category_name: quiz.category?.name, // ✅ имя категории
-    level: quiz.level,               // ✅ явно возвращаем
+    category_id: quiz.category_id,
+    category_name: quiz.category?.name,
+    level: quiz.level,
     questions: quiz.questions.map((q: any) => ({
       ...q,
       options: typeof q.options === 'string' ? JSON.parse(q.options) : q.options,
@@ -54,35 +54,46 @@ export async function PUT(
   }
 
   const body = await request.json();
-  const { title, description, categoryId, level, questions } = body;
 
+  // Валидируем входящие данные
+  const validated = adminQuizCreateSchema.safeParse(body);
+  if (!validated.success) {
+    return NextResponse.json(
+      { error: z.treeifyError(validated.error) },
+      { status: 400 }
+    );
+  }
+
+  const { title, description, categoryId, level, questions } = validated.data;
+
+  // Проверяем, что категория выбрана
+  if (!categoryId) {
+    return NextResponse.json({ error: 'Category is required' }, { status: 400 });
+  }
+
+  // Удаляем старые вопросы
   await prisma.question.deleteMany({ where: { quiz_id: id } });
 
-  // ✅ Правильная обработка пустой строки → null
-  const finalCategoryId = categoryId && categoryId.trim() !== '' ? categoryId : null;
-
+  // Обновляем квиз
   const quiz = await prisma.quiz.update({
     where: { id },
     data: {
       title,
-      description,
-      category_id: finalCategoryId, // ✅ null вместо ''
+      description: description || '',
+      category_id: categoryId,
       level,
       updated_at: new Date(),
       questions: {
-        create: questions.map((q: any, index: number) => ({
+        create: questions.map((q, index) => ({
           id: crypto.randomUUID(),
           text: q.text,
-          options: JSON.stringify(q.options.map((o: any) => o.text)),
+          options: q.options,
           correct_option_id: q.correctOptionId,
           order: index,
         })),
       },
     },
-    include: { 
-      questions: true,
-      category: true, // ✅ возвращаем категорию в ответе
-    },
+    include: { questions: true, category: true },
   });
 
   return NextResponse.json(quiz);

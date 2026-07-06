@@ -181,19 +181,36 @@ h1, h2, h3, .font-display {
 
 
 
-/* браузерные артефакты на мобилке */
+/* Браузерные артефакты на мобилке — нативный режим */
 * {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 html {
   -webkit-text-size-adjust: 100%;
   touch-action: manipulation;
   background-color: var(--loom-black);
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
-input, textarea, button {
-  user-select: none;
-  -webkit-user-select: none;
+/* Запрет перетаскивания картинок */
+img {
+  -webkit-user-drag: none;
+}
+
+/* Разрешаем выделение только в инпутах */
+input, textarea, select {
+  user-select: text;
+  -webkit-user-select: text;
+  font-size: 16px !important;
+}
+
+/* Дополнительная защита для iOS */
+a, button {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
 }

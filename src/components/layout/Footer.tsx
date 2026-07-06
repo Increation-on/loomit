@@ -43,7 +43,8 @@ export default function Footer() {
 
       <div className="flex justify-around items-center h-16 max-w-md mx-auto relative z-10">
         <Link 
-          href="/" 
+          href="/"
+          onContextMenu={(e) => e.preventDefault()} 
           className={`flex flex-col items-center gap-1 transition-all duration-100 ${
             pathname === '/' 
               ? 'text-(--loom-yellow)' 
@@ -55,7 +56,8 @@ export default function Footer() {
         </Link>
         
         <Link 
-          href="/catalog" 
+          href="/catalog"
+          onContextMenu={(e) => e.preventDefault()} 
           className={`flex flex-col items-center gap-1 transition-all duration-100 ${
             pathname === '/catalog' 
               ? 'text-(--loom-yellow)' 
@@ -67,7 +69,8 @@ export default function Footer() {
         </Link>
         
         <Link 
-          href="/favorites" 
+          href="/favorites"
+          onContextMenu={(e) => e.preventDefault()} 
           className={`flex flex-col items-center gap-1 transition-all duration-100 ${
             pathname === '/favorites' 
               ? 'text-(--loom-yellow)' 
@@ -79,7 +82,8 @@ export default function Footer() {
         </Link>
         
         <Link 
-          href="/profile" 
+          href="/profile"
+          onContextMenu={(e) => e.preventDefault()} 
           className={`flex flex-col items-center gap-1 transition-all duration-100 ${
             pathname === '/profile' 
               ? 'text-(--loom-yellow)' 

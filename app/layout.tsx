@@ -51,6 +51,7 @@ export default async function RootLayout({
       lang="ru"
       className={`${spaceGrotesk.variable} ${inter.variable} h-full antialiased`}
       suppressHydrationWarning
+      data-scroll-behavior="smooth"
     >
       <body className="min-h-full flex flex-col">
         <Providers session={session}>

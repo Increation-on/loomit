@@ -11,9 +11,9 @@ import { persistor } from '@/store/store';
 import { Modal } from '@/components/ui/feedback/Modal';
 import { EmptyState } from '@/components/ui/feedback/EmptyState';
 import { Button } from '@/components/ui/core/Button';
-import { ArrowRight, Search } from 'lucide-react';
+import { SearchWithDropdown } from '@/components/ui/core/SearchWithDropDown';
 import { cn, pluralize } from '@/lib/utils';
-import { Input } from '@/components/ui/core/Input';
+
 
 export default function HomePage() {
   const { data: quizzes, isLoading: isQuizzesLoading } = useGetQuizzesQuery({});
@@ -98,11 +98,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-(--loom-black) text-(--loom-white) pb-24">
       {/* Поиск */}
       <div className="p-4 mb-2">
-        <Input
-          type="text"
-          placeholder="Поиск квизов..."
-          leftIcon={<Search size={20} />}
-        />
+      <SearchWithDropdown items={quizzes || []} placeholder="Поиск квизов..." />
       </div>
 
       {/* Баннер "Продолжить" / Try it */}

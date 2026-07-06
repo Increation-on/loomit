@@ -4,11 +4,11 @@ import { useState, useEffect, useMemo } from 'react';
 import { useGetQuizzesQuery } from '@/store/api/quizApi';
 import { useGetCategoriesQuery } from '@/store/api/categoryApi';
 import { Input } from '@/components/ui/core/Input';
-import { Search } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/core/Card';
 import { cn, pluralize } from '@/lib/utils';
 import { Filters } from '@/components/ui/core/Filters';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { SearchWithDropdown } from '@/components/ui/core/SearchWithDropDown';
 
 export default function CatalogPage() {
   const router = useRouter();
@@ -30,13 +30,6 @@ export default function CatalogPage() {
   const categoryOptions = [
     { value: 'all', label: 'Все' },
     ...(categories?.map((cat: any) => ({ value: cat.id, label: cat.name })) || []),
-  ];
-
-  const levelOptions = [
-    { value: 'all', label: 'Все' },
-    { value: 'JUNIOR', label: 'Junior' },
-    { value: 'MIDDLE', label: 'Middle' },
-    { value: 'SENIOR', label: 'Senior' },
   ];
 
   // Выпадающий поиск
@@ -99,29 +92,7 @@ export default function CatalogPage() {
 
       {/* ПОИСК */}
       <div className="relative mb-6">
-        <Input
-          placeholder="Поиск квизов..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          leftIcon={<Search size={20} />}
-          rightIcon={
-            searchQuery.length > 0 && (
-              <button
-                onClick={() => {
-                  setSearchQuery('');
-                  setIsDropdownOpen(false);
-                  setSuggestions([]);
-                }}
-                className="text-(--loom-white)/40 hover:text-(--loom-white) transition-colors"
-                aria-label="Очистить поиск"
-              >
-                ✕
-              </button>
-            )
-          }
-          onBlur={() => setTimeout(() => setIsDropdownOpen(false), 150)}
-          onFocus={() => searchQuery.length > 0 && setIsDropdownOpen(true)}
-        />
+        <SearchWithDropdown items={quizzes || []} placeholder="Поиск квизов..." />
 
         {isDropdownOpen && suggestions.length > 0 && (
           <div className="absolute top-full left-0 right-0 mt-2 z-30 glitch-border rounded-xl bg-(--loom-black) p-2 max-h-60 overflow-y-auto shadow-xl">

@@ -132,12 +132,41 @@ h1, h2, h3, .font-display {
 }
 
 
+
+/* Глитч-полоска с двумя цветами */
+.glitch-scanline-gradient {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--loom-cyan) 30%,
+    var(--glitch-pink) 40%,
+    var(--loom-yellow) 30%,
+    transparent 100%
+  );
+}
+
 @keyframes shimmer {
   100% {
     transform: translateX(100%);
   }
 }
 
+/* Глитч-полоска (медленная, с паузой) */
+@keyframes scanline {
+  0% {
+    top: -10%;
+  }
+  25% {
+    top: 110%;
+  }
+  100% {
+    top: 110%;
+  }
+}
+
+.animate-scanline {
+  animation: scanline 3s linear infinite;
+}
 
 
 

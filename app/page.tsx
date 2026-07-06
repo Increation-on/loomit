@@ -192,52 +192,63 @@ export default function HomePage() {
 
       {/* Категории */}
       <div className="px-4 mt-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-bold">Категории</h2>
-          {categories && categories.length > 4 && (
-            <Link href="/catalog" className="text-sm text-(--loom-yellow)">Все категории →</Link>
-          )}
-        </div>
+  <div className="flex justify-between items-center mb-4">
+    <h2 className="text-lg font-bold">Категории</h2>
+    {categories && categories.length > 4 && (
+      <Link href="/catalog" className="text-sm text-(--loom-yellow)">Все категории</Link>
+    )}
+  </div>
 
-        {isCategoriesLoading ? (
-          <div className="space-y-3">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-16 bg-(--loom-white)/5 rounded-xl animate-pulse" />
-            ))}
-          </div>
-        ) : categories && categories.length > 0 ? (
-          <div className="space-y-3">
-            {categories.slice(0, 4).map((cat: any) => (
-              <div
-                key={cat.id}
-                onClick={() => router.push(`/catalog?category=${cat.id}`)}
-                className="bg-(--loom-white)/5 rounded-2xl p-5 cursor-pointer flex justify-between items-center relative glitch-border hover:bg-(--loom-white)/10 transition-colors"
-              >
-                <div>
-                  <h3 className="font-bold text-lg text-(--loom-magenta)">{cat.name}</h3>
-                  <p className="text-sm text-(--loom-white)/60">
-                    {cat._count?.quizzes || 0} {pluralize(cat._count?.quizzes || 0, 'квиз', 'квиза', 'квизов')}
-                  </p>
-                </div>
-                <div>
-                  {cat.iconUrl ? (
-                    <img src={cat.iconUrl} alt={cat.name} className="w-10 h-10 rounded-full object-contain" />
-                  ) : (
-                    <div className="w-10 h-10 rounded-full bg-(--loom-cyan)/20 flex items-center justify-center text-(--loom-cyan) font-bold">
-                      {cat.name[0]}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <EmptyState
-            title="Нет доступных категорий"
-            description="Создайте первую категорию в админке."
-          />
-        )}
-      </div>
+  {isCategoriesLoading ? (
+    <div className="space-y-3">
+      {[1, 2, 3, 4].map((i) => (
+        <div key={i} className="h-16 bg-(--loom-white)/5 rounded-xl animate-pulse" />
+      ))}
+    </div>
+  ) : categories && categories.length > 0 ? (
+    <div className="space-y-3 relative overflow-hidden">
+      {/* Глитч-полоска (более выразительная) */}
+      {/* <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute left-0 right-0 mx-auto w-[82%] h-0.75 glitch-scanline-gradient opacity-80 blur-[1px] animate-scanline" />
+      </div> */}
+
+      {/* Карточки */}
+      {categories.slice(0, 4).map((cat: any) => (
+  <div
+    key={cat.id}
+    onClick={() => router.push(`/catalog?category=${cat.id}`)}
+    className="bg-(--loom-white)/5 rounded-2xl p-5 cursor-pointer flex justify-between items-center relative glitch-border hover:bg-(--loom-white)/10 transition-colors overflow-hidden"
+  >
+    {/* Индивидуальная полоска для каждой карточки */}
+    <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute left-0 right-0 mx-auto w-full h-0.75 glitch-scanline-gradient opacity-50 blur-[1px] animate-scanline" />
+    </div>
+
+    <div>
+      <h3 className="font-bold text-lg text-(--loom-magenta)">{cat.name}</h3>
+      <p className="text-sm text-(--loom-white)/60">
+        {cat._count?.quizzes || 0} {pluralize(cat._count?.quizzes || 0, 'квиз', 'квиза', 'квизов')}
+      </p>
+    </div>
+    <div>
+      {cat.iconUrl ? (
+        <img src={cat.iconUrl} alt={cat.name} className="w-10 h-10 rounded-full object-contain" />
+      ) : (
+        <div className="w-10 h-10 rounded-full bg-(--loom-cyan)/20 flex items-center justify-center text-(--loom-cyan) font-bold">
+          {cat.name[0]}
+        </div>
+      )}
+    </div>
+  </div>
+))}
+    </div>
+  ) : (
+    <EmptyState
+      title="Нет доступных категорий"
+      description="Создайте первую категорию в админке."
+    />
+  )}
+</div>
 
       {/* Модалка */}
       <Modal

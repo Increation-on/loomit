@@ -3,17 +3,20 @@
 import { useGetCategoriesQuery } from '@/store/api/categoryApi';
 import { cn } from '@/lib/utils';
 import { Button } from './Button';
+import { Skeleton } from '../feedback/Skeleton';
 
 interface FiltersProps {
   // Категории
   categoryFilter: string;
   setCategoryFilter: (value: string) => void;
-  
+  disableAllOption?: boolean; // убираем «Все» для категорий
+
   // Уровни
-  levelFilter: string;
-  setLevelFilter: (value: 'all' | 'JUNIOR' | 'MIDDLE' | 'SENIOR') => void;
-  
-  // Сортировка (опционально)
+  levelFilter?: string;
+  setLevelFilter?: (value: any) => void;
+  includeLevelAll?: boolean; // ✅ добавляем «Все» для уровней
+
+  // Сортировка
   sortBy?: string;
   setSortBy?: (value: string) => void;
   showSort?: boolean;
@@ -24,21 +27,16 @@ interface FiltersProps {
 export function Filters({
   categoryFilter,
   setCategoryFilter,
+  disableAllOption = false,
   levelFilter,
   setLevelFilter,
+  includeLevelAll = true, // по умолчанию «Все» есть
   sortBy,
   setSortBy,
   showSort = true,
   className,
 }: FiltersProps) {
   const { data: categories, isLoading } = useGetCategoriesQuery({});
-
-  const levelOptions = [
-  { value: 'all', label: 'Все' },
-  { value: 'JUNIOR', label: 'Junior' },
-  { value: 'MIDDLE', label: 'Middle' },
-  { value: 'SENIOR', label: 'Senior' },
-] as const;
 
   const sortOptions = [
     { value: 'popular', label: 'Популярные' },
@@ -47,20 +45,27 @@ export function Filters({
   ];
 
   const categoryOptions = [
-    { value: 'all', label: 'Все' },
+    ...(!disableAllOption ? [{ value: 'all', label: 'Все' }] : []),
     ...(categories?.map((cat: any) => ({ value: cat.id, label: cat.name })) || []),
+  ];
+
+  const levelOptions = [
+    ...(includeLevelAll ? [{ value: 'all', label: 'Все' }] : []),
+    { value: 'JUNIOR', label: 'Junior' },
+    { value: 'MIDDLE', label: 'Middle' },
+    { value: 'SENIOR', label: 'Senior' },
   ];
 
   return (
     <div className={cn('space-y-4', className)}>
       {/* Категории */}
       <div>
-        <span className="text-sm text-(--loom-white)/60 block mb-2">Категории</span>
+        <span className="text-sm text-(--loom-white)/60 block mb-2">Категория</span>
         <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
           {isLoading ? (
             <>
               {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="h-7 w-16 bg-(--loom-white)/5 rounded-full animate-pulse shrink-0" />
+                <Skeleton key={i} className="h-7 w-20 rounded-full shrink-0" />
               ))}
             </>
           ) : (
@@ -82,29 +87,31 @@ export function Filters({
         </div>
       </div>
 
-      {/* Уровни */}
-      <div>
-        <span className="text-sm text-(--loom-white)/60 block mb-2">Уровень</span>
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-          {levelOptions.map((option) => (
-            <button
-              key={option.value}
-              onClick={() => setLevelFilter(option.value)}
-              className={cn(
-                'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
-                levelFilter === option.value
-                  ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
-                  : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
-              )}
-            >
-              {option.label}
-            </button>
-          ))}
+      {/* Уровни (только если передан levelFilter) */}
+      {levelFilter !== undefined && setLevelFilter !== undefined && (
+        <div>
+          <span className="text-sm text-(--loom-white)/60 block mb-2">Уровень</span>
+          <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+            {levelOptions.map((option) => (
+              <button
+                key={option.value}
+                onClick={() => setLevelFilter(option.value)}
+                className={cn(
+                  'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
+                  levelFilter === option.value
+                    ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
+                    : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
+                )}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Сортировка (только если showSort = true) */}
-      {showSort && sortBy && setSortBy && (
+      {showSort && sortBy !== undefined && setSortBy !== undefined && (
         <div>
           <span className="text-sm text-(--loom-white)/60 block mb-2">Сортировка</span>
           <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">

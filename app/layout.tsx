@@ -20,6 +20,10 @@ const inter = Inter({
 
 export const viewport: Viewport = {
   themeColor: "#0f0f23",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export const metadata: Metadata = {
@@ -47,6 +51,7 @@ export default async function RootLayout({
       lang="ru"
       className={`${spaceGrotesk.variable} ${inter.variable} h-full antialiased`}
       suppressHydrationWarning
+      data-scroll-behavior="smooth"
     >
       <body className="min-h-full flex flex-col">
         <Providers session={session}>

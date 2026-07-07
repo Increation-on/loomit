@@ -3,6 +3,7 @@ import { authOptions } from 'app/api/auth/[...nextauth]/route';
 import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/prisma';
 import { adminQuizCreateSchema } from '@/lib/validators/quiz';
+import z from 'zod';
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -25,22 +26,30 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json();
+  
+  // ✅ Сначала валидируем
   const validated = adminQuizCreateSchema.safeParse(body);
-
   if (!validated.success) {
     return NextResponse.json(
-      { error: validated.error.format() },
+      { error: z.treeifyError(validated.error) },
       { status: 400 }
     );
   }
 
-  const { title, description, questions } = validated.data;
+  const { title, description, categoryId, level, questions } = validated.data;
+
+  // ✅ Проверяем наличие категории
+  if (!categoryId) {
+    return NextResponse.json({ error: 'Category is required' }, { status: 400 });
+  }
 
   const quiz = await prisma.quiz.create({
     data: {
       id: crypto.randomUUID(),
       title,
       description: description || '',
+      category_id: categoryId, // ✅ записываем в базу
+      level,
       updated_at: new Date(),
       questions: {
         create: questions.map((q, index) => ({

@@ -132,12 +132,41 @@ h1, h2, h3, .font-display {
 }
 
 
+
+/* Глитч-полоска с двумя цветами */
+.glitch-scanline-gradient {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--loom-cyan) 30%,
+    var(--glitch-pink) 40%,
+    var(--loom-yellow) 30%,
+    transparent 100%
+  );
+}
+
 @keyframes shimmer {
   100% {
     transform: translateX(100%);
   }
 }
 
+/* Глитч-полоска (медленная, с паузой) */
+@keyframes scanline {
+  0% {
+    top: -10%;
+  }
+  25% {
+    top: 110%;
+  }
+  100% {
+    top: 110%;
+  }
+}
+
+.animate-scanline {
+  animation: scanline 3s linear infinite;
+}
 
 
 
@@ -152,19 +181,36 @@ h1, h2, h3, .font-display {
 
 
 
-/* браузерные артефакты на мобилке */
+/* Браузерные артефакты на мобилке — нативный режим */
 * {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 html {
   -webkit-text-size-adjust: 100%;
   touch-action: manipulation;
   background-color: var(--loom-black);
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
-input, textarea, button {
-  user-select: none;
-  -webkit-user-select: none;
+/* Запрет перетаскивания картинок */
+img {
+  -webkit-user-drag: none;
+}
+
+/* Разрешаем выделение только в инпутах */
+input, textarea, select {
+  user-select: text;
+  -webkit-user-select: text;
+  font-size: 16px !important;
+}
+
+/* Дополнительная защита для iOS */
+a, button {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
 }

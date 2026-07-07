@@ -15,38 +15,35 @@ export default function CatalogPage() {
   const searchParams = useSearchParams();
   const categoryFromUrl = searchParams.get('category');
   const { data: quizzes, isLoading: quizzesLoading } = useGetQuizzesQuery({});
-  const { data: categories } = useGetCategoriesQuery({});
+
 
   const [searchQuery, setSearchQuery] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [sortBy, setSortBy] = useState('popular');
 
+  const [attemptStatuses, setAttemptStatuses] = useState<Record<string, any>>({});
+
   // Фильтры
   const [categoryFilter, setCategoryFilter] = useState(categoryFromUrl || 'all');
   const [levelFilter, setLevelFilter] = useState('all');
 
-  // Опции для фильтров
-  const categoryOptions = [
-    { value: 'all', label: 'Все' },
-    ...(categories?.map((cat: any) => ({ value: cat.id, label: cat.name })) || []),
-  ];
-
-  // Выпадающий поиск
   useEffect(() => {
-    if (!quizzes || searchQuery.length < 1) {
-      setSuggestions([]);
-      setIsDropdownOpen(false);
-      return;
-    }
-    const filtered = quizzes
-      .filter((q: any) =>
-        q.title.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-      .slice(0, 5);
-    setSuggestions(filtered);
-    setIsDropdownOpen(true);
-  }, [searchQuery, quizzes]);
+    if (!quizzes?.length) return;
+
+    const fetchStatuses = async () => {
+      const quizIds = quizzes.map((q: any) => q.id);
+      const res = await fetch('/api/quizzes/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ quizIds }),
+      });
+      const data = await res.json();
+      setAttemptStatuses(data);
+    };
+
+    fetchStatuses();
+  }, [quizzes]);
 
   // Фильтрация
   const filteredQuizzes = useMemo(() => {
@@ -131,57 +128,76 @@ export default function CatalogPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-          {sortedQuizzes.map((quiz: any) => (
-            <Card
-              key={quiz.id}
-              className="cursor-pointer hover:scale-[1.01] transition-transform duration-200"
-              onClick={() => router.push(`/quiz/${quiz.id}`)}
-            >
-              <CardHeader className="p-0 pb-2">
-                <CardTitle className="text-lg">{quiz.title}</CardTitle>
-              </CardHeader>
-              <CardContent className="p-0 flex flex-col gap-1 relative">
-                <div className="flex justify-between items-center text-sm text-(--loom-white)/60">
-                  <span>
-                    {quiz._count?.questions || 0} {pluralize(quiz._count?.questions || 0, 'вопрос', 'вопроса', 'вопросов')}
-                  </span>
-                  <div className="flex flex-col items-end relative">
-                    <div className="absolute -top-9 right-0">
-                      {quiz.category?.iconUrl ? (
-                        <img
-                          src={quiz.category.iconUrl}
-                          alt={quiz.category.name}
-                          className="w-7 h-7 rounded-full object-contain"
-                        />
-                      ) : (
-                        <div className="w-7 h-7 rounded-full bg-(--loom-cyan)/20 flex items-center justify-center text-s text-(--loom-cyan) font-bold">
-                          {quiz.category?.name?.[0] || '?'}
-                        </div>
-                      )}
-                    </div>
-                    <span className="text-(--loom-magenta) text-l font-medium">
-                      {quiz.category?.name || 'Без категории'}
+          {sortedQuizzes.map((quiz: any) => {
+            const lastAttempt = attemptStatuses[quiz.id];
+            return (
+              <Card
+                key={quiz.id}
+                className="cursor-pointer hover:scale-[1.01] transition-transform duration-200"
+                onClick={() => router.push(`/quiz/${quiz.id}`)}
+              >
+                <CardHeader className="p-0 pb-2">
+                  <CardTitle className="text-lg">{quiz.title}</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0 flex flex-col gap-1 relative">
+                  <div className="flex justify-between items-center text-sm text-(--loom-white)/60">
+                    <span>
+                      {quiz._count?.questions || 0} {pluralize(quiz._count?.questions || 0, 'вопрос', 'вопроса', 'вопросов')}
                     </span>
+                    <div className="flex flex-col items-end relative">
+                      <div className="absolute -top-9 right-0">
+                        {quiz.category?.iconUrl ? (
+                          <img
+                            src={quiz.category.iconUrl}
+                            alt={quiz.category.name}
+                            className="w-7 h-7 rounded-full object-contain"
+                          />
+                        ) : (
+                          <div className="w-7 h-7 rounded-full bg-(--loom-cyan)/20 flex items-center justify-center text-s text-(--loom-cyan) font-bold">
+                            {quiz.category?.name?.[0] || '?'}
+                          </div>
+                        )}
+                      </div>
+                      <span className="text-(--loom-magenta) text-l font-medium">
+                        {quiz.category?.name || 'Без категории'}
+                      </span>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-2 text-xs">
-                  <span className="text-(--loom-white)/40">
-                    {quiz.level ? quiz.level.charAt(0) + quiz.level.slice(1).toLowerCase() : 'Любой'}
-                  </span>
-                  {quiz.level && (
-                    <span
-                      className={cn(
-                        'w-1.5 h-1.5 rounded-full',
-                        quiz.level === 'JUNIOR' && 'bg-(--loom-cyan)',
-                        quiz.level === 'MIDDLE' && 'bg-(--loom-yellow)',
-                        quiz.level === 'SENIOR' && 'bg-(--glitch-pink)'
-                      )}
-                    />
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+
+                  {/* Статус + уровень */}
+                  <div className="flex items-center gap-2 text-xs">
+                    {lastAttempt && (
+                      <>
+                        <span
+                          className={cn(
+                            'font-semibold',
+                            lastAttempt.score === lastAttempt.totalQuestions && 'text-(--loom-cyan)',
+                            lastAttempt.score < lastAttempt.totalQuestions && 'text-(--loom-yellow)'
+                          )}
+                        >
+                          {lastAttempt.score}/{lastAttempt.totalQuestions}
+                        </span>
+                        <span className="text-(--loom-white)/30">•</span>
+                      </>
+                    )}
+                    <span className="text-(--loom-white)/40">
+                      {quiz.level ? quiz.level.charAt(0) + quiz.level.slice(1).toLowerCase() : 'Любой'}
+                    </span>
+                    {quiz.level && (
+                      <span
+                        className={cn(
+                          'w-1.5 h-1.5 rounded-full',
+                          quiz.level === 'JUNIOR' && 'bg-(--loom-cyan)',
+                          quiz.level === 'MIDDLE' && 'bg-(--loom-yellow)',
+                          quiz.level === 'SENIOR' && 'bg-(--glitch-pink)'
+                        )}
+                      />
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
     </div>

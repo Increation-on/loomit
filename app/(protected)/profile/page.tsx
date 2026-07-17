@@ -55,11 +55,7 @@ export default function ProfilePage() {
       <div>
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-(--loom-white)">Последние попытки</h2>
-          <Link href="/profile/history" className="text-(--loom-yellow) text-sm hover:text-(--loom-yellow) active:scale-[0.98]">
-            Вся история
-          </Link>
         </div>
-
         {attemptsLoading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
@@ -94,6 +90,14 @@ export default function ProfilePage() {
             ))}
           </div>
         )}
+        <div className="mt-4 flex justify-end">
+          <Link
+            href="/profile/history"
+            className="text-(--loom-yellow) text-sm hover:text-(--loom-yellow) active:scale-[0.98] transition-all duration-100"
+          >
+            Вся история
+          </Link>
+        </div>
       </div>
 
 

@@ -7,7 +7,8 @@ import { store, persistor } from '@/store/store';
 import { ToastContainer } from '@/components/ui/feedback/ToastContainer';
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { useTheme } from '@/hooks/useTheme'; // ← ДОБАВИЛИ
+import { useTheme } from '@/hooks/useTheme';
+import { usePWA } from '@/hooks/usePWA'; // ← НОВЫЙ ИМПОРТ
 
 import { Session } from 'next-auth';
 
@@ -19,9 +20,19 @@ export function Providers({
   session: Session | null;
 }) {
   const pathname = usePathname();
-  const { mounted } = useTheme(); // ← ДОБАВИЛИ
+  const { mounted } = useTheme();
+  const isPWA = usePWA();
 
-  // Твой MutationObserver для статус-бара
+  // PWA-класс на <html>
+  useEffect(() => {
+    if (isPWA) {
+      document.documentElement.classList.add('pwa-mode');
+    } else {
+      document.documentElement.classList.remove('pwa-mode');
+    }
+  }, [isPWA]);
+
+  // MutationObserver для статус-бара
   useEffect(() => {
     const updateMeta = () => {
       const isDark = document.documentElement.classList.contains('dark');
@@ -41,12 +52,10 @@ export function Providers({
     return () => observer.disconnect();
   }, [pathname]);
 
-  // ЕСЛИ ТЕМА ЕЩЁ НЕ ЗАГРУЗИЛАСЬ — ПОКАЗЫВАЕМ ЗАГЛУШКУ
   if (!mounted) {
     return <div className="h-screen bg-(--loom-black)" />;
   }
 
-  // ЕСЛИ ЗАГРУЗИЛАСЬ — РЕНДЕРИМ ВСЁ ПРИЛОЖЕНИЕ
   return (
     <SessionProvider session={session}>
       <ReduxProvider store={store}>

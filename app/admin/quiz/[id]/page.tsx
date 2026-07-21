@@ -10,6 +10,7 @@ import { Trash2, Plus, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Filters } from '@/components/ui/core/Filters';
 import { useUpdateQuizMutation } from '@/store/api/quizApi';
+import { Skeleton } from '@/components/ui/feedback/Skeleton';
 
 interface Option {
   id: string;
@@ -38,7 +39,6 @@ export default function EditQuizPage() {
 
   const [updateQuiz, { isLoading: isUpdating }] = useUpdateQuizMutation();
 
-  // Загрузка квиза
   useEffect(() => {
     const loadQuiz = async () => {
       try {
@@ -138,8 +138,21 @@ export default function EditQuizPage() {
 
   if (loading) {
     return (
-      <div className="p-4 max-w-2xl mx-auto">
-        <div className="h-40 bg-(--loom-white)/5 rounded-xl animate-pulse" />
+      <div className="p-4 max-w-2xl mx-auto pb-24">
+        <Skeleton className="h-10 w-64 mb-6" />
+        <div className="space-y-4">
+          <Skeleton className="h-12 w-full rounded-xl" />
+          <Skeleton className="h-32 w-full rounded-xl" />
+          <div className="flex gap-3">
+            <Skeleton className="h-10 w-40 rounded-full" />
+            <Skeleton className="h-10 w-32 rounded-full" />
+          </div>
+          <div className="space-y-6 mt-6">
+            {[1, 2, 3].map((i) => (
+              <Skeleton key={i} className="h-48 w-full rounded-xl" />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
@@ -148,7 +161,6 @@ export default function EditQuizPage() {
     <div className="p-4 max-w-2xl mx-auto pb-24">
       <h1 className="text-2xl font-bold text-(--loom-white) mb-6">Редактирование квиза</h1>
 
-      {/* Основная информация */}
       <div className="space-y-4 mb-6">
         <label className="text-xl font-medium text-(--loom-white)/80 mb-2 block">Название</label>
         <Input
@@ -178,7 +190,6 @@ export default function EditQuizPage() {
         />
       </div>
 
-      {/* Список вопросов */}
       <div className="space-y-4 mb-6">
         {questions.map((q, qi) => (
           <Card key={q.id} className="p-4">
@@ -237,7 +248,6 @@ export default function EditQuizPage() {
                 </div>
               ))}
 
-              {/* Кнопка добавления варианта */}
               <div className="pt-2">
                 <Button
                   variant="secondary"
@@ -256,7 +266,6 @@ export default function EditQuizPage() {
         ))}
       </div>
 
-      {/* Кнопка добавления вопроса */}
       <div className="flex gap-3 mb-20">
         <Button variant="secondary" onClick={addQuestion}>
           <Plus size={16} className="mr-2" />
@@ -264,7 +273,6 @@ export default function EditQuizPage() {
         </Button>
       </div>
 
-      {/* Нижняя панель */}
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-(--loom-black)/90 backdrop-blur-sm border-t border-(--loom-white)/10 flex gap-3 justify-end">
         <Button variant="ghost" onClick={() => router.back()}>
           Отмена

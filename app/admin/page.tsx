@@ -10,7 +10,7 @@ import { useToast } from '@/components/ui/feedback/ToastContainer';
 import { Plus, Pencil, Eye, Trash2 } from 'lucide-react';
 import { cn, pluralize } from '@/lib/utils';
 import { Filters } from '@/components/ui/core/Filters';
-
+import { Skeleton, AdminQuizRowSkeleton } from '@/components/ui/feedback/Skeleton';
 
 export default function AdminDashboard() {
   const { data: quizzes, isLoading, refetch } = useGetQuizzesQuery({}, {
@@ -20,11 +20,9 @@ export default function AdminDashboard() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const { success, error: showError } = useToast();
 
-  // Фильтры и сортировка для админки
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [levelFilter, setLevelFilter] = useState('all');
   const [sortBy, setSortBy] = useState('newest');
-
 
   const handleDelete = async () => {
     if (!deleteId) return;
@@ -40,7 +38,6 @@ export default function AdminDashboard() {
     }
   };
 
-  // Фильтрация
   const filteredQuizzes = useMemo(() => {
     if (!quizzes) return [];
     return quizzes.filter((quiz: any) => {
@@ -50,7 +47,6 @@ export default function AdminDashboard() {
     });
   }, [quizzes, categoryFilter, levelFilter]);
 
-  // Сортировка
   const sortedQuizzes = useMemo(() => {
     const sorted = [...filteredQuizzes];
     switch (sortBy) {
@@ -67,10 +63,17 @@ export default function AdminDashboard() {
 
   if (isLoading) {
     return (
-      <div className="p-4 max-w-4xl mx-auto">
+      <div className="p-4 max-w-4xl mx-auto pb-24">
+        <div className="flex justify-between items-center mb-6">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-10 w-36 rounded-full" />
+        </div>
+        <div className="mb-4">
+          <Skeleton className="h-8 w-48 rounded-full" />
+        </div>
         <div className="space-y-3">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-20 bg-(--loom-white)/5 rounded-xl animate-pulse" />
+          {[1, 2, 3, 4, 5].map((i) => (
+            <AdminQuizRowSkeleton key={i} />
           ))}
         </div>
       </div>
@@ -105,7 +108,7 @@ export default function AdminDashboard() {
         sortBy={sortBy}
         setSortBy={setSortBy}
       />
-      {/* СПИСОК КВИЗОВ */}
+
       {sortedQuizzes.length === 0 ? (
         <div className="text-center py-16 text-(--loom-white)/60 mt-3">
           <p>Нет квизов по выбранным фильтрам</p>

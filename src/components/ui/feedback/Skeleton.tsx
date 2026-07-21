@@ -97,3 +97,25 @@ export function CatalogCardSkeleton() {
     </div>
   );
 }
+
+export function AdminQuizRowSkeleton() {
+  return (
+    <div className="p-4 bg-(--loom-white)/5 rounded-xl glitch-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="flex-1 space-y-2">
+        <Skeleton className="h-6 w-3/4" />
+        <div className="flex gap-2">
+          <Skeleton className="h-4 w-12" />
+          <Skeleton className="h-4 w-4" />
+          <Skeleton className="h-4 w-20" />
+          <Skeleton className="h-4 w-4" />
+          <Skeleton className="h-4 w-16" />
+        </div>
+      </div>
+      <div className="flex gap-2">
+        <Skeleton className="h-8 w-20 rounded-full" />
+        <Skeleton className="h-8 w-16 rounded-full" />
+        <Skeleton className="h-8 w-20 rounded-full" />
+      </div>
+    </div>
+  );
+}

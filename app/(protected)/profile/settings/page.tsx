@@ -2,8 +2,7 @@
 
 import { useTheme } from '@/hooks/useTheme';
 import Link from 'next/link';
-import { signOut } from 'next-auth/react';
-import { ArrowLeft, Bell, Sun, Moon, LogOut } from 'lucide-react';
+import { ArrowLeft, Bell, Sun, Moon } from 'lucide-react';
 
 export default function SettingsPage() {
   const { theme, toggleTheme } = useTheme();
@@ -12,29 +11,36 @@ export default function SettingsPage() {
     <div className="p-6 max-w-2xl mx-auto space-y-6 pb-24">
       {/* Хедер страницы */}
       <div className="flex items-center gap-3">
-        <Link href="/profile" className="p-2 rounded-full hover:bg-loom-dark-secondary transition">
-          <ArrowLeft size={24} />
+        <Link
+          href="/profile"
+          className="p-2 rounded-xl bg-(--loom-white)/5 glitch-border hover:bg-(--loom-white)/10 active:scale-[0.98] transition-all duration-100"
+        >
+          <ArrowLeft size={24} className="text-(--loom-white)" />
         </Link>
-        <h1 className="text-2xl font-bold text-loom-white">Настройки</h1>
+        <h1 className="text-2xl font-bold text-(--loom-white)">Настройки</h1>
       </div>
 
       {/* Тема */}
-      <div className="bg-loom-dark-secondary rounded-lg p-4">
-        <h2 className="text-lg font-semibold text-loom-white mb-3">Тема</h2>
-        <div className="flex items-center justify-between pt-2 rounded-lg bg-loom-black/50">
-          {/* Иконка слева (меняется) */}
-          <div className="flex items-center gap-2">
+      <div className="bg-(--loom-white)/5 rounded-2xl p-5 glitch-border relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute left-0 right-0 mx-auto w-full h-0.75 glitch-scanline-gradient opacity-50 blur-[1px] animate-scanline" />
+        </div>
+
+        <div className="flex items-center justify-between relative z-10">
+          <div className="flex items-center gap-3">
             {theme === 'dark' ? (
-              <Moon size={20} className="text-loom-cyan" />
+              <Moon size={20} className="text-(--loom-cyan)" />
             ) : (
-              <Sun size={20} className="text-loom-yellow" />
+              <Sun size={20} className="text-(--loom-yellow)" />
             )}
-            <span className="text-sm text-loom-white/60">
-              {theme === 'dark' ? 'Тёмная' : 'Светлая'}
-            </span>
+            <div>
+              <span className="text-(--loom-white) font-medium">Тема</span>
+              <p className="text-sm text-(--loom-white)/60">
+                {theme === 'dark' ? 'Тёмная' : 'Светлая'}
+              </p>
+            </div>
           </div>
 
-          {/* Toggle Switch справа */}
           <label className="relative inline-flex items-center cursor-pointer">
             <input
               type="checkbox"
@@ -42,38 +48,30 @@ export default function SettingsPage() {
               onChange={toggleTheme}
               className="sr-only peer"
             />
-            <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-loom-purple"></div>
+            <div className="w-11 h-6 bg-(--loom-white)/10 rounded-full peer peer-checked:bg-(--loom-cyan) transition-colors duration-200 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-(--loom-white) after:rounded-full after:h-5 after:w-5 after:transition-all after:duration-200 peer-checked:after:translate-x-5" />
           </label>
         </div>
       </div>
 
       {/* Уведомления (заглушка) */}
-      <div className="bg-loom-dark-secondary rounded-lg p-4">
-        <h2 className="text-lg font-semibold text-loom-white mb-3">Уведомления</h2>
-        <div className="flex items-center justify-between pt-2 rounded-lg bg-loom-black/50">
-          <div className="flex items-center gap-2">
-            <Bell size={20} className="text-loom-white/60" />
-            <span className="text-loom-white">Push-уведомления</span>
+      <div className="bg-(--loom-white)/5 rounded-2xl p-5 glitch-border relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute left-0 right-0 mx-auto w-full h-0.75 glitch-scanline-gradient opacity-50 blur-[1px] animate-scanline" />
+        </div>
+
+        <div className="flex items-center justify-between relative z-10">
+          <div className="flex items-center gap-3">
+            <Bell size={20} className="text-(--loom-white)/60" />
+            <div>
+              <span className="text-(--loom-white) font-medium">Push-уведомления</span>
+              <p className="text-sm text-(--loom-white)/40">Скоро появится</p>
+            </div>
           </div>
-          <div className="w-12 h-6 bg-gray-600 rounded-full relative cursor-pointer">
-            <div className="w-4 h-4 bg-white rounded-full absolute top-1 left-1 transition"></div>
+
+          <div className="w-11 h-6 bg-(--loom-white)/10 rounded-full opacity-50 cursor-not-allowed relative">
+            <div className="absolute top-0.5 left-0.5 w-5 h-5 bg-(--loom-white)/30 rounded-full" />
           </div>
         </div>
-        <p className="text-xs text-loom-white/40 mt-2">Скоро появится возможность включать уведомления</p>
-      </div>
-
-      {/* Выход */}
-      <div className="pt-4 border-t border-loom-white/10">
-        <button
-          onClick={() => signOut({ callbackUrl: '/' })}
-          className="w-full flex items-center justify-between p-4 bg-loom-dark-secondary rounded-lg hover:bg-red-900/20 transition-colors"
-        >
-          <div className="flex items-center gap-3">
-            <LogOut className="text-red-400" size={20} />
-            <span className="text-red-400 font-medium">Выход</span>
-          </div>
-          <span className="text-red-400/60 text-sm">→</span>
-        </button>
       </div>
     </div>
   );

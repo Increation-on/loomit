@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useGetAttemptByIdQuery } from '@/store/api/profileApi';
 import { Check, X, ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/feedback/Skeleton';
 
 export default function AttemptDetailPage() {
   const params = useParams();
@@ -14,11 +15,12 @@ export default function AttemptDetailPage() {
   if (isLoading) {
     return (
       <div className="p-6 max-w-2xl mx-auto space-y-6">
-        <div className="h-8 w-3/4 bg-(--loom-white)/5 rounded-xl animate-pulse" />
-        <div className="h-4 w-1/2 bg-(--loom-white)/5 rounded-xl animate-pulse" />
+        <Skeleton className="h-6 w-32" />
+        <Skeleton className="h-10 w-3/4" />
+        <Skeleton className="h-4 w-1/2" />
         <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-24 bg-(--loom-white)/5 rounded-xl animate-pulse" />
+          {[1, 2, 3, 4, 5].map((i) => (
+            <Skeleton key={i} className="h-24 w-full rounded-xl" />
           ))}
         </div>
       </div>
@@ -37,7 +39,6 @@ export default function AttemptDetailPage() {
 
   return (
     <div className="p-6 max-w-2xl mx-auto pb-24 space-y-8">
-      {/* Кнопка назад */}
       <Link
         href="/profile/history"
         className="flex items-center gap-2 text-(--loom-white)/60 hover:text-(--loom-white) transition-colors text-sm"
@@ -46,7 +47,6 @@ export default function AttemptDetailPage() {
         Назад к истории
       </Link>
 
-      {/* Заголовок и результат */}
       <div>
         <h1 className="text-2xl font-bold text-(--loom-white) mb-2">{attempt.quizTitle}</h1>
         <div className="flex flex-wrap gap-4 text-(--loom-white)/60">
@@ -54,29 +54,24 @@ export default function AttemptDetailPage() {
             Результат: <span className="text-(--loom-yellow) font-semibold">{attempt.score}/{attempt.totalQuestions}</span>
           </span>
           <span>•</span>
-          <span>
-            {scorePercent}%
-          </span>
+          <span>{scorePercent}%</span>
           <span>•</span>
           <span>{new Date(attempt.createdAt).toLocaleDateString('ru')}</span>
         </div>
       </div>
 
-      {/* Список ответов */}
       <div className="space-y-4">
         {attempt.answers?.map((a: any, i: number) => {
           const isCorrect = a.isCorrect ?? false;
-          const question = a; // ✅ берём из самого ответа
+          const question = a;
 
           const getSelectedText = (a: any, question: any) => {
             const selectedId = a.selectedOptionId || a.selected_option_id;
             const options = question?.options || [];
 
-            // Ищем по ID
             const found = options.find((o: any) => o.id === selectedId);
             if (found) return found.text;
 
-            // Если это массив строк, берём по индексу
             if (typeof options[0] === 'string') {
               const index = parseInt(selectedId) - 1;
               if (index >= 0 && index < options.length) {
@@ -93,11 +88,9 @@ export default function AttemptDetailPage() {
 
             const options = question?.options || [];
 
-            // Если options — массив объектов { id, text }
             const found = options.find((o: any) => String(o.id) === String(correctId));
             if (found) return found.text;
 
-            // Если options — массив строк (старый формат), берём по индексу
             if (typeof options[0] === 'string') {
               const index = parseInt(correctId as string) - 1;
               if (index >= 0 && index < options.length) {
@@ -105,7 +98,6 @@ export default function AttemptDetailPage() {
               }
             }
 
-            // Если ничего не нашли — возвращаем ID как есть
             return correctId;
           };
 

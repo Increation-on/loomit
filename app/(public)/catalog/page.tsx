@@ -9,13 +9,13 @@ import { cn, pluralize } from '@/lib/utils';
 import { Filters } from '@/components/ui/core/Filters';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { SearchWithDropdown } from '@/components/ui/core/SearchWithDropDown';
+import { Skeleton, CatalogCardSkeleton } from '@/components/ui/feedback/Skeleton';
 
 export default function CatalogPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const categoryFromUrl = searchParams.get('category');
   const { data: quizzes, isLoading: quizzesLoading } = useGetQuizzesQuery({});
-
 
   const [searchQuery, setSearchQuery] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -24,7 +24,6 @@ export default function CatalogPage() {
 
   const [attemptStatuses, setAttemptStatuses] = useState<Record<string, any>>({});
 
-  // Фильтры
   const [categoryFilter, setCategoryFilter] = useState(categoryFromUrl || 'all');
   const [levelFilter, setLevelFilter] = useState('all');
 
@@ -45,7 +44,6 @@ export default function CatalogPage() {
     fetchStatuses();
   }, [quizzes]);
 
-  // Фильтрация
   const filteredQuizzes = useMemo(() => {
     if (!quizzes) return [];
     return quizzes.filter((quiz: any) => {
@@ -55,7 +53,6 @@ export default function CatalogPage() {
     });
   }, [quizzes, categoryFilter, levelFilter]);
 
-  // Сортировка
   const sortedQuizzes = useMemo(() => {
     const sorted = [...filteredQuizzes];
     switch (sortBy) {
@@ -74,9 +71,22 @@ export default function CatalogPage() {
     return (
       <div className="min-h-screen bg-(--loom-black) text-(--loom-white) pb-24 px-4 pt-6">
         <h1 className="text-2xl font-bold mb-6">Каталог квизов</h1>
+
+        {/* Скелетон для поиска */}
+        <div className="mb-6">
+          <Skeleton className="h-12 w-full rounded-xl" />
+        </div>
+
+        {/* Скелетоны для фильтров */}
+        <div className="space-y-3 mb-6">
+          <Skeleton className="h-10 w-48 rounded-full" />
+          <Skeleton className="h-10 w-36 rounded-full" />
+          <Skeleton className="h-10 w-28 rounded-full" />
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-32 bg-(--loom-white)/5 rounded-xl animate-pulse" />
+            <CatalogCardSkeleton key={i} />
           ))}
         </div>
       </div>
@@ -87,7 +97,6 @@ export default function CatalogPage() {
     <div className="min-h-screen bg-(--loom-black) text-(--loom-white) pb-24 px-4 pt-6">
       <h1 className="text-2xl font-bold mb-6">Каталог квизов</h1>
 
-      {/* ПОИСК */}
       <div className="relative mb-6">
         <SearchWithDropdown items={quizzes || []} placeholder="Поиск квизов..." />
 
@@ -120,7 +129,6 @@ export default function CatalogPage() {
         setSortBy={setSortBy}
       />
 
-      {/* СЕТКА КАРТОЧЕК */}
       {sortedQuizzes.length === 0 ? (
         <div className="text-center py-16 text-(--loom-white)/60">
           <p>Ничего не найдено 😕</p>
@@ -164,7 +172,6 @@ export default function CatalogPage() {
                     </div>
                   </div>
 
-                  {/* Статус + уровень */}
                   <div className="flex items-center gap-2 text-xs">
                     {lastAttempt && (
                       <>

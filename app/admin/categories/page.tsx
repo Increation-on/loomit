@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/core/Card';
 import { Trash2, Plus, Pencil, Upload, X } from 'lucide-react';
 import { useToast } from '@/components/ui/feedback/ToastContainer';
 import { Modal } from '@/components/ui/feedback/Modal';
+import { Skeleton } from '@/components/ui/feedback/Skeleton';
 import { cn } from '@/lib/utils';
 
 export default function CategoriesPage() {
@@ -14,14 +15,12 @@ export default function CategoriesPage() {
   const [loading, setLoading] = useState(true);
   const { success, error: showError } = useToast();
 
-  // Состояния для создания
   const [newCategoryName, setNewCategoryName] = useState('');
   const [iconFile, setIconFile] = useState<File | null>(null);
   const [iconPreview, setIconPreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
 
-  // Состояния для редактирования
   const [editingCategory, setEditingCategory] = useState<any | null>(null);
   const [editName, setEditName] = useState('');
   const [editIconFile, setEditIconFile] = useState<File | null>(null);
@@ -30,7 +29,6 @@ export default function CategoriesPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  // Состояния для удаления
   const [deleteCategoryId, setDeleteCategoryId] = useState<string | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
@@ -200,8 +198,21 @@ export default function CategoriesPage() {
 
   if (loading) {
     return (
-      <div className="p-4 max-w-2xl mx-auto">
-        <div className="h-40 bg-(--loom-white)/5 rounded-xl animate-pulse" />
+      <div className="p-4 max-w-2xl mx-auto pb-24">
+        <Skeleton className="h-10 w-64 mb-6" />
+        <div className="flex gap-3 mb-4">
+          <Skeleton className="h-10 flex-1 rounded-xl" />
+          <Skeleton className="h-10 w-32 rounded-full" />
+        </div>
+        <div className="flex items-center gap-4 mb-6">
+          <Skeleton className="h-12 w-12 rounded-lg" />
+          <Skeleton className="h-4 w-32" />
+        </div>
+        <div className="space-y-3">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <Skeleton key={i} className="h-16 w-full rounded-xl" />
+          ))}
+        </div>
       </div>
     );
   }
@@ -210,7 +221,6 @@ export default function CategoriesPage() {
     <div className="p-4 max-w-2xl mx-auto pb-24">
       <h1 className="text-2xl font-bold text-(--loom-white) mb-6">Управление категориями</h1>
 
-      {/* Форма добавления */}
       <div className="flex flex-col gap-3 mb-6">
         <div className="flex gap-3">
           <Input
@@ -258,7 +268,6 @@ export default function CategoriesPage() {
         </div>
       </div>
 
-      {/* Список категорий */}
       <div className="space-y-3">
         {categories.length === 0 ? (
           <p className="text-(--loom-white)/60 text-center py-10">
@@ -303,7 +312,6 @@ export default function CategoriesPage() {
         )}
       </div>
 
-      {/* Модалка удаления */}
       <Modal
         isOpen={isDeleteModalOpen}
         onClose={() => {
@@ -326,7 +334,6 @@ export default function CategoriesPage() {
         </p>
       </Modal>
 
-      {/* Модалка редактирования */}
       <Modal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}

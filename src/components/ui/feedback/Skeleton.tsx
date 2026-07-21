@@ -79,3 +79,21 @@ export function CategorySkeleton() {
     </div>
   );
 }
+
+export function CatalogCardSkeleton() {
+  return (
+    <div className="p-4 bg-(--loom-white)/5 rounded-xl glitch-border">
+      <div className="space-y-3">
+        <Skeleton className="h-6 w-3/4" />
+        <div className="flex justify-between items-center">
+          <Skeleton className="h-4 w-16" />
+          <Skeleton className="h-4 w-20" />
+        </div>
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-4 w-12" />
+          <Skeleton className="h-2 w-2 rounded-full" />
+        </div>
+      </div>
+    </div>
+  );
+}

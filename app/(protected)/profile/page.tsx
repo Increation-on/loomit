@@ -58,7 +58,7 @@ export default function ProfilePage() {
         </div>
         {attemptsLoading ? (
           <div className="space-y-3">
-            {[1, 2, 3].map((i) => (
+            {[1, 2, 3,4,5].map((i) => (
               <div key={i} className="h-20 bg-(--loom-white)/5 rounded-xl animate-pulse" />
             ))}
           </div>

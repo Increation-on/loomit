@@ -54,3 +54,28 @@ export function QuestionSkeleton() {
     </div>
   );
 }
+
+export function TryItSkeleton() {
+  return (
+    <div className="w-50 h-46 shrink-0 snap-start rounded-xl overflow-hidden">
+      <Skeleton className="w-full h-full" variant="glitch" />
+    </div>
+  );
+}
+
+export function CategorySkeleton() {
+  return (
+    <div className="bg-(--loom-white)/5 rounded-2xl p-5 glitch-border relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute left-0 right-0 mx-auto w-full h-0.75 glitch-scanline-gradient opacity-50 blur-[1px] animate-scanline" />
+      </div>
+      <div className="flex justify-between items-center relative z-10">
+        <div className="space-y-2">
+          <Skeleton className="h-6 w-32" />
+          <Skeleton className="h-4 w-20" />
+        </div>
+        <Skeleton className="h-10 w-10 rounded-full" />
+      </div>
+    </div>
+  );
+}

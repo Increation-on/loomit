@@ -12,6 +12,7 @@ export async function GET(
     const quiz = await prisma.quiz.findUnique({
       where: { id },
       include: {
+        category: true, // ← ДОБАВЛЯЕМ КАТЕГОРИЮ
         questions: {
           orderBy: { order: 'asc' },
         },
@@ -25,15 +26,12 @@ export async function GET(
     const transformed = {
       ...quiz,
       questions: quiz.questions.map((q) => {
-        // 1. Парсим JSON, если это строка
         const parsed = typeof q.options === 'string'
           ? JSON.parse(q.options)
           : q.options;
 
-        // 2. Приводим к массиву
         const optionsArray = Array.isArray(parsed) ? parsed : [];
 
-        // 3. Если это массив строк — превращаем в объекты с id
         const options = optionsArray.map((opt: any, idx: number) => {
           if (typeof opt === 'string') {
             return { id: String(idx + 1), text: opt };
@@ -41,14 +39,13 @@ export async function GET(
           return opt;
         });
 
-        // 4. Находим правильный вариант по ID (если есть)
         const correctOption = options.find(
           (opt: any) => opt.id === q.correct_option_id
         );
 
         return {
           ...q,
-          options, // теперь всегда массив объектов { id, text }
+          options,
           correctOptionId: correctOption?.id || q.correct_option_id,
         };
       }),

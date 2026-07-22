@@ -151,7 +151,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
               <div className="flex gap-2 flex-wrap">
-                <Link href={`/quiz/${quiz.id}`}>
+                <Link href={`/quiz/${quiz.id}/preview`}>
                   <Button variant="ghost" size="sm">
                     <Eye size={14} className="mr-1" />
                     Смотреть

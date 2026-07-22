@@ -142,7 +142,7 @@ export default function CatalogPage() {
               <Card
                 key={quiz.id}
                 className="cursor-pointer hover:scale-[1.01] transition-transform duration-200"
-                onClick={() => router.push(`/quiz/${quiz.id}`)}
+                onClick={() => router.push(`/quiz/${quiz.id}/preview`)}
               >
                 <CardHeader className="p-0 pb-2">
                   <CardTitle className="text-lg">{quiz.title}</CardTitle>

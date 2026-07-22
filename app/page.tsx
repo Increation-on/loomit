@@ -71,16 +71,16 @@ export default function HomePage() {
   const isSameQuiz = currentQuiz?.id === pendingQuizId;
 
   const handleQuizClick = (quizId: string) => {
-    if (currentQuiz?.id === quizId) {
-      router.push(`/quiz/${quizId}`);
-      return;
-    }
-    if (hasUnfinished) {
-      setPendingQuizId(quizId);
-    } else {
-      router.push(`/quiz/${quizId}`);
-    }
-  };
+  if (currentQuiz?.id === quizId) {
+    router.push(`/quiz/${quizId}/preview`);
+    return;
+  }
+  if (hasUnfinished) {
+    setPendingQuizId(quizId);
+  } else {
+    router.push(`/quiz/${quizId}/preview`);
+  }
+};
 
   const handleStartNew = async () => {
     await persistor.purge();

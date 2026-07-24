@@ -81,3 +81,8 @@ export type verificationToken = Prisma.verificationTokenModel
  * 
  */
 export type category = Prisma.categoryModel
+/**
+ * Model favorite
+ * 
+ */
+export type favorite = Prisma.favoriteModel

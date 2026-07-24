@@ -391,7 +391,8 @@ export const ModelName = {
   session: 'session',
   user: 'user',
   verificationToken: 'verificationToken',
-  category: 'category'
+  category: 'category',
+  favorite: 'favorite'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -407,7 +408,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "account" | "attempt" | "question" | "quiz" | "session" | "user" | "verificationToken" | "category"
+    modelProps: "account" | "attempt" | "question" | "quiz" | "session" | "user" | "verificationToken" | "category" | "favorite"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1003,6 +1004,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    favorite: {
+      payload: Prisma.$favoritePayload<ExtArgs>
+      fields: Prisma.favoriteFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.favoriteFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$favoritePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.favoriteFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$favoritePayload>
+        }
+        findFirst: {
+          args: Prisma.favoriteFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$favoritePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.favoriteFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$favoritePayload>
+        }
+        findMany: {
+          args: Prisma.favoriteFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$favoritePayload>[]
+        }
+        create: {
+          args: Prisma.favoriteCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$favoritePayload>
+        }
+        createMany: {
+          args: Prisma.favoriteCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.favoriteCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$favoritePayload>[]
+        }
+        delete: {
+          args: Prisma.favoriteDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$favoritePayload>
+        }
+        update: {
+          args: Prisma.favoriteUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$favoritePayload>
+        }
+        deleteMany: {
+          args: Prisma.favoriteDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.favoriteUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.favoriteUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$favoritePayload>[]
+        }
+        upsert: {
+          args: Prisma.favoriteUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$favoritePayload>
+        }
+        aggregate: {
+          args: Prisma.FavoriteAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFavorite>
+        }
+        groupBy: {
+          args: Prisma.favoriteGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FavoriteGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.favoriteCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FavoriteCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1141,6 +1216,16 @@ export const CategoryScalarFieldEnum = {
 } as const
 
 export type CategoryScalarFieldEnum = (typeof CategoryScalarFieldEnum)[keyof typeof CategoryScalarFieldEnum]
+
+
+export const FavoriteScalarFieldEnum = {
+  id: 'id',
+  user_id: 'user_id',
+  quiz_id: 'quiz_id',
+  created_at: 'created_at'
+} as const
+
+export type FavoriteScalarFieldEnum = (typeof FavoriteScalarFieldEnum)[keyof typeof FavoriteScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1375,6 +1460,7 @@ export type GlobalOmitConfig = {
   user?: Prisma.userOmit
   verificationToken?: Prisma.verificationTokenOmit
   category?: Prisma.categoryOmit
+  favorite?: Prisma.favoriteOmit
 }
 
 /* Types for Logging */

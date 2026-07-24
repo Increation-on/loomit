@@ -3,6 +3,7 @@ import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, 
 import { attemptsApi } from './api/attemptsApi';
 import { quizApi } from './api/quizApi';
 import { categoryApi } from './api/categoryApi';
+import { favoritesApi } from './api/favoritesApi';
 import quizReducer from './slices/quizSlice';
 import syncReducer from './slices/syncSlice';
 import idbStorage from '@/lib/idbStorage';
@@ -34,6 +35,7 @@ export const store = configureStore({
     [quizApi.reducerPath]: quizApi.reducer,
     [categoryApi.reducerPath] : categoryApi.reducer,
     [profileApi.reducerPath]: profileApi.reducer,
+    [favoritesApi.reducerPath]: favoritesApi.reducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -46,6 +48,7 @@ export const store = configureStore({
       .concat(offlineMiddleware)
       .concat(profileApi.middleware)
       .concat(categoryApi.middleware)
+      .concat(favoritesApi.middleware)
 });
 
 export const persistor = persistStore(store);

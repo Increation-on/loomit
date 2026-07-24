@@ -3,18 +3,14 @@ import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from 'app/api/auth/[...nextauth]/route';
 
+// ✅ GET — публичный (не требует авторизации)
 export async function GET() {
-    const session = await getServerSession(authOptions);
-    if (!session || session.user?.role !== 'admin') {
-        return new NextResponse('Unauthorized', { status: 401 });
-    }
-
     const categories = await prisma.category.findMany({
         orderBy: { name: 'asc' },
         select: {
             id: true,
             name: true,
-            iconUrl: true, // ✅ добавляем
+            iconUrl: true,
             _count: {
                 select: { quizzes: true },
             },
@@ -28,6 +24,7 @@ export async function GET() {
     });
 }
 
+// ✅ POST — только для админа
 export async function POST(req: Request) {
     const session = await getServerSession(authOptions);
     if (!session || session.user?.role !== 'admin') {
@@ -41,7 +38,6 @@ export async function POST(req: Request) {
             return new NextResponse('Invalid category name', { status: 400 });
         }
 
-        // Проверяем, есть ли уже категория с таким именем
         const existing = await prisma.category.findUnique({
             where: { name: name.trim() },
         });
@@ -56,16 +52,13 @@ export async function POST(req: Request) {
             },
         });
 
-        return NextResponse.json(category, {
-            headers: {
-                'Cache-Control': 'no-cache, no-store, must-revalidate',
-            },
-        });
+        return NextResponse.json(category);
     } catch (error) {
         return new NextResponse('Failed to create category', { status: 500 });
     }
 }
 
+// ✅ DELETE — только для админа
 export async function DELETE(req: Request) {
     const session = await getServerSession(authOptions);
     if (!session || session.user?.role !== 'admin') {
@@ -90,6 +83,7 @@ export async function DELETE(req: Request) {
     }
 }
 
+// ✅ PUT — только для админа
 export async function PUT(req: Request) {
     const session = await getServerSession(authOptions);
     if (!session || session.user?.role !== 'admin') {
@@ -111,11 +105,7 @@ export async function PUT(req: Request) {
             },
         });
 
-        return NextResponse.json(category, {
-            headers: {
-                'Cache-Control': 'no-cache, no-store, must-revalidate',
-            },
-        });
+        return NextResponse.json(category);
     } catch (error) {
         return new NextResponse('Failed to update category', { status: 500 });
     }

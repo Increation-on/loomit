@@ -67,6 +67,8 @@ model quiz {
   updated_at  DateTime
   attempts    attempt[]
   questions   question[]
+
+  favorites favorite[]
 }
 
 model session {
@@ -89,6 +91,8 @@ model user {
   accounts       account[]
   attempts       attempt[]
   sessions       session[]
+
+  favorites favorite[]
 }
 
 model verificationToken {
@@ -99,13 +103,23 @@ model verificationToken {
   @@unique([identifier, token])
 }
 
-
-
 model category {
   id          String   @id @default(cuid())
   name        String   @unique
   quizzes     quiz[]  
   iconUrl String?
+}
+
+model favorite {
+  id        String   @id @default(cuid())
+  user_id   String
+  quiz_id   String
+  created_at DateTime @default(now())
+
+  user user @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  quiz quiz @relation(fields: [quiz_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, quiz_id])
 }
 
 enum Level {

@@ -58,7 +58,8 @@ export const ModelName = {
   session: 'session',
   user: 'user',
   verificationToken: 'verificationToken',
-  category: 'category'
+  category: 'category',
+  favorite: 'favorite'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -176,6 +177,16 @@ export const CategoryScalarFieldEnum = {
 } as const
 
 export type CategoryScalarFieldEnum = (typeof CategoryScalarFieldEnum)[keyof typeof CategoryScalarFieldEnum]
+
+
+export const FavoriteScalarFieldEnum = {
+  id: 'id',
+  user_id: 'user_id',
+  quiz_id: 'quiz_id',
+  created_at: 'created_at'
+} as const
+
+export type FavoriteScalarFieldEnum = (typeof FavoriteScalarFieldEnum)[keyof typeof FavoriteScalarFieldEnum]
 
 
 export const SortOrder = {

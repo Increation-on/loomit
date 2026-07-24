@@ -209,6 +209,7 @@ export type userWhereInput = {
   accounts?: Prisma.AccountListRelationFilter
   attempts?: Prisma.AttemptListRelationFilter
   sessions?: Prisma.SessionListRelationFilter
+  favorites?: Prisma.FavoriteListRelationFilter
 }
 
 export type userOrderByWithRelationInput = {
@@ -223,6 +224,7 @@ export type userOrderByWithRelationInput = {
   accounts?: Prisma.accountOrderByRelationAggregateInput
   attempts?: Prisma.attemptOrderByRelationAggregateInput
   sessions?: Prisma.sessionOrderByRelationAggregateInput
+  favorites?: Prisma.favoriteOrderByRelationAggregateInput
 }
 
 export type userWhereUniqueInput = Prisma.AtLeast<{
@@ -240,6 +242,7 @@ export type userWhereUniqueInput = Prisma.AtLeast<{
   accounts?: Prisma.AccountListRelationFilter
   attempts?: Prisma.AttemptListRelationFilter
   sessions?: Prisma.SessionListRelationFilter
+  favorites?: Prisma.FavoriteListRelationFilter
 }, "id" | "email">
 
 export type userOrderByWithAggregationInput = {
@@ -282,6 +285,7 @@ export type userCreateInput = {
   accounts?: Prisma.accountCreateNestedManyWithoutUserInput
   attempts?: Prisma.attemptCreateNestedManyWithoutUserInput
   sessions?: Prisma.sessionCreateNestedManyWithoutUserInput
+  favorites?: Prisma.favoriteCreateNestedManyWithoutUserInput
 }
 
 export type userUncheckedCreateInput = {
@@ -296,6 +300,7 @@ export type userUncheckedCreateInput = {
   accounts?: Prisma.accountUncheckedCreateNestedManyWithoutUserInput
   attempts?: Prisma.attemptUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.sessionUncheckedCreateNestedManyWithoutUserInput
+  favorites?: Prisma.favoriteUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type userUpdateInput = {
@@ -310,6 +315,7 @@ export type userUpdateInput = {
   accounts?: Prisma.accountUpdateManyWithoutUserNestedInput
   attempts?: Prisma.attemptUpdateManyWithoutUserNestedInput
   sessions?: Prisma.sessionUpdateManyWithoutUserNestedInput
+  favorites?: Prisma.favoriteUpdateManyWithoutUserNestedInput
 }
 
 export type userUncheckedUpdateInput = {
@@ -324,6 +330,7 @@ export type userUncheckedUpdateInput = {
   accounts?: Prisma.accountUncheckedUpdateManyWithoutUserNestedInput
   attempts?: Prisma.attemptUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.sessionUncheckedUpdateManyWithoutUserNestedInput
+  favorites?: Prisma.favoriteUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type userCreateManyInput = {
@@ -450,6 +457,20 @@ export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
 }
 
+export type userCreateNestedOneWithoutFavoritesInput = {
+  create?: Prisma.XOR<Prisma.userCreateWithoutFavoritesInput, Prisma.userUncheckedCreateWithoutFavoritesInput>
+  connectOrCreate?: Prisma.userCreateOrConnectWithoutFavoritesInput
+  connect?: Prisma.userWhereUniqueInput
+}
+
+export type userUpdateOneRequiredWithoutFavoritesNestedInput = {
+  create?: Prisma.XOR<Prisma.userCreateWithoutFavoritesInput, Prisma.userUncheckedCreateWithoutFavoritesInput>
+  connectOrCreate?: Prisma.userCreateOrConnectWithoutFavoritesInput
+  upsert?: Prisma.userUpsertWithoutFavoritesInput
+  connect?: Prisma.userWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.userUpdateToOneWithWhereWithoutFavoritesInput, Prisma.userUpdateWithoutFavoritesInput>, Prisma.userUncheckedUpdateWithoutFavoritesInput>
+}
+
 export type userCreateWithoutAccountsInput = {
   id?: string
   email: string
@@ -461,6 +482,7 @@ export type userCreateWithoutAccountsInput = {
   role?: string
   attempts?: Prisma.attemptCreateNestedManyWithoutUserInput
   sessions?: Prisma.sessionCreateNestedManyWithoutUserInput
+  favorites?: Prisma.favoriteCreateNestedManyWithoutUserInput
 }
 
 export type userUncheckedCreateWithoutAccountsInput = {
@@ -474,6 +496,7 @@ export type userUncheckedCreateWithoutAccountsInput = {
   role?: string
   attempts?: Prisma.attemptUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.sessionUncheckedCreateNestedManyWithoutUserInput
+  favorites?: Prisma.favoriteUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type userCreateOrConnectWithoutAccountsInput = {
@@ -503,6 +526,7 @@ export type userUpdateWithoutAccountsInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   attempts?: Prisma.attemptUpdateManyWithoutUserNestedInput
   sessions?: Prisma.sessionUpdateManyWithoutUserNestedInput
+  favorites?: Prisma.favoriteUpdateManyWithoutUserNestedInput
 }
 
 export type userUncheckedUpdateWithoutAccountsInput = {
@@ -516,6 +540,7 @@ export type userUncheckedUpdateWithoutAccountsInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   attempts?: Prisma.attemptUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.sessionUncheckedUpdateManyWithoutUserNestedInput
+  favorites?: Prisma.favoriteUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type userCreateWithoutAttemptsInput = {
@@ -529,6 +554,7 @@ export type userCreateWithoutAttemptsInput = {
   role?: string
   accounts?: Prisma.accountCreateNestedManyWithoutUserInput
   sessions?: Prisma.sessionCreateNestedManyWithoutUserInput
+  favorites?: Prisma.favoriteCreateNestedManyWithoutUserInput
 }
 
 export type userUncheckedCreateWithoutAttemptsInput = {
@@ -542,6 +568,7 @@ export type userUncheckedCreateWithoutAttemptsInput = {
   role?: string
   accounts?: Prisma.accountUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.sessionUncheckedCreateNestedManyWithoutUserInput
+  favorites?: Prisma.favoriteUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type userCreateOrConnectWithoutAttemptsInput = {
@@ -571,6 +598,7 @@ export type userUpdateWithoutAttemptsInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   accounts?: Prisma.accountUpdateManyWithoutUserNestedInput
   sessions?: Prisma.sessionUpdateManyWithoutUserNestedInput
+  favorites?: Prisma.favoriteUpdateManyWithoutUserNestedInput
 }
 
 export type userUncheckedUpdateWithoutAttemptsInput = {
@@ -584,6 +612,7 @@ export type userUncheckedUpdateWithoutAttemptsInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   accounts?: Prisma.accountUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.sessionUncheckedUpdateManyWithoutUserNestedInput
+  favorites?: Prisma.favoriteUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type userCreateWithoutSessionsInput = {
@@ -597,6 +626,7 @@ export type userCreateWithoutSessionsInput = {
   role?: string
   accounts?: Prisma.accountCreateNestedManyWithoutUserInput
   attempts?: Prisma.attemptCreateNestedManyWithoutUserInput
+  favorites?: Prisma.favoriteCreateNestedManyWithoutUserInput
 }
 
 export type userUncheckedCreateWithoutSessionsInput = {
@@ -610,6 +640,7 @@ export type userUncheckedCreateWithoutSessionsInput = {
   role?: string
   accounts?: Prisma.accountUncheckedCreateNestedManyWithoutUserInput
   attempts?: Prisma.attemptUncheckedCreateNestedManyWithoutUserInput
+  favorites?: Prisma.favoriteUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type userCreateOrConnectWithoutSessionsInput = {
@@ -639,6 +670,7 @@ export type userUpdateWithoutSessionsInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   accounts?: Prisma.accountUpdateManyWithoutUserNestedInput
   attempts?: Prisma.attemptUpdateManyWithoutUserNestedInput
+  favorites?: Prisma.favoriteUpdateManyWithoutUserNestedInput
 }
 
 export type userUncheckedUpdateWithoutSessionsInput = {
@@ -652,6 +684,79 @@ export type userUncheckedUpdateWithoutSessionsInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   accounts?: Prisma.accountUncheckedUpdateManyWithoutUserNestedInput
   attempts?: Prisma.attemptUncheckedUpdateManyWithoutUserNestedInput
+  favorites?: Prisma.favoriteUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type userCreateWithoutFavoritesInput = {
+  id?: string
+  email: string
+  name?: string | null
+  image?: string | null
+  created_at?: Date | string
+  password?: string | null
+  email_verified?: Date | string | null
+  role?: string
+  accounts?: Prisma.accountCreateNestedManyWithoutUserInput
+  attempts?: Prisma.attemptCreateNestedManyWithoutUserInput
+  sessions?: Prisma.sessionCreateNestedManyWithoutUserInput
+}
+
+export type userUncheckedCreateWithoutFavoritesInput = {
+  id?: string
+  email: string
+  name?: string | null
+  image?: string | null
+  created_at?: Date | string
+  password?: string | null
+  email_verified?: Date | string | null
+  role?: string
+  accounts?: Prisma.accountUncheckedCreateNestedManyWithoutUserInput
+  attempts?: Prisma.attemptUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.sessionUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type userCreateOrConnectWithoutFavoritesInput = {
+  where: Prisma.userWhereUniqueInput
+  create: Prisma.XOR<Prisma.userCreateWithoutFavoritesInput, Prisma.userUncheckedCreateWithoutFavoritesInput>
+}
+
+export type userUpsertWithoutFavoritesInput = {
+  update: Prisma.XOR<Prisma.userUpdateWithoutFavoritesInput, Prisma.userUncheckedUpdateWithoutFavoritesInput>
+  create: Prisma.XOR<Prisma.userCreateWithoutFavoritesInput, Prisma.userUncheckedCreateWithoutFavoritesInput>
+  where?: Prisma.userWhereInput
+}
+
+export type userUpdateToOneWithWhereWithoutFavoritesInput = {
+  where?: Prisma.userWhereInput
+  data: Prisma.XOR<Prisma.userUpdateWithoutFavoritesInput, Prisma.userUncheckedUpdateWithoutFavoritesInput>
+}
+
+export type userUpdateWithoutFavoritesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email_verified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  accounts?: Prisma.accountUpdateManyWithoutUserNestedInput
+  attempts?: Prisma.attemptUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.sessionUpdateManyWithoutUserNestedInput
+}
+
+export type userUncheckedUpdateWithoutFavoritesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email_verified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  accounts?: Prisma.accountUncheckedUpdateManyWithoutUserNestedInput
+  attempts?: Prisma.attemptUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.sessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -663,12 +768,14 @@ export type UserCountOutputType = {
   accounts: number
   attempts: number
   sessions: number
+  favorites: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   accounts?: boolean | UserCountOutputTypeCountAccountsArgs
   attempts?: boolean | UserCountOutputTypeCountAttemptsArgs
   sessions?: boolean | UserCountOutputTypeCountSessionsArgs
+  favorites?: boolean | UserCountOutputTypeCountFavoritesArgs
 }
 
 /**
@@ -702,6 +809,13 @@ export type UserCountOutputTypeCountSessionsArgs<ExtArgs extends runtime.Types.E
   where?: Prisma.sessionWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountFavoritesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.favoriteWhereInput
+}
+
 
 export type userSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -715,6 +829,7 @@ export type userSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   accounts?: boolean | Prisma.user$accountsArgs<ExtArgs>
   attempts?: boolean | Prisma.user$attemptsArgs<ExtArgs>
   sessions?: boolean | Prisma.user$sessionsArgs<ExtArgs>
+  favorites?: boolean | Prisma.user$favoritesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -756,6 +871,7 @@ export type userInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   accounts?: boolean | Prisma.user$accountsArgs<ExtArgs>
   attempts?: boolean | Prisma.user$attemptsArgs<ExtArgs>
   sessions?: boolean | Prisma.user$sessionsArgs<ExtArgs>
+  favorites?: boolean | Prisma.user$favoritesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type userIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -767,6 +883,7 @@ export type $userPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     accounts: Prisma.$accountPayload<ExtArgs>[]
     attempts: Prisma.$attemptPayload<ExtArgs>[]
     sessions: Prisma.$sessionPayload<ExtArgs>[]
+    favorites: Prisma.$favoritePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1174,6 +1291,7 @@ export interface Prisma__userClient<T, Null = never, ExtArgs extends runtime.Typ
   accounts<T extends Prisma.user$accountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.user$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$accountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   attempts<T extends Prisma.user$attemptsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.user$attemptsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$attemptPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sessions<T extends Prisma.user$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.user$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$sessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  favorites<T extends Prisma.user$favoritesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.user$favoritesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$favoritePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1673,6 +1791,30 @@ export type user$sessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   distinct?: Prisma.SessionScalarFieldEnum | Prisma.SessionScalarFieldEnum[]
+}
+
+/**
+ * user.favorites
+ */
+export type user$favoritesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the favorite
+   */
+  select?: Prisma.favoriteSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the favorite
+   */
+  omit?: Prisma.favoriteOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.favoriteInclude<ExtArgs> | null
+  where?: Prisma.favoriteWhereInput
+  orderBy?: Prisma.favoriteOrderByWithRelationInput | Prisma.favoriteOrderByWithRelationInput[]
+  cursor?: Prisma.favoriteWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FavoriteScalarFieldEnum | Prisma.FavoriteScalarFieldEnum[]
 }
 
 /**

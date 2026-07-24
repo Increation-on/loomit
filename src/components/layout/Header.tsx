@@ -15,40 +15,56 @@ export default function Header() {
   const userName = session?.user?.name || 'пользователь';
 
   // Мобильная версия
-  if (!isDesktop) {
-    return (
-      <header className="bg-(--loom-black) sticky top-0 z-10 px-4 h-18 flex items-center justify-between">
+if (!isDesktop) {
+  const displayName = isAuthenticated ? userName : 'Гость';
+  const avatarLetter = isAuthenticated ? userName?.[0] : '?';
 
-        <div className="absolute bottom-0 left-0 w-full px-4">
-          <img
-            src="/glitch-line.png"
-            alt="glitch line"
-            className="w-full h-0.5 object-cover z-20 pointer-events-none"
-          />
-        </div>
+  return (
+    <header className="bg-(--loom-black) sticky top-0 z-10 px-4 h-18 flex items-center justify-between">
 
-        <Link href="/" className="shrink-0 -ml-3.5">
-          <img
-            src="/logo.png"
-            alt="LOOMIT"
-            className="h-28 w-auto object-contain"
-          />
-        </Link>
+      <div className="absolute bottom-0 left-0 w-full px-4">
+        <img
+          src="/glitch-line.png"
+          alt="glitch line"
+          className="w-full h-0.5 object-cover z-20 pointer-events-none"
+        />
+      </div>
 
-        <div className="flex items-center gap-3">
-          <div className="text-left">
-            <p className="text-sm text-gray-500 leading-none">Hello,</p>
-            <p className="font-semibold text-loom-white">{userName}</p>
-          </div>
-          <Link href="/profile">
-            <div className="w-10 h-10 rounded-full bg-(--loom-magenta) flex items-center justify-center font-bold text-lg text-loom-black">
-              {userName?.[0] || '?'}
+      <Link href="/" className="shrink-0 -ml-3.5">
+        <img
+          src="/logo.png"
+          alt="LOOMIT"
+          className="h-28 w-auto object-contain"
+        />
+      </Link>
+
+      <div className="flex items-center gap-3">
+        {isAuthenticated ? (
+          <>
+            <div className="text-left">
+              <p className="text-sm text-gray-500 leading-none">Hello,</p>
+              <p className="font-semibold text-(--loom-white)">{displayName}</p>
+            </div>
+            <Link href="/profile">
+              <div className="w-10 h-10 rounded-full bg-(--loom-magenta) flex items-center justify-center font-bold text-lg text-(--loom-white)">
+                {avatarLetter}
+              </div>
+            </Link>
+          </>
+        ) : (
+          <Link href="/login">
+            <div className="flex items-center gap-3 px-4 py-2 bg-(--loom-white)/5 rounded-xl glitch-border hover:bg-(--loom-white)/10 transition-colors">
+              <span className="text-sm text-(--loom-white)">Войти</span>
+              <div className="w-8 h-8 rounded-full bg-(--loom-white)/10 flex items-center justify-center text-(--loom-white)/60 text-sm">
+                ?
+              </div>
             </div>
           </Link>
-        </div>
-      </header>
-    );
-  }
+        )}
+      </div>
+    </header>
+  );
+}
 
   // Десктопная версия (остаётся как есть)
   return (

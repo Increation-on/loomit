@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/core/Button';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
 import { cn } from '@/lib/utils';
 import { ArrowLeft, FileQuestion } from 'lucide-react';
+import { StarButton } from '@/components/ui/core/StarButton';
 
 export default function QuizPreviewPage() {
   const params = useParams();
@@ -76,7 +77,7 @@ export default function QuizPreviewPage() {
             </div>
 
             <h1 className="text-2xl font-bold text-(--loom-white)">{quiz.title}</h1>
-
+<StarButton quizId={quiz.id} size={32} />
             {quiz.description && (
               <p className="text-(--loom-white)/60 text-base">{quiz.description}</p>
             )}

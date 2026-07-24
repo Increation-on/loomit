@@ -10,6 +10,7 @@ import { Filters } from '@/components/ui/core/Filters';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { SearchWithDropdown } from '@/components/ui/core/SearchWithDropDown';
 import { Skeleton, CatalogCardSkeleton } from '@/components/ui/feedback/Skeleton';
+import { StarButton } from '@/components/ui/core/StarButton';
 
 export default function CatalogPage() {
   const router = useRouter();
@@ -144,8 +145,13 @@ export default function CatalogPage() {
                 className="cursor-pointer hover:scale-[1.01] transition-transform duration-200"
                 onClick={() => router.push(`/quiz/${quiz.id}/preview`)}
               >
+
                 <CardHeader className="p-0 pb-2">
-                  <CardTitle className="text-lg">{quiz.title}</CardTitle>
+                  <CardTitle className="text-xl">{quiz.title}</CardTitle>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-(--loom-white)/60">В избранное</span>
+                    <StarButton quizId={quiz.id} size={22} />
+                  </div>
                 </CardHeader>
                 <CardContent className="p-0 flex flex-col gap-1 relative">
                   <div className="flex justify-between items-center text-sm text-(--loom-white)/60">
@@ -153,20 +159,20 @@ export default function CatalogPage() {
                       {quiz._count?.questions || 0} {pluralize(quiz._count?.questions || 0, 'вопрос', 'вопроса', 'вопросов')}
                     </span>
                     <div className="flex flex-col items-end relative">
-                      <div className="absolute -top-9 right-0">
+                      <div className="absolute -top-14 right-0">
                         {quiz.category?.iconUrl ? (
                           <img
                             src={quiz.category.iconUrl}
                             alt={quiz.category.name}
-                            className="w-7 h-7 rounded-full object-contain"
+                            className="w-11 h-11 rounded-full object-contain"
                           />
                         ) : (
-                          <div className="w-7 h-7 rounded-full bg-(--loom-cyan)/20 flex items-center justify-center text-s text-(--loom-cyan) font-bold">
+                          <div className="w-11 h-11 rounded-full bg-(--loom-cyan)/20 flex items-center justify-center text-sm text-(--loom-cyan) font-bold">
                             {quiz.category?.name?.[0] || '?'}
                           </div>
                         )}
                       </div>
-                      <span className="text-(--loom-magenta) text-l font-medium">
+                      <span className="text-(--loom-cyan) text-lg font-medium">
                         {quiz.category?.name || 'Без категории'}
                       </span>
                     </div>

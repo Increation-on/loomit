@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/core/Button';
 import { SearchWithDropdown } from '@/components/ui/core/SearchWithDropDown';
 import { TryItSkeleton, CategorySkeleton } from '@/components/ui/feedback/Skeleton';
 import { cn, pluralize } from '@/lib/utils';
+import { StarButton } from '@/components/ui/core/StarButton';
 
 export default function HomePage() {
   const { data: quizzes, isLoading: isQuizzesLoading } = useGetQuizzesQuery({});
@@ -245,7 +246,7 @@ export default function HomePage() {
             ))}
           </div>
         ) : (
-          <EmptyState title="Нет доступных категорий" description="Создайте первую категорию в админке." />
+          <EmptyState title="Нет доступных категорий" />
         )}
       </div>
 

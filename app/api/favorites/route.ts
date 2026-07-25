@@ -38,30 +38,32 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'quizId required' }, { status: 400 });
   }
 
-  // Проверяем, есть ли уже
-  const existing = await prisma.favorite.findUnique({
-    where: {
-      user_id_quiz_id: {
+  try {
+    // Пытаемся удалить запись по составному ключу (если она есть)
+    const deleted = await prisma.favorite.deleteMany({
+      where: {
         user_id: session.user.id,
         quiz_id: quizId,
       },
-    },
-  });
-
-  if (existing) {
-    // Удаляем
-    await prisma.favorite.delete({
-      where: { id: existing.id },
     });
-    return NextResponse.json({ favorited: false });
-  } else {
-    // Добавляем
+
+    // Если удалили хотя бы одну запись — значит она была в избранном
+    if (deleted.count > 0) {
+      return NextResponse.json({ favorited: false });
+    }
+
+    // Если не удалили — значит её не было, добавляем
     await prisma.favorite.create({
       data: {
         user_id: session.user.id,
         quiz_id: quizId,
       },
     });
+
     return NextResponse.json({ favorited: true });
+
+  } catch (error) {
+    console.error('🔥 Ошибка в POST /api/favorites:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

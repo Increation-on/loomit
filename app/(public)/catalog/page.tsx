@@ -1,68 +1,78 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useGetQuizzesQuery } from '@/store/api/quizApi';
 import { Filters } from '@/components/ui/core/Filters';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { SearchWithDropdown } from '@/components/ui/core/SearchWithDropDown';
 import { Skeleton, CatalogCardSkeleton } from '@/components/ui/feedback/Skeleton';
-import { CatalogCard } from '@/components/features/CatalogCard'; // ← новый импорт
+import { CatalogCard } from '@/components/features/CatalogCard';
+import { useGetStatusesQuery } from '@/store/api/attemptsApi';
+import { useFavorites } from '@/hooks/useFavorites';
 
 export default function CatalogPage() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const categoryFromUrl = searchParams.get('category');
   const { data: quizzes, isLoading: quizzesLoading } = useGetQuizzesQuery({});
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [suggestions, setSuggestions] = useState<any[]>([]);
   const [sortBy, setSortBy] = useState('popular');
-
-  const [attemptStatuses, setAttemptStatuses] = useState<Record<string, any>>({});
 
   const [categoryFilter, setCategoryFilter] = useState(categoryFromUrl || 'all');
   const [levelFilter, setLevelFilter] = useState('all');
 
-  useEffect(() => {
-    if (!quizzes?.length) return;
+  const quizIds = useMemo(
+    () => quizzes?.map((q: any) => q.id) ?? [],
+    [quizzes]
+  );
 
-    const fetchStatuses = async () => {
-      const quizIds = quizzes.map((q: any) => q.id);
-      const res = await fetch('/api/quizzes/status', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quizIds }),
-      });
-      const data = await res.json();
-      setAttemptStatuses(data);
-    };
+  const { data: attemptStatuses = {} } = useGetStatusesQuery(quizIds, {
+    skip: quizIds.length === 0,
+  });
 
-    fetchStatuses();
-  }, [quizzes]);
+  const {
+    isFavorite,
+    toggle,
+    isAuthenticated,
+    isLoading,
+  } = useFavorites();
 
-  const filteredQuizzes = useMemo(() => {
+
+  const displayedQuizzes = useMemo(() => {
     if (!quizzes) return [];
-    return quizzes.filter((quiz: any) => {
-      const matchCategory = categoryFilter === 'all' || quiz.category?.id === categoryFilter;
-      const matchLevel = levelFilter === 'all' || quiz.level === levelFilter;
+
+    const result = quizzes.filter((quiz: any) => {
+      const matchCategory =
+        categoryFilter === 'all' || quiz.category?.id === categoryFilter;
+
+      const matchLevel =
+        levelFilter === 'all' || quiz.level === levelFilter;
+
       return matchCategory && matchLevel;
     });
-  }, [quizzes, categoryFilter, levelFilter]);
 
-  const sortedQuizzes = useMemo(() => {
-    const sorted = [...filteredQuizzes];
     switch (sortBy) {
       case 'newest':
-        return sorted.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        return result.sort(
+          (a: any, b: any) =>
+            new Date(b.createdAt).getTime() -
+            new Date(a.createdAt).getTime()
+        );
+
       case 'alphabetical':
-        return sorted.sort((a, b) => a.title.localeCompare(b.title));
+        return result.sort((a: any, b: any) =>
+          a.title.localeCompare(b.title)
+        );
+
       case 'popular':
-        return sorted.sort((a, b) => (b._count?.attempts || 0) - (a._count?.attempts || 0));
+        return result.sort(
+          (a: any, b: any) =>
+            (b._count?.attempts || 0) - (a._count?.attempts || 0)
+        );
+
       default:
-        return sorted;
+        return result;
     }
-  }, [filteredQuizzes, sortBy]);
+  }, [quizzes, categoryFilter, levelFilter, sortBy]);
 
   if (quizzesLoading) {
     return (
@@ -91,25 +101,6 @@ export default function CatalogPage() {
 
       <div className="relative mb-6">
         <SearchWithDropdown items={quizzes || []} placeholder="Поиск квизов..." />
-
-        {isDropdownOpen && suggestions.length > 0 && (
-          <div className="absolute top-full left-0 right-0 mt-2 z-30 glitch-border rounded-xl bg-(--loom-black) p-2 max-h-60 overflow-y-auto shadow-xl">
-            {suggestions.map((quiz: any) => (
-              <button
-                key={quiz.id}
-                onClick={() => {
-                  router.push(`/quiz/${quiz.id}`);
-                  setIsDropdownOpen(false);
-                  setSearchQuery('');
-                }}
-                className="w-full text-left px-3 py-2 text-sm text-(--loom-white) hover:bg-(--loom-white)/10 rounded-lg transition-colors flex justify-between items-center"
-              >
-                <span className="truncate">{quiz.title}</span>
-                <span className="text-(--loom-cyan) text-xs">Перейти →</span>
-              </button>
-            ))}
-          </div>
-        )}
       </div>
 
       <Filters
@@ -121,18 +112,22 @@ export default function CatalogPage() {
         setSortBy={setSortBy}
       />
 
-      {sortedQuizzes.length === 0 ? (
+      {displayedQuizzes.length === 0 ? (
         <div className="text-center py-16 text-(--loom-white)/60">
           <p>Ничего не найдено 😕</p>
           <p className="text-sm mt-1">Попробуй изменить фильтры или поиск</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-          {sortedQuizzes.map((quiz: any) => (
+          {displayedQuizzes.map((quiz: any) => (
             <CatalogCard
               key={quiz.id}
               quiz={quiz}
               lastAttempt={attemptStatuses[quiz.id]}
+              showFavorite={isAuthenticated}
+              isFavorited={isFavorite(quiz.id)}
+              isFavoriteLoading={isLoading}
+              onFavoriteToggle={() => toggle(quiz.id)}
             />
           ))}
         </div>

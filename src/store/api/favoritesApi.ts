@@ -1,30 +1,49 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
+export interface Favorite {
+  id: string;
+  quiz: {
+    id: string;
+    title: string;
+    description?: string | null;
+    level: string;
+    category: {
+      id: string;
+      name: string;
+      iconUrl?: string | null;
+    } | null;
+    questions?: { id: string }[];
+    _count?: {
+      questions: number;
+      attempts: number;
+    };
+  };
+}
+
 export const favoritesApi = createApi({
   reducerPath: 'favoritesApi',
-  baseQuery: fetchBaseQuery({ baseUrl: '/api' }),
+
+  baseQuery: fetchBaseQuery({
+    baseUrl: '/api',
+  }),
+
   tagTypes: ['Favorites'],
+
   endpoints: (builder) => ({
-    // Получить список избранного
-    getFavorites: builder.query({
+    getFavorites: builder.query<Favorite[], void>({
       query: () => '/favorites',
+
       providesTags: ['Favorites'],
     }),
 
-    // Добавить или удалить из избранного (toggle)
-    toggleFavorite: builder.mutation({
-      query: (quizId: string) => ({
+    toggleFavorite: builder.mutation<void, string>({
+      query: (quizId) => ({
         url: '/favorites',
         method: 'POST',
         body: { quizId },
       }),
-      invalidatesTags: ['Favorites'], // ✅ Просто инвалидируем кэш
-    }),
 
-    // Проверить, добавлен ли квиз в избранное
-    checkFavorite: builder.query({
-      query: (quizId: string) => `/favorites/check?quizId=${quizId}`,
-      providesTags: (result, error, quizId) => [{ type: 'Favorites', id: quizId }],
+      invalidatesTags: ['Favorites'],
     }),
   }),
 });
@@ -32,5 +51,4 @@ export const favoritesApi = createApi({
 export const {
   useGetFavoritesQuery,
   useToggleFavoriteMutation,
-  useCheckFavoriteQuery,
 } = favoritesApi;

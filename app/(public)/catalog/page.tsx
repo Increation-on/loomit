@@ -2,15 +2,11 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useGetQuizzesQuery } from '@/store/api/quizApi';
-import { useGetCategoriesQuery } from '@/store/api/categoryApi';
-import { Input } from '@/components/ui/core/Input';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/core/Card';
-import { cn, pluralize } from '@/lib/utils';
 import { Filters } from '@/components/ui/core/Filters';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { SearchWithDropdown } from '@/components/ui/core/SearchWithDropDown';
 import { Skeleton, CatalogCardSkeleton } from '@/components/ui/feedback/Skeleton';
-import { StarButton } from '@/components/ui/core/StarButton';
+import { CatalogCard } from '@/components/features/CatalogCard'; // ← новый импорт
 
 export default function CatalogPage() {
   const router = useRouter();
@@ -72,19 +68,14 @@ export default function CatalogPage() {
     return (
       <div className="min-h-screen bg-(--loom-black) text-(--loom-white) pb-24 px-4 pt-6">
         <h1 className="text-2xl font-bold mb-6">Каталог квизов</h1>
-
-        {/* Скелетон для поиска */}
         <div className="mb-6">
           <Skeleton className="h-12 w-full rounded-xl" />
         </div>
-
-        {/* Скелетоны для фильтров */}
         <div className="space-y-3 mb-6">
           <Skeleton className="h-10 w-48 rounded-full" />
           <Skeleton className="h-10 w-36 rounded-full" />
           <Skeleton className="h-10 w-28 rounded-full" />
         </div>
-
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {[1, 2, 3, 4].map((i) => (
             <CatalogCardSkeleton key={i} />
@@ -137,80 +128,13 @@ export default function CatalogPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-          {sortedQuizzes.map((quiz: any) => {
-            const lastAttempt = attemptStatuses[quiz.id];
-            return (
-              <Card
-                key={quiz.id}
-                className="cursor-pointer hover:scale-[1.01] transition-transform duration-200"
-                onClick={() => router.push(`/quiz/${quiz.id}/preview`)}
-              >
-
-                <CardHeader className="p-0 pb-2">
-                  <CardTitle className="text-xl">{quiz.title}</CardTitle>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-(--loom-white)/60">В избранное</span>
-                    <StarButton quizId={quiz.id} size={22} />
-                  </div>
-                </CardHeader>
-                <CardContent className="p-0 flex flex-col gap-1 relative">
-                  <div className="flex justify-between items-center text-sm text-(--loom-white)/60">
-                    <span>
-                      {quiz._count?.questions || 0} {pluralize(quiz._count?.questions || 0, 'вопрос', 'вопроса', 'вопросов')}
-                    </span>
-                    <div className="flex flex-col items-end relative">
-                      <div className="absolute -top-14 right-0">
-                        {quiz.category?.iconUrl ? (
-                          <img
-                            src={quiz.category.iconUrl}
-                            alt={quiz.category.name}
-                            className="w-11 h-11 rounded-full object-contain"
-                          />
-                        ) : (
-                          <div className="w-11 h-11 rounded-full bg-(--loom-cyan)/20 flex items-center justify-center text-sm text-(--loom-cyan) font-bold">
-                            {quiz.category?.name?.[0] || '?'}
-                          </div>
-                        )}
-                      </div>
-                      <span className="text-(--loom-cyan) text-lg font-medium">
-                        {quiz.category?.name || 'Без категории'}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 text-xs">
-                    {lastAttempt && (
-                      <>
-                        <span
-                          className={cn(
-                            'font-semibold',
-                            lastAttempt.score === lastAttempt.totalQuestions && 'text-(--loom-cyan)',
-                            lastAttempt.score < lastAttempt.totalQuestions && 'text-(--loom-yellow)'
-                          )}
-                        >
-                          {lastAttempt.score}/{lastAttempt.totalQuestions}
-                        </span>
-                        <span className="text-(--loom-white)/30">•</span>
-                      </>
-                    )}
-                    <span className="text-(--loom-white)/40">
-                      {quiz.level ? quiz.level.charAt(0) + quiz.level.slice(1).toLowerCase() : 'Любой'}
-                    </span>
-                    {quiz.level && (
-                      <span
-                        className={cn(
-                          'w-1.5 h-1.5 rounded-full',
-                          quiz.level === 'JUNIOR' && 'bg-(--loom-cyan)',
-                          quiz.level === 'MIDDLE' && 'bg-(--loom-yellow)',
-                          quiz.level === 'SENIOR' && 'bg-(--glitch-pink)'
-                        )}
-                      />
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
+          {sortedQuizzes.map((quiz: any) => (
+            <CatalogCard
+              key={quiz.id}
+              quiz={quiz}
+              lastAttempt={attemptStatuses[quiz.id]}
+            />
+          ))}
         </div>
       )}
     </div>

@@ -1,22 +1,27 @@
 'use client';
 
+import { useMemo } from 'react';
+import { useSession } from 'next-auth/react';
+
 import { EmptyState } from '@/components/ui/feedback/EmptyState';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
 import { CatalogCard } from '@/components/features/CatalogCard';
 import { pluralize } from '@/lib/utils';
-import { useFavorites } from '@/hooks/useFavorites';
-import { useMemo } from 'react';
+
+import {
+  useGetFavoritesQuery,
+  useToggleFavoriteMutation,
+} from '@/store/api/favoritesApi';
 import { useGetStatusesQuery } from '@/store/api/attemptsApi';
 
 export default function FavoritesPage() {
+  const { data: session, status } = useSession();
 
-  const {
-    favorites,
-    isLoading,
-    status,
-    toggle,
-    isAuthenticated,
-  } = useFavorites();
+  const { data: favorites = [], isLoading } = useGetFavoritesQuery(undefined, {
+    skip: !session,
+  });
+
+  const [toggleFavorite] = useToggleFavoriteMutation();
 
   const quizIds = useMemo(
     () => favorites.map((fav) => fav.quiz.id),
@@ -27,7 +32,6 @@ export default function FavoritesPage() {
     skip: quizIds.length === 0,
   });
 
-
   if (status === 'loading') {
     return (
       <div className="min-h-screen bg-(--loom-black) text-(--loom-white) pb-24 px-4 pt-6">
@@ -37,19 +41,16 @@ export default function FavoritesPage() {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!session) {
     return (
       <div className="min-h-screen bg-(--loom-black) text-(--loom-white) flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-(--loom-white)/5 rounded-2xl p-8 glitch-border text-center space-y-4">
           <div className="text-6xl mb-4">⭐</div>
 
-          <h2 className="text-2xl font-bold">
-            Избранное доступно только авторизованным
-          </h2>
+          <h2 className="text-2xl font-bold">Избранное доступно только авторизованным</h2>
 
           <p className="text-(--loom-white)/60 text-sm">
-            Войдите или зарегистрируйтесь, чтобы сохранять квизы и возвращаться
-            к ним позже.
+            Войдите или зарегистрируйтесь, чтобы сохранять квизы и возвращаться к ним позже.
           </p>
 
           <div className="flex flex-col gap-3 pt-4">
@@ -79,17 +80,14 @@ export default function FavoritesPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {[1, 2, 3, 4].map((i) => (
-            <Skeleton
-              key={i}
-              className="h-32 w-full rounded-xl"
-            />
+            <Skeleton key={i} className="h-32 w-full rounded-xl" />
           ))}
         </div>
       </div>
     );
   }
 
-  if (!favorites.length) {
+  if (favorites.length === 0) {
     return (
       <div className="min-h-screen bg-(--loom-black) text-(--loom-white) pb-24 px-4 pt-6">
         <h1 className="text-2xl font-bold mb-6">Избранное</h1>
@@ -108,26 +106,24 @@ export default function FavoritesPage() {
         <h1 className="text-2xl font-bold">Избранное</h1>
 
         <span className="text-sm text-(--loom-white)/60">
-          {favorites.length}{' '}
-          {pluralize(
-            favorites.length,
-            'квиз',
-            'квиза',
-            'квизов'
-          )}
+          {favorites.length} {pluralize(favorites.length, 'квиз', 'квиза', 'квизов')}
         </span>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {favorites.map((fav: any) => (
+        {favorites.map((fav) => (
           <CatalogCard
             key={fav.quiz.id}
             quiz={fav.quiz}
             lastAttempt={attemptStatuses[fav.quiz.id]}
             showFavorite
-            isFavorited
-            isFavoriteLoading={isLoading}
-            onFavoriteToggle={() => toggle(fav.quiz.id)}
+            isFavorited={true}
+            onFavoriteToggle={() =>
+              toggleFavorite({
+                quizId: fav.quiz.id,
+                quiz: fav.quiz,
+              }).unwrap()
+            }
           />
         ))}
       </div>

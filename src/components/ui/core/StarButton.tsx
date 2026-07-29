@@ -6,35 +6,39 @@ import { cn } from '@/lib/utils';
 interface StarButtonProps {
   active: boolean;
   onClick: () => void;
-  loading?: boolean;
   className?: string;
   size?: number;
+  disabled?: boolean;
 }
 
 export function StarButton({
   active,
   onClick,
-  loading = false,
   className,
   size = 20,
+  disabled = false,
 }: StarButtonProps) {
   return (
     <button
-     type="button"
+      type="button"
+      disabled={disabled}
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
-        console.log('[StarButton] click');
         onClick();
       }}
-      disabled={loading}
       className={cn(
-        'transition-all duration-200 hover:scale-110 active:scale-95',
+        'transition-all duration-200 hover:scale-110 active:scale-95 disabled:opacity-50',
         active
           ? 'text-(--loom-yellow)'
           : 'text-(--loom-white)/40 hover:text-(--loom-white)',
         className
       )}
+      aria-label={
+        active
+          ? 'Удалить из избранного'
+          : 'Добавить в избранное'
+      }
     >
       <Star
         size={size}

@@ -60,7 +60,7 @@ export function CatalogCard({
   const questionsCount = quiz._count?.questions ?? quiz.questions?.length ?? 0;
 
   return (
-    <Card className={cn('overflow-hidden flex flex-row p-4 gap-3 h-39', className)}>
+    <Card className={cn('overflow-hidden flex flex-row p-4 gap-3 min-h-39', className)}>
       {/* Левая часть */}
       <div className="flex-1 flex flex-col h-full min-w-0">
         {/* Заголовок */}

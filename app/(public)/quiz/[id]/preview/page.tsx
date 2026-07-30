@@ -1,18 +1,40 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import { useMemo } from 'react';
+
 import { useGetQuizByIdQuery } from '@/store/api/quizApi';
+import {
+  useGetFavoritesQuery,
+  useToggleFavoriteMutation,
+} from '@/store/api/favoritesApi';
+
 import { Button } from '@/components/ui/core/Button';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, FileQuestion } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { StarButton } from '@/components/ui/core/StarButton';
 
 export default function QuizPreviewPage() {
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
+
+  const { data: session } = useSession();
+
   const { data: quiz, isLoading } = useGetQuizByIdQuery(id);
+
+  const { data: favorites = [] } = useGetFavoritesQuery(undefined, {
+    skip: !session,
+  });
+
+  const [toggleFavorite] = useToggleFavoriteMutation();
+
+  const favoriteIds = useMemo(
+    () => new Set(favorites.map((fav) => fav.quiz.id)),
+    [favorites]
+  );
 
   if (isLoading) {
     return (
@@ -43,7 +65,6 @@ export default function QuizPreviewPage() {
 
   return (
     <div className="min-h-[calc(100vh-140px)] flex flex-col p-4">
-      {/* Кнопка назад */}
       <div className="max-w-md w-full mx-auto mb-4">
         <button
           onClick={() => router.back()}
@@ -54,7 +75,6 @@ export default function QuizPreviewPage() {
         </button>
       </div>
 
-      {/* Карточка по центру свободного пространства */}
       <div className="flex-1 flex items-center justify-center">
         <div className="max-w-md w-full bg-(--loom-white)/5 rounded-2xl p-8 glitch-border relative overflow-hidden">
           <div className="absolute inset-0 pointer-events-none">
@@ -77,7 +97,16 @@ export default function QuizPreviewPage() {
             </div>
 
             <h1 className="text-2xl font-bold text-(--loom-white)">{quiz.title}</h1>
-<StarButton quizId={quiz.id} size={32} />
+
+            {/* Звезда — точно как в каталоге */}
+            <div className="flex justify-center">
+              <StarButton
+                active={favoriteIds.has(quiz.id)}
+                onClick={() => toggleFavorite({ quizId: quiz.id, quiz }).unwrap()}
+                size={32}
+              />
+            </div>
+
             {quiz.description && (
               <p className="text-(--loom-white)/60 text-base">{quiz.description}</p>
             )}

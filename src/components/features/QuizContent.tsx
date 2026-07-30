@@ -1,5 +1,3 @@
-// src\components\features\QuizContent.tsx
-
 'use client';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,7 +16,7 @@ import {
 } from '@/store/slices/quizSlice';
 import { Button } from '@/components/ui/core/Button';
 import { useSaveAttemptMutation } from '@/store/api/attemptsApi';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { persistor } from '@/store/store';
 import { useGetQuizByIdQuery } from '@/store/api/quizApi';
@@ -29,6 +27,7 @@ import { cn } from '@/lib/utils';
 import { useGetFavoritesQuery, useToggleFavoriteMutation } from '@/store/api/favoritesApi';
 import { useMemo } from 'react';
 import { StarButton } from '../ui/core/StarButton';
+import { Skeleton } from '@/components/ui/feedback/Skeleton';
 
 export function QuizContent({ id }: { id: string }) {
   const dispatch = useDispatch();
@@ -39,7 +38,7 @@ export function QuizContent({ id }: { id: string }) {
   const { questions, answers, currentIndex, isFinished, currentQuiz } = useSelector(selectQuizState);
   const [saveAttempt] = useSaveAttemptMutation();
   const savedRef = useRef(false);
-  const { data: quizData } = useGetQuizByIdQuery(id, { skip: !!currentQuiz });
+  const { data: quizData, isLoading: quizLoading } = useGetQuizByIdQuery(id, { skip: !!currentQuiz });
   const { status } = useSession();
   const isAuthenticated = status === 'authenticated';
   const { warning } = useToast();
@@ -47,12 +46,19 @@ export function QuizContent({ id }: { id: string }) {
   const { data: favorites = [] } = useGetFavoritesQuery(undefined, { skip: !session });
   const [toggleFavorite] = useToggleFavoriteMutation();
 
+  const [redirecting, setRedirecting] = useState(false);
+
   const favoriteIds = useMemo(
     () => new Set(favorites.map((fav) => fav.quiz.id)),
     [favorites]
   );
 
-  // Загрузка квиза
+  useEffect(() => {
+    if (redirecting) {
+      router.push('/catalog');
+    }
+  }, [redirecting, router]);
+
   useEffect(() => {
     if (currentQuiz && currentQuiz.id !== id) {
       persistor.purge();
@@ -70,7 +76,6 @@ export function QuizContent({ id }: { id: string }) {
     }
   }, [quizData, currentQuiz, dispatch]);
 
-  // Сохранение
   useEffect(() => {
     if (isFinished && questions.length > 0 && !savedRef.current) {
       savedRef.current = true;
@@ -91,83 +96,108 @@ export function QuizContent({ id }: { id: string }) {
     }
   }, [isFinished, questions, answers, id, saveAttempt, dispatch]);
 
+  if (isFinished) {
+    return (
+      <div className="min-h-screen bg-(--loom-black) flex flex-col items-center justify-center p-6 text-center space-y-6">
+        <h2 className="text-4xl font-bold text-(--loom-yellow) glitch-text" data-text="Квиз завершён!">
+          Квиз завершён!
+        </h2>
 
-// Экран результатов
-if (isFinished) {
-  return (
-    <div className="min-h-screen bg-(--loom-black) flex flex-col items-center justify-center p-6 text-center space-y-6">
-      <h2 className="text-4xl font-bold text-(--loom-yellow) glitch-text" data-text="Квиз завершён!">
-        Квиз завершён!
-      </h2>
-
-      <div className="text-(--loom-white) text-6xl font-bold">
-        {score} <span className="text-2xl text-(--loom-white)/60">/ {questions.length}</span>
-      </div>
-
-      {/* ✅ Плашка — теперь это <div> с cursor-pointer, а не <button> */}
-      {(quizData || currentQuiz) && (
-        <div className="flex flex-col items-center gap-2 mt-2">
-          <div
-            onClick={() => {
-              const target = quizData || currentQuiz;
-              if (target) {
-                toggleFavorite({
-                  quizId: target.id,
-                  quiz: target,
-                }).unwrap();
-              }
-            }}
-            className="flex items-center gap-2 px-5 py-2 rounded-full bg-(--loom-white)/5 hover:bg-(--loom-white)/10 border border-(--loom-white)/10 transition-all cursor-pointer text-(--loom-white)/80 hover:text-(--loom-white)"
-          >
-            <StarButton
-              active={favoriteIds.has((quizData || currentQuiz)!.id)}
-              size={28}
-              className="text-(--loom-yellow)! hover:scale-110 transition-transform"
-              onClick={() => {
-                const target = quizData || currentQuiz;
-                if (target) {
-                  toggleFavorite({
-                    quizId: target.id,
-                    quiz: target,
-                  }).unwrap();
-                }
-              }}
-            />
-            <span className="text-sm font-medium">В избранное</span>
-          </div>
+        <div className="text-(--loom-white) text-6xl font-bold">
+          {score} <span className="text-2xl text-(--loom-white)/60">/ {questions.length}</span>
         </div>
-      )}
 
-      <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm mt-6">
-        <Button
-          onClick={() => { dispatch(resetQuiz()); router.push(`/quiz/${id}`); }}
-          className="flex-1 bg-(--loom-yellow) text-black font-bold py-3 rounded-xl hover:opacity-90 transition"
-        >
-          Пройти заново
-        </Button>
-        <Button
-          onClick={() => { dispatch(resetQuiz()); router.push('/'); }}
-          className="flex-1 bg-(--loom-white)/10 text-(--loom-white) py-3 rounded-xl border border-(--loom-white)/20 hover:bg-(--loom-white)/20 transition"
-        >
-          На главную
-        </Button>
+        {quizData && (
+          <div className="flex flex-col items-center gap-2 mt-2">
+            <div
+              onClick={() => {
+                toggleFavorite({
+                  quizId: quizData.id,
+                  quiz: quizData,
+                }).unwrap();
+              }}
+              className="flex items-center gap-2 px-5 py-2 rounded-full bg-(--loom-white)/5 hover:bg-(--loom-white)/10 border border-(--loom-white)/10 transition-all cursor-pointer text-(--loom-white)/80 hover:text-(--loom-white) min-w-45 justify-center"
+            >
+              <StarButton
+                active={favoriteIds.has(quizData.id)}
+                size={20}
+                className="text-(--loom-yellow)! hover:scale-110 transition-transform"
+                onClick={() => {
+                  toggleFavorite({
+                    quizId: quizData.id,
+                    quiz: quizData,
+                  }).unwrap();
+                }}
+              />
+              <span className="text-sm font-medium">
+                {favoriteIds.has(quizData.id)
+                  ? 'В избранном'
+                  : 'Добавить в избранное'}
+              </span>
+            </div>
+          </div>
+        )}
+
+        <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm mt-6">
+          <Button
+            onClick={() => {
+              dispatch(resetQuiz());
+              setRedirecting(true);
+            }}
+            className="flex-1 bg-(--loom-yellow) text-black font-bold py-3 rounded-xl hover:opacity-90 transition"
+          >
+            Пройти заново
+          </Button>
+          <Button
+            onClick={() => {
+              dispatch(resetQuiz());
+              setRedirecting(true);
+            }}
+            className="flex-1 bg-(--loom-white)/10 text-(--loom-white) py-3 rounded-xl border border-(--loom-white)/20 hover:bg-(--loom-white)/20 transition"
+          >
+            В каталог
+          </Button>
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
+
   if (!currentQuestion) return null;
 
   const currentAnswer = answers.find(a => a.questionId === currentQuestion.id);
   const isCurrentConfirmed = !!currentAnswer;
   const optionLetters = ['A', 'B', 'C', 'D'];
 
+  if (redirecting) {
+    return (
+      <div className="min-h-screen bg-(--loom-black) flex items-center justify-center">
+        <Skeleton className="h-full w-full rounded-xl" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-(--loom-black) pt-8 pb-24 px-4 flex flex-col items-center max-w-2xl mx-auto">
-
-      {/* Прогресс и заголовок */}
       <div className="w-full mb-6">
-        {currentQuiz && (
-          <h1 className="text-2xl font-bold text-(--loom-cyan) text-center mb-2">{currentQuiz.title}</h1>
+        {currentQuiz && quizData && (
+          <div className="flex items-center justify-center gap-3 mb-2">
+            <h1 className="text-2xl font-bold text-(--loom-cyan) text-center">
+              {currentQuiz.title}
+            </h1>
+            <StarButton
+              active={favoriteIds.has(quizData.id)}
+              onClick={() => {
+                if (quizData) {
+                  toggleFavorite({
+                    quizId: quizData.id,
+                    quiz: quizData,
+                  }).unwrap();
+                }
+              }}
+              size={28}
+              className="ml-2"
+            />
+          </div>
         )}
 
         <div className="flex items-center gap-4 text-(--loom-white)/60 text-sm mb-2">
@@ -184,7 +214,6 @@ if (isFinished) {
         </div>
       </div>
 
-      {/* Вопрос и варианты */}
       <AnimatePresence mode="wait">
         <motion.div
           key={currentQuestion.id}
@@ -200,35 +229,29 @@ if (isFinished) {
 
           <div className="space-y-3">
             {currentQuestion.options.map((opt: any, idx: number) => {
-
               if (!opt || typeof opt !== 'object') return null;
 
               const isSelected = selectedOption === opt.id;
               const isCorrectOption = currentQuestion.correctOptionId === opt.id;
 
-              // === Базовое состояние (градиент жёлтый → циан) ===
               let borderClass = 'border-(--loom-white)/10 hover:border-(--loom-cyan)/40';
               let letterClass = 'font-bold bg-gradient-to-r from-(--loom-yellow) to-(--loom-cyan) bg-clip-text text-transparent';
               let textClass = 'text-(--loom-white)/70';
               let icon = null;
 
-              // === Выбрано, но ещё не подтверждено ===
               if (isSelected && !isCurrentConfirmed) {
                 borderClass = 'glitch-border';
                 letterClass = 'text-(--loom-yellow) font-bold';
                 textClass = 'text-(--loom-yellow)';
               }
 
-              // === Подтверждено ===
               if (isCurrentConfirmed) {
                 if (isCorrectOption) {
-                  // Правильный — чистый циан (как награда)
                   borderClass = 'border-(--loom-cyan)';
                   letterClass = 'text-(--loom-cyan) font-bold';
                   textClass = 'text-(--loom-cyan)';
                   icon = <Check size={18} className="text-(--loom-cyan) ml-auto" />;
                 } else if (currentAnswer?.selectedOptionId === opt.id && !currentAnswer?.isCorrect) {
-                  // Неправильный — розовый
                   borderClass = 'border-(--glitch-pink)';
                   letterClass = 'text-(--glitch-pink) font-bold';
                   textClass = 'text-(--glitch-pink)/80';
@@ -260,7 +283,6 @@ if (isFinished) {
             })}
           </div>
 
-          {/* Кнопки управления */}
           <div className="flex flex-col items-center gap-2 pt-8">
             {!isCurrentConfirmed ? (
               <Button

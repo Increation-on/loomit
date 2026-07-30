@@ -72,16 +72,16 @@ export default function HomePage() {
   const isSameQuiz = currentQuiz?.id === pendingQuizId;
 
   const handleQuizClick = (quizId: string) => {
-if (currentQuiz?.id === quizId) {
-  router.push(`/quiz/${quizId}/preview`);
-  return;
-}
-  if (hasUnfinished) {
-    setPendingQuizId(quizId);
-  } else {
-    router.push(`/quiz/${quizId}/preview`);
-  }
-};
+    if (currentQuiz?.id === quizId) {
+      router.push(`/quiz/${quizId}/`);
+      return;
+    }
+    if (hasUnfinished) {
+      setPendingQuizId(quizId);
+    } else {
+      router.push(`/quiz/${quizId}/preview`);
+    }
+  };
 
   const handleStartNew = async () => {
     await persistor.purge();
@@ -148,9 +148,8 @@ if (currentQuiz?.id === quizId) {
                         setClickedId(quiz.id);
                         setTimeout(() => setClickedId(null), 1000);
                       }}
-                      className={`w-50 h-46 shrink-0 snap-start bg-(--loom-cyan)/20 p-4 rounded-xl cursor-pointer relative transition-all duration-300 try-it-card flex flex-col ${
-                        isActive || isClicked ? 'snake-active' : ''
-                      }`}
+                      className={`w-50 h-46 shrink-0 snap-start bg-(--loom-cyan)/20 p-4 rounded-xl cursor-pointer relative transition-all duration-300 try-it-card flex flex-col ${isActive || isClicked ? 'snake-active' : ''
+                        }`}
                     >
                       <div className="flex items-center justify-between mb-1.5">
                         <div className="flex items-center gap-2">

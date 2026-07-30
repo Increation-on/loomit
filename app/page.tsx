@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/core/Button';
 import { SearchWithDropdown } from '@/components/ui/core/SearchWithDropDown';
 import { TryItSkeleton, CategorySkeleton } from '@/components/ui/feedback/Skeleton';
 import { cn, pluralize } from '@/lib/utils';
-import { StarButton } from '@/components/ui/core/StarButton';
+import { ChevronRight } from 'lucide-react';
 
 export default function HomePage() {
   const { data: quizzes, isLoading: isQuizzesLoading } = useGetQuizzesQuery({});
@@ -202,13 +202,7 @@ export default function HomePage() {
       </div>
 
       <div className="px-4 mt-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-bold">Категории</h2>
-          {categories && categories.length > 4 && (
-            <Link href="/catalog" className="text-sm text-(--loom-yellow)">Все категории</Link>
-          )}
-        </div>
-
+        <h2 className="text-lg font-bold mb-2">Категории</h2>
         {isCategoriesLoading ? (
           <div className="space-y-3">
             {[1, 2, 3, 4].map((i) => (
@@ -247,6 +241,17 @@ export default function HomePage() {
         ) : (
           <EmptyState title="Нет доступных категорий" />
         )}
+        <div className='mt-2 flex justify-end mr-1'>
+          {categories && categories.length > 5 && (
+            <Link href="/catalog" className="text-sm text-(--loom-yellow)">
+              <div className='flex'>
+                Все категории
+                <ChevronRight size={20} />
+              </div>
+
+            </Link>
+          )}
+        </div>
       </div>
 
       <Modal

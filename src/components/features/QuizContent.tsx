@@ -1,3 +1,5 @@
+// src\components\features\QuizContent.tsx
+
 'use client';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -24,6 +26,9 @@ import { useSession } from 'next-auth/react';
 import { useToast } from '@/components/ui/feedback/ToastContainer';
 import { Check, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useGetFavoritesQuery, useToggleFavoriteMutation } from '@/store/api/favoritesApi';
+import { useMemo } from 'react';
+import { StarButton } from '../ui/core/StarButton';
 
 export function QuizContent({ id }: { id: string }) {
   const dispatch = useDispatch();
@@ -38,6 +43,14 @@ export function QuizContent({ id }: { id: string }) {
   const { status } = useSession();
   const isAuthenticated = status === 'authenticated';
   const { warning } = useToast();
+  const { data: session } = useSession();
+  const { data: favorites = [] } = useGetFavoritesQuery(undefined, { skip: !session });
+  const [toggleFavorite] = useToggleFavoriteMutation();
+
+  const favoriteIds = useMemo(
+    () => new Set(favorites.map((fav) => fav.quiz.id)),
+    [favorites]
+  );
 
   // Загрузка квиза
   useEffect(() => {
@@ -78,34 +91,70 @@ export function QuizContent({ id }: { id: string }) {
     }
   }, [isFinished, questions, answers, id, saveAttempt, dispatch]);
 
-  // Экран результатов
-  if (isFinished) {
-    return (
-      <div className="min-h-screen bg-(--loom-black) flex flex-col items-center justify-center p-6 text-center space-y-6">
-        <h2 className="text-4xl font-bold text-(--loom-yellow) glitch-text" data-text="Квиз завершён!">
-          Квиз завершён!
-        </h2>
-        <div className="text-(--loom-white) text-6xl font-bold">
-          {score} <span className="text-2xl text-(--loom-white)/60">/ {questions.length}</span>
-        </div>
-        <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm">
-          <Button
-            onClick={() => { dispatch(resetQuiz()); router.push(`/quiz/${id}`); }}
-            className="flex-1 bg-(--loom-yellow) text-black font-bold py-3 rounded-xl hover:opacity-90 transition"
-          >
-            Пройти заново
-          </Button>
-          <Button
-            onClick={() => { dispatch(resetQuiz()); router.push('/'); }}
-            className="flex-1 bg-(--loom-white)/10 text-(--loom-white) py-3 rounded-xl border border-(--loom-white)/20 hover:bg-(--loom-white)/20 transition"
-          >
-            На главную
-          </Button>
-        </div>
-      </div>
-    );
-  }
 
+// Экран результатов
+if (isFinished) {
+  return (
+    <div className="min-h-screen bg-(--loom-black) flex flex-col items-center justify-center p-6 text-center space-y-6">
+      <h2 className="text-4xl font-bold text-(--loom-yellow) glitch-text" data-text="Квиз завершён!">
+        Квиз завершён!
+      </h2>
+
+      <div className="text-(--loom-white) text-6xl font-bold">
+        {score} <span className="text-2xl text-(--loom-white)/60">/ {questions.length}</span>
+      </div>
+
+      {/* ✅ Плашка — теперь это <div> с cursor-pointer, а не <button> */}
+      {(quizData || currentQuiz) && (
+        <div className="flex flex-col items-center gap-2 mt-2">
+          <div
+            onClick={() => {
+              const target = quizData || currentQuiz;
+              if (target) {
+                toggleFavorite({
+                  quizId: target.id,
+                  quiz: target,
+                }).unwrap();
+              }
+            }}
+            className="flex items-center gap-2 px-5 py-2 rounded-full bg-(--loom-white)/5 hover:bg-(--loom-white)/10 border border-(--loom-white)/10 transition-all cursor-pointer text-(--loom-white)/80 hover:text-(--loom-white)"
+          >
+            <StarButton
+              active={favoriteIds.has((quizData || currentQuiz)!.id)}
+              size={28}
+              className="text-(--loom-yellow)! hover:scale-110 transition-transform"
+              onClick={() => {
+                const target = quizData || currentQuiz;
+                if (target) {
+                  toggleFavorite({
+                    quizId: target.id,
+                    quiz: target,
+                  }).unwrap();
+                }
+              }}
+            />
+            <span className="text-sm font-medium">В избранное</span>
+          </div>
+        </div>
+      )}
+
+      <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm mt-6">
+        <Button
+          onClick={() => { dispatch(resetQuiz()); router.push(`/quiz/${id}`); }}
+          className="flex-1 bg-(--loom-yellow) text-black font-bold py-3 rounded-xl hover:opacity-90 transition"
+        >
+          Пройти заново
+        </Button>
+        <Button
+          onClick={() => { dispatch(resetQuiz()); router.push('/'); }}
+          className="flex-1 bg-(--loom-white)/10 text-(--loom-white) py-3 rounded-xl border border-(--loom-white)/20 hover:bg-(--loom-white)/20 transition"
+        >
+          На главную
+        </Button>
+      </div>
+    </div>
+  );
+}
   if (!currentQuestion) return null;
 
   const currentAnswer = answers.find(a => a.questionId === currentQuestion.id);
@@ -120,6 +169,7 @@ export function QuizContent({ id }: { id: string }) {
         {currentQuiz && (
           <h1 className="text-2xl font-bold text-(--loom-cyan) text-center mb-2">{currentQuiz.title}</h1>
         )}
+
         <div className="flex items-center gap-4 text-(--loom-white)/60 text-sm mb-2">
           <span>Вопрос {currentIndex + 1} из {questions.length}</span>
           <div className="flex-1 h-1 bg-(--loom-white)/10 rounded-full overflow-hidden">

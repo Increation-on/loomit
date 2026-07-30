@@ -61,11 +61,7 @@ export default function CatalogPage() {
   );
 
 
-  const {
-    data: attemptStatuses = {},
-  } = useGetStatusesQuery(quizIds, {
-    skip: quizIds.length === 0,
-  });
+  const { data: attemptStatuses = {} } = useGetStatusesQuery(quizIds, {});
 
 
   const displayedQuizzes = useMemo(() => {
@@ -82,6 +78,7 @@ export default function CatalogPage() {
 
       return matchCategory && matchLevel;
     });
+
 
 
     switch (sortBy) {

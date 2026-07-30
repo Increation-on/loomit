@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/core/Button';
 import { SearchWithDropdown } from '@/components/ui/core/SearchWithDropDown';
 import { TryItSkeleton, CategorySkeleton } from '@/components/ui/feedback/Skeleton';
 import { cn, pluralize } from '@/lib/utils';
-import { StarButton } from '@/components/ui/core/StarButton';
+import { ChevronRight } from 'lucide-react';
 
 export default function HomePage() {
   const { data: quizzes, isLoading: isQuizzesLoading } = useGetQuizzesQuery({});
@@ -72,16 +72,16 @@ export default function HomePage() {
   const isSameQuiz = currentQuiz?.id === pendingQuizId;
 
   const handleQuizClick = (quizId: string) => {
-  if (currentQuiz?.id === quizId) {
-    router.push(`/quiz/${quizId}/preview`);
-    return;
-  }
-  if (hasUnfinished) {
-    setPendingQuizId(quizId);
-  } else {
-    router.push(`/quiz/${quizId}/preview`);
-  }
-};
+    if (currentQuiz?.id === quizId) {
+      router.push(`/quiz/${quizId}/`);
+      return;
+    }
+    if (hasUnfinished) {
+      setPendingQuizId(quizId);
+    } else {
+      router.push(`/quiz/${quizId}/preview`);
+    }
+  };
 
   const handleStartNew = async () => {
     await persistor.purge();
@@ -148,9 +148,8 @@ export default function HomePage() {
                         setClickedId(quiz.id);
                         setTimeout(() => setClickedId(null), 1000);
                       }}
-                      className={`w-50 h-46 shrink-0 snap-start bg-(--loom-cyan)/20 p-4 rounded-xl cursor-pointer relative transition-all duration-300 try-it-card flex flex-col ${
-                        isActive || isClicked ? 'snake-active' : ''
-                      }`}
+                      className={`w-50 h-46 shrink-0 snap-start bg-(--loom-cyan)/20 p-4 rounded-xl cursor-pointer relative transition-all duration-300 try-it-card flex flex-col ${isActive || isClicked ? 'snake-active' : ''
+                        }`}
                     >
                       <div className="flex items-center justify-between mb-1.5">
                         <div className="flex items-center gap-2">
@@ -203,13 +202,7 @@ export default function HomePage() {
       </div>
 
       <div className="px-4 mt-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-bold">Категории</h2>
-          {categories && categories.length > 4 && (
-            <Link href="/catalog" className="text-sm text-(--loom-yellow)">Все категории</Link>
-          )}
-        </div>
-
+        <h2 className="text-lg font-bold mb-2">Категории</h2>
         {isCategoriesLoading ? (
           <div className="space-y-3">
             {[1, 2, 3, 4].map((i) => (
@@ -248,6 +241,17 @@ export default function HomePage() {
         ) : (
           <EmptyState title="Нет доступных категорий" />
         )}
+        <div className='mt-2 flex justify-end mr-1'>
+          {categories && categories.length > 5 && (
+            <Link href="/catalog" className="text-sm text-(--loom-yellow)">
+              <div className='flex'>
+                Все категории
+                <ChevronRight size={20} />
+              </div>
+
+            </Link>
+          )}
+        </div>
       </div>
 
       <Modal

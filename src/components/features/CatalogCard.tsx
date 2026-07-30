@@ -86,40 +86,43 @@ export function CatalogCard({
             </p>
           </div>
         </div>
-
-        {/* Теги */}
-        <div className="flex flex-wrap items-center gap-3 text-xs mt-2">
-          <span className="text-(--loom-white)/50">
+        
+        {/* Теги  */}
+        <div className="flex flex-wrap justify-center gap-3 text-xs mt-1">
+          <span className="text-(--loom-white)/50 whitespace-nowrap">
             {questionsCount}{' '}
             {pluralize(questionsCount, 'вопрос', 'вопроса', 'вопросов')}
           </span>
 
-          <div className="flex items-center gap-1.5">
-            <span className={cn('w-1.5 h-1.5 rounded-full', levelDotColor)} />
-            <span className="text-(--loom-white)/50">{levelLabel}</span>
-          </div>
-
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 whitespace-nowrap">
             <span className="text-(--loom-white)/20">●</span>
-            <span className="text-(--loom-magenta)">{quiz.category?.name || 'Без категории'}</span>
+            <span className="text-(--loom-magenta) truncate max-w-25 md:max-w-35">
+              {quiz.category?.name || 'Без категории'}
+            </span>
+            <span className="text-(--loom-white)/20">●</span>
           </div>
 
-          {lastAttempt && (
-            <>
-              <span className="text-(--loom-white)/20">●</span>
-              <span
-                className={cn(
-                  'font-semibold',
-                  lastAttempt.score === lastAttempt.totalQuestions
-                    ? 'text-(--loom-cyan)'
-                    : 'text-(--loom-yellow)'
-                )}
-              >
-                {lastAttempt.score}/{lastAttempt.totalQuestions}
-              </span>
-            </>
-          )}
+           <div className="flex items-center gap-1.5 whitespace-nowrap">
+            <span className="text-(--loom-white)/50">{levelLabel}</span>
+            <span className={cn('w-1.5 h-1.5 rounded-full', levelDotColor)} />
+          </div>
         </div>
+
+        {/* Попытки — отдельная строка, по центру */}
+        {lastAttempt && (
+          <div className="flex justify-center mt-1">
+            <span
+              className={cn(
+                'text-sm font-semibold',
+                lastAttempt.score === lastAttempt.totalQuestions
+                  ? 'text-(--loom-cyan)'
+                  : 'text-(--loom-yellow)'
+              )}
+            >
+              {lastAttempt.score}/{lastAttempt.totalQuestions}
+            </span>
+          </div>
+        )}
 
         {/* Кнопка */}
         <div className="mt-auto pt-2">
@@ -145,7 +148,7 @@ export function CatalogCard({
             active={isFavorited}
             size={28}
             className="hover:scale-110 transition-transform"
-            onClick={onFavoriteToggle ?? (() => {})}
+            onClick={onFavoriteToggle ?? (() => { })}
           />
         </div>
       )}

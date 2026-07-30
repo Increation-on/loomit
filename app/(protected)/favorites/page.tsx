@@ -28,9 +28,7 @@ export default function FavoritesPage() {
     [favorites]
   );
 
-  const { data: attemptStatuses = {} } = useGetStatusesQuery(quizIds, {
-    skip: quizIds.length === 0,
-  });
+  const { data: attemptStatuses = {} } = useGetStatusesQuery(quizIds, {});
 
   if (status === 'loading') {
     return (

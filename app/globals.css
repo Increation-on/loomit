@@ -200,15 +200,6 @@ h1, h2, h3, .font-display {
 
 
 
-
-
-
-
-
-
-
-
-
 /* ===== Браузерные артефакты — только для PWA ===== */
 .pwa-mode * {
   -webkit-tap-highlight-color: transparent;

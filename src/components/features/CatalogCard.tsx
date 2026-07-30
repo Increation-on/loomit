@@ -96,7 +96,7 @@ export function CatalogCard({
 
           <div className="flex items-center gap-1.5 whitespace-nowrap">
             <span className="text-(--loom-white)/20">●</span>
-            <span className="text-(--loom-magenta) truncate max-w-[100px] md:max-w-[140px]">
+            <span className="text-(--loom-magenta) truncate max-w-25 md:max-w-35">
               {quiz.category?.name || 'Без категории'}
             </span>
             <span className="text-(--loom-white)/20">●</span>

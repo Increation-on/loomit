@@ -30,7 +30,7 @@ export function Filters({
   disableAllOption = false,
   levelFilter,
   setLevelFilter,
-  includeLevelAll = true, // по умолчанию «Все» есть
+  includeLevelAll = true,
   sortBy,
   setSortBy,
   showSort = true,
@@ -65,7 +65,7 @@ export function Filters({
           {isLoading ? (
             <>
               {[1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} className="h-7 w-20 rounded-full shrink-0" />
+                <Skeleton key={i} className="h-8 w-24 rounded-full shrink-0" />
               ))}
             </>
           ) : (
@@ -74,7 +74,7 @@ export function Filters({
                 key={option.value}
                 onClick={() => setCategoryFilter(option.value)}
                 className={cn(
-                  'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
+                  'px-4 py-2 text-sm rounded-full transition-colors whitespace-nowrap',
                   categoryFilter === option.value
                     ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
                     : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
@@ -97,7 +97,7 @@ export function Filters({
                 key={option.value}
                 onClick={() => setLevelFilter(option.value)}
                 className={cn(
-                  'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap',
+                  'px-4 py-2 text-sm rounded-full transition-colors whitespace-nowrap',
                   levelFilter === option.value
                     ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
                     : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
@@ -121,7 +121,7 @@ export function Filters({
                 variant={sortBy === option.value ? 'glitch' : 'secondary'}
                 size="sm"
                 onClick={() => setSortBy(option.value)}
-                className="px-4 py-1.5 text-xs shrink-0"
+                className="px-4 py-2 text-sm shrink-0"
               >
                 {option.label}
               </Button>

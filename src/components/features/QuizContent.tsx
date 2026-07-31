@@ -179,11 +179,11 @@ export function QuizContent({ id }: { id: string }) {
   }
 
   return (
-    <div className={`min-h-screen bg-(--loom-black) pb-24 flex flex-col items-center mx-auto ${hideNavigation ? 'pt-16' : 'pt-8'}`}>
+    <div className={`min-h-screen bg-(--loom-black) pb-24 flex flex-col items-center mx-auto ${hideNavigation ? 'pt-10' : 'pt-16'}`}>
       <div className="w-full mb-6">
         {currentQuiz && (
           <div className="flex items-center justify-center gap-3 mb-2">
-            <h1 className="text-2xl font-bold text-(--loom-cyan) text-center mb-3">
+            <h1 className="text-2xl font-bold text-(--loom-cyan) text-center mb-2">
               {currentQuiz.title}
             </h1>
           </div>
@@ -272,7 +272,7 @@ export function QuizContent({ id }: { id: string }) {
             })}
           </div>
 
-          <div className="flex flex-col items-center gap-2 pt-8">
+          <div className="flex flex-col items-center gap-2 pt-2">
             {!isCurrentConfirmed ? (
               <Button
                 variant="glitch"

@@ -233,3 +233,10 @@ h1, h2, h3, .font-display {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
 }
+
+/* Скрываем хедер и футер только на странице квиза в PWA */
+.quiz-pwa-mode header,
+.quiz-pwa-mode nav.fixed.bottom-0,
+.quiz-pwa-mode footer {
+  display: none !important;
+}

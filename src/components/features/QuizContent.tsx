@@ -183,26 +183,9 @@ export function QuizContent({ id }: { id: string }) {
   return (
     <div className={`min-h-screen bg-(--loom-black) px-4 pb-24 flex flex-col items-center max-w-2xl mx-auto ${hideNavigation ? 'pt-16' : 'pt-8'}`}>
       <div className="w-full mb-6">
-        {hideNavigation && (
-  <button
-    onClick={() => {
-      // Если есть реферер — возвращаемся на него
-      if (document.referrer) {
-        router.back();
-      } else {
-        // Если реферера нет — идём на каталог
-        router.push('/catalog');
-      }
-    }}
-    className="absolute left-4 top-4 flex items-center gap-1 text-(--loom-white)/60 hover:text-(--loom-white) transition-colors text-sm"
-  >
-    <span className="text-lg">←</span>
-    Назад
-  </button>
-)}
         {currentQuiz && (
           <div className="flex items-center justify-center gap-3 mb-2">
-            <h1 className="text-2xl font-bold text-(--loom-cyan) text-center">
+            <h1 className="text-2xl font-bold text-(--loom-cyan) text-center mb-6">
               {currentQuiz.title}
             </h1>
 

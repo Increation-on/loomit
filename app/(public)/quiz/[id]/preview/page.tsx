@@ -67,7 +67,14 @@ export default function QuizPreviewPage() {
     <div className="min-h-[calc(100vh-140px)] flex flex-col p-4">
       <div className="max-w-md w-full mx-auto mb-4">
         <button
-          onClick={() => router.back()}
+          onClick={() => {
+            const referrer = document.referrer;
+            if (referrer && !referrer.includes('/quiz/')) {
+              router.push(referrer);
+            } else {
+              router.push('/catalog');
+            }
+          }}
           className="inline-flex items-center gap-2 text-(--loom-white)/60 hover:text-(--loom-white) transition-colors"
         >
           <ArrowLeft size={18} />
@@ -98,7 +105,6 @@ export default function QuizPreviewPage() {
 
             <h1 className="text-2xl font-bold text-(--loom-white)">{quiz.title}</h1>
 
-            {/* Звезда — точно как в каталоге */}
             <div className="flex justify-center">
               <StarButton
                 active={favoriteIds.has(quiz.id)}

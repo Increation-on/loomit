@@ -22,17 +22,11 @@ export default function QuizPage() {
   }, [pathname, isPWA]);
 
   const handleBack = () => {
-    const referrer = document.referrer;
-    if (referrer && !referrer.includes('/quiz/')) {
-      router.push(referrer);
-    } else {
-      router.push('/catalog');
-    }
+    router.push('/catalog');
   };
 
   return (
     <div className="min-h-screen flex flex-col px-4 pb-safe pt-safe">
-      {/* Кнопка «Назад» — только в PWA */}
       {isPWA && (
         <button
           onClick={handleBack}
@@ -44,11 +38,10 @@ export default function QuizPage() {
           )}
         >
           <ChevronLeft size={22} />
-          Назад
+          В каталог
         </button>
       )}
 
-      {/* Плеер занимает всю высоту и центрирует контент */}
       <div className="flex-1 flex flex-col justify-center w-full mx-auto mt-8">
         <QuizPlayer />
       </div>

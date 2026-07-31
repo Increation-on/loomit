@@ -21,5 +21,9 @@ export function QuizPlayer() {
     );
   }
 
-  return <QuizContent id={id as string} />;
+  return (
+    <div className="w-full">
+      <QuizContent id={id as string} />
+    </div>
+  );
 }

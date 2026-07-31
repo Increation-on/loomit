@@ -98,8 +98,6 @@ export function QuizContent({ id }: { id: string }) {
     }
   }, [isFinished, questions, answers, id, saveAttempt, dispatch]);
 
-
-
   if (isFinished) {
     return (
       <div className="min-h-screen bg-(--loom-black) flex flex-col items-center justify-center p-6 text-center space-y-6">
@@ -181,28 +179,13 @@ export function QuizContent({ id }: { id: string }) {
   }
 
   return (
-    <div className={`min-h-screen bg-(--loom-black) px-4 pb-24 flex flex-col items-center max-w-2xl mx-auto ${hideNavigation ? 'pt-16' : 'pt-8'}`}>
+    <div className={`min-h-screen bg-(--loom-black) pb-24 flex flex-col items-center mx-auto ${hideNavigation ? 'pt-16' : 'pt-8'}`}>
       <div className="w-full mb-6">
         {currentQuiz && (
           <div className="flex items-center justify-center gap-3 mb-2">
             <h1 className="text-2xl font-bold text-(--loom-cyan) text-center mb-6">
               {currentQuiz.title}
             </h1>
-
-            {/* Звезда — переключаем только если есть полный quizData */}
-            {quizData && (
-              <StarButton
-                active={favoriteIds.has(quizData.id)}
-                onClick={() => {
-                  toggleFavorite({
-                    quizId: quizData.id,
-                    quiz: quizData,
-                  }).unwrap();
-                }}
-                size={28}
-                className="ml-2"
-              />
-            )}
           </div>
         )}
 
@@ -233,7 +216,7 @@ export function QuizContent({ id }: { id: string }) {
             {currentQuestion.text}
           </h2>
 
-          <div className="space-y-3">
+          <div className="flex flex-col gap-3 w-full mx-auto">
             {currentQuestion.options.map((opt: any, idx: number) => {
               if (!opt || typeof opt !== 'object') return null;
 
@@ -276,7 +259,7 @@ export function QuizContent({ id }: { id: string }) {
                     }
                   }}
                   className={cn(
-                    'flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200',
+                    'flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 w-full',
                     'bg-(--loom-white)/5',
                     borderClass
                   )}

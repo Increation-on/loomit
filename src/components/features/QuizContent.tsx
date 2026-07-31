@@ -28,6 +28,7 @@ import { useGetFavoritesQuery, useToggleFavoriteMutation } from '@/store/api/fav
 import { useMemo } from 'react';
 import { StarButton } from '../ui/core/StarButton';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
+import { usePWA } from '@/hooks/usePWA';
 
 export function QuizContent({ id }: { id: string }) {
   const dispatch = useDispatch();
@@ -47,6 +48,7 @@ export function QuizContent({ id }: { id: string }) {
   const [toggleFavorite] = useToggleFavoriteMutation();
 
   const [redirecting, setRedirecting] = useState(false);
+  const hideNavigation = usePWA();
 
   const favoriteIds = useMemo(
     () => new Set(favorites.map((fav) => fav.quiz.id)),
@@ -142,7 +144,7 @@ export function QuizContent({ id }: { id: string }) {
           <Button
             onClick={() => {
               dispatch(resetQuiz());
-              setRedirecting(true);
+              router.push(`/quiz/${id}`);
             }}
             className="flex-1 bg-(--loom-yellow) text-black font-bold py-3 rounded-xl hover:opacity-90 transition"
           >
@@ -151,7 +153,7 @@ export function QuizContent({ id }: { id: string }) {
           <Button
             onClick={() => {
               dispatch(resetQuiz());
-              setRedirecting(true);
+              router.push('/catalog');
             }}
             className="flex-1 bg-(--loom-white)/10 text-(--loom-white) py-3 rounded-xl border border-(--loom-white)/20 hover:bg-(--loom-white)/20 transition"
           >
@@ -177,26 +179,13 @@ export function QuizContent({ id }: { id: string }) {
   }
 
   return (
-    <div className="min-h-screen bg-(--loom-black) pt-8 pb-24 px-4 flex flex-col items-center max-w-2xl mx-auto">
+    <div className={`min-h-screen bg-(--loom-black) pb-24 flex flex-col items-center mx-auto ${hideNavigation ? 'pt-16' : 'pt-8'}`}>
       <div className="w-full mb-6">
-        {currentQuiz && quizData && (
+        {currentQuiz && (
           <div className="flex items-center justify-center gap-3 mb-2">
-            <h1 className="text-2xl font-bold text-(--loom-cyan) text-center">
+            <h1 className="text-2xl font-bold text-(--loom-cyan) text-center mb-3">
               {currentQuiz.title}
             </h1>
-            <StarButton
-              active={favoriteIds.has(quizData.id)}
-              onClick={() => {
-                if (quizData) {
-                  toggleFavorite({
-                    quizId: quizData.id,
-                    quiz: quizData,
-                  }).unwrap();
-                }
-              }}
-              size={28}
-              className="ml-2"
-            />
           </div>
         )}
 
@@ -227,7 +216,7 @@ export function QuizContent({ id }: { id: string }) {
             {currentQuestion.text}
           </h2>
 
-          <div className="space-y-3">
+          <div className="flex flex-col gap-3 w-full mx-auto">
             {currentQuestion.options.map((opt: any, idx: number) => {
               if (!opt || typeof opt !== 'object') return null;
 
@@ -270,7 +259,7 @@ export function QuizContent({ id }: { id: string }) {
                     }
                   }}
                   className={cn(
-                    'flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200',
+                    'flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 w-full',
                     'bg-(--loom-white)/5',
                     borderClass
                   )}

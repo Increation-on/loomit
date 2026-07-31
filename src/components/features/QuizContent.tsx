@@ -153,7 +153,7 @@ export function QuizContent({ id }: { id: string }) {
           <Button
             onClick={() => {
               dispatch(resetQuiz());
-              router.push('/catalog');
+              setRedirecting(true);
             }}
             className="flex-1 bg-(--loom-white)/10 text-(--loom-white) py-3 rounded-xl border border-(--loom-white)/20 hover:bg-(--loom-white)/20 transition"
           >

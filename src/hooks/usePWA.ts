@@ -3,25 +3,23 @@
 import { useEffect, useState } from 'react';
 
 export function usePWA() {
-  const [isPWA, setIsPWA] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
 
   useEffect(() => {
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-    setIsPWA(isStandalone);
+    const check = () => {
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+      const isMobile = window.innerWidth < 768;
 
-    // Если PWA — отключаем контекстное меню на всех ссылках
-    if (isStandalone) {
-      const handleContextMenu = (e: MouseEvent) => {
-        const target = e.target as HTMLElement;
-        if (target.closest('a')) {
-          e.preventDefault();
-        }
-      };
+      const isDevMobile = process.env.NODE_ENV === 'development' && isMobile;
 
-      document.addEventListener('contextmenu', handleContextMenu);
-      return () => document.removeEventListener('contextmenu', handleContextMenu);
-    }
+      setIsHidden(isStandalone || isDevMobile);
+    };
+
+    check();
+
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
   }, []);
 
-  return isPWA;
+  return isHidden;
 }

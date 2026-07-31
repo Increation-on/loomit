@@ -7,6 +7,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Providers } from "./providers";
 import PageTransition from "./PageTransitions";
+import { AnimatedNavigation } from "@/components/layout/AnimatedNavigation";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -54,13 +55,17 @@ export default async function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <Providers session={session}>
-          <Header />
+          <AnimatedNavigation direction="up">
+            <Header />
+          </AnimatedNavigation>
           <main className="flex-1">
             <PageTransition>
               {children}
             </PageTransition>
           </main>
-          <Footer />
+          <AnimatedNavigation direction="down">
+            <Footer />
+          </AnimatedNavigation>
         </Providers>
       </body>
     </html>

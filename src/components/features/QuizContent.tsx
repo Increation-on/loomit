@@ -28,6 +28,7 @@ import { useGetFavoritesQuery, useToggleFavoriteMutation } from '@/store/api/fav
 import { useMemo } from 'react';
 import { StarButton } from '../ui/core/StarButton';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
+import { usePWA } from '@/hooks/usePWA';
 
 export function QuizContent({ id }: { id: string }) {
   const dispatch = useDispatch();
@@ -47,6 +48,7 @@ export function QuizContent({ id }: { id: string }) {
   const [toggleFavorite] = useToggleFavoriteMutation();
 
   const [redirecting, setRedirecting] = useState(false);
+  const hideNavigation = usePWA();
 
   const favoriteIds = useMemo(
     () => new Set(favorites.map((fav) => fav.quiz.id)),
@@ -95,6 +97,8 @@ export function QuizContent({ id }: { id: string }) {
         });
     }
   }, [isFinished, questions, answers, id, saveAttempt, dispatch]);
+
+
 
   if (isFinished) {
     return (
@@ -177,26 +181,28 @@ export function QuizContent({ id }: { id: string }) {
   }
 
   return (
-    <div className="min-h-screen bg-(--loom-black) pt-8 pb-24 px-4 flex flex-col items-center max-w-2xl mx-auto">
+    <div className={`min-h-screen bg-(--loom-black) px-4 pb-24 flex flex-col items-center max-w-2xl mx-auto ${hideNavigation ? 'pt-16' : 'pt-8'}`}>
       <div className="w-full mb-6">
-        {currentQuiz && quizData && (
+        {currentQuiz && (
           <div className="flex items-center justify-center gap-3 mb-2">
             <h1 className="text-2xl font-bold text-(--loom-cyan) text-center">
               {currentQuiz.title}
             </h1>
-            <StarButton
-              active={favoriteIds.has(quizData.id)}
-              onClick={() => {
-                if (quizData) {
+
+            {/* Звезда — переключаем только если есть полный quizData */}
+            {quizData && (
+              <StarButton
+                active={favoriteIds.has(quizData.id)}
+                onClick={() => {
                   toggleFavorite({
                     quizId: quizData.id,
                     quiz: quizData,
                   }).unwrap();
-                }
-              }}
-              size={28}
-              className="ml-2"
-            />
+                }}
+                size={28}
+                className="ml-2"
+              />
+            )}
           </div>
         )}
 

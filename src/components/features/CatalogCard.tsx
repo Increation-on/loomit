@@ -58,6 +58,7 @@ export function CatalogCard({
   );
 
   const questionsCount = quiz._count?.questions ?? quiz.questions?.length ?? 0;
+  const attemptsCount = quiz._count?.attempts ?? 0;
 
   return (
     <Card className={cn('overflow-hidden flex flex-row p-4 gap-3 min-h-39', className)}>
@@ -86,8 +87,8 @@ export function CatalogCard({
             </p>
           </div>
         </div>
-        
-        {/* Теги  */}
+
+        {/* Теги */}
         <div className="flex flex-wrap justify-center gap-3 text-xs mt-1">
           <span className="text-(--loom-white)/50 whitespace-nowrap">
             {questionsCount}{' '}
@@ -102,27 +103,37 @@ export function CatalogCard({
             <span className="text-(--loom-white)/20">●</span>
           </div>
 
-           <div className="flex items-center gap-1.5 whitespace-nowrap">
+          <div className="flex items-center gap-1.5 whitespace-nowrap">
             <span className="text-(--loom-white)/50">{levelLabel}</span>
             <span className={cn('w-1.5 h-1.5 rounded-full', levelDotColor)} />
           </div>
-        </div>
 
-        {/* Попытки — отдельная строка, по центру */}
-        {lastAttempt && (
-          <div className="flex justify-center mt-1">
-            <span
-              className={cn(
-                'text-sm font-semibold',
-                lastAttempt.score === lastAttempt.totalQuestions
-                  ? 'text-(--loom-cyan)'
-                  : 'text-(--loom-yellow)'
+          {/* Общее количество попыток + последняя попытка — в одной строке */}
+          {(attemptsCount > 0 || lastAttempt) && (
+            <>
+              {attemptsCount > 0 && (
+                <span className="text-(--loom-white)/50 whitespace-nowrap">
+                  {attemptsCount} {pluralize(attemptsCount, 'попытка', 'попытки', 'попыток')}
+                </span>
               )}
-            >
-              {lastAttempt.score}/{lastAttempt.totalQuestions}
-            </span>
-          </div>
-        )}
+              {lastAttempt && (
+                <>
+                  {attemptsCount > 0 && <span className="text-(--loom-white)/30">•</span>}
+                  <span
+                    className={cn(
+                      'text-sm font-semibold',
+                      lastAttempt.score === lastAttempt.totalQuestions
+                        ? 'text-(--loom-cyan)'
+                        : 'text-(--loom-yellow)'
+                    )}
+                  >
+                    {lastAttempt.score}/{lastAttempt.totalQuestions}
+                  </span>
+                </>
+              )}
+            </>
+          )}
+        </div>
 
         {/* Кнопка */}
         <div className="mt-auto pt-2">
@@ -148,7 +159,7 @@ export function CatalogCard({
             active={isFavorited}
             size={28}
             className="hover:scale-110 transition-transform"
-            onClick={onFavoriteToggle ?? (() => { })}
+            onClick={onFavoriteToggle ?? (() => {})}
           />
         </div>
       )}

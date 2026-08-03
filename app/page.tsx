@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/core/Button';
 import { SearchWithDropdown } from '@/components/ui/core/SearchWithDropDown';
 import { TryItSkeleton, CategorySkeleton } from '@/components/ui/feedback/Skeleton';
 import { cn, pluralize } from '@/lib/utils';
-import { ChevronRight } from 'lucide-react';
+import { TryItCard } from '@/components/features/TryItCard';
 
 export default function HomePage() {
   const { data: quizzes, isLoading: isQuizzesLoading } = useGetQuizzesQuery({});
@@ -73,7 +73,7 @@ export default function HomePage() {
 
   const handleQuizClick = (quizId: string) => {
     if (currentQuiz?.id === quizId) {
-      router.push(`/quiz/${quizId}/`);
+      router.push(`/quiz/${quizId}`);
       return;
     }
     if (hasUnfinished) {
@@ -140,59 +140,18 @@ export default function HomePage() {
                   const isClicked = clickedId === quiz.id;
                   const lastAttempt = attemptStatuses[quiz.id];
                   return (
-                    <div
+                    <TryItCard
                       key={quiz.id}
-                      id={quiz.id}
+                      quiz={quiz}
+                      lastAttempt={lastAttempt}
+                      isActive={isActive}
+                      isClicked={isClicked}
                       onClick={() => {
                         handleQuizClick(quiz.id);
                         setClickedId(quiz.id);
                         setTimeout(() => setClickedId(null), 1000);
                       }}
-                      className={`w-50 h-46 shrink-0 snap-start bg-(--loom-cyan)/20 p-4 rounded-xl cursor-pointer relative transition-all duration-300 try-it-card flex flex-col ${isActive || isClicked ? 'snake-active' : ''
-                        }`}
-                    >
-                      <div className="flex items-center justify-between mb-1.5">
-                        <div className="flex items-center gap-2">
-                          {quiz.category?.iconUrl ? (
-                            <img src={quiz.category.iconUrl} alt="" className="w-9 h-9 rounded-full object-contain" />
-                          ) : (
-                            <div className="w-9 h-9 rounded-full bg-(--loom-cyan)/20 flex items-center justify-center text-(--loom-cyan) text-l font-bold">
-                              {quiz.category?.name?.[0] || '?'}
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {lastAttempt && (
-                            <>
-                              <span
-                                className={cn(
-                                  'text-xs font-semibold',
-                                  lastAttempt.score === lastAttempt.totalQuestions && 'text-(--loom-cyan)',
-                                  lastAttempt.score < lastAttempt.totalQuestions && 'text-(--loom-yellow)'
-                                )}
-                              >
-                                {lastAttempt.score}/{lastAttempt.totalQuestions}
-                              </span>
-                              <span className="text-(--loom-white)/30">•</span>
-                            </>
-                          )}
-                          {quiz.level && (
-                            <span
-                              className={cn(
-                                'text-xs font-semibold',
-                                quiz.level === 'JUNIOR' && 'text-(--loom-cyan)',
-                                quiz.level === 'MIDDLE' && 'text-(--loom-yellow)',
-                                quiz.level === 'SENIOR' && 'text-(--glitch-pink)'
-                              )}
-                            >
-                              {quiz.level.charAt(0) + quiz.level.slice(1).toLowerCase()}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      <h3 className="font-bold text-lg text-(--loom-white) truncate leading-tight mt-1">{quiz.title}</h3>
-                      <p className="flex-1 text-sm text-(--loom-white)/60 mt-1">{quiz.description}</p>
-                    </div>
+                    />
                   );
                 })
               )}
@@ -202,7 +161,13 @@ export default function HomePage() {
       </div>
 
       <div className="px-4 mt-6">
-        <h2 className="text-lg font-bold mb-2">Категории</h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-bold">Категории</h2>
+          {categories && categories.length > 4 && (
+            <Link href="/catalog" className="text-sm text-(--loom-yellow)">Все категории</Link>
+          )}
+        </div>
+
         {isCategoriesLoading ? (
           <div className="space-y-3">
             {[1, 2, 3, 4].map((i) => (
@@ -241,15 +206,9 @@ export default function HomePage() {
         ) : (
           <EmptyState title="Нет доступных категорий" />
         )}
-        <div className='mt-2 flex justify-end mr-1'>
-          {categories && categories.length > 5 && (
-            <Link href="/catalog" className="text-sm text-(--loom-yellow)">
-              <div className='flex'>
-                Все категории
-                <ChevronRight size={20} />
-              </div>
-
-            </Link>
+        <div className="mt-2 flex justify-end">
+          {categories && categories.length > 4 && (
+            <Link href="/catalog" className="text-sm text-(--loom-yellow)">Все категории</Link>
           )}
         </div>
       </div>

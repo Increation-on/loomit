@@ -14,7 +14,7 @@ interface QuizFinishScreenProps {
   onToggleFavorite: (quizId: string, quiz: any) => void;
   onReset: () => void;
   onRedirect: () => void;
-  attemptId?: string | null; // ✅ новый проп
+  attemptId?: string | null;
 }
 
 export function QuizFinishScreen({
@@ -82,16 +82,17 @@ export function QuizFinishScreen({
           В каталог
         </Button>
 
-        {/* ✅ Третья кнопка */}
-        {attemptId && (
-          <Button
-            variant="glitch"
-            onClick={() => router.push(`/profile/attempts/${attemptId}`)}
-            className="flex-1 py-3 rounded-xl text-base"
-          >
-            Разобрать ответы
-          </Button>
-        )}
+        <Button
+          variant="glitch"
+          onClick={() => {
+            if (attemptId) {
+              router.push(`/profile/attempts/${attemptId}`);
+            }
+          }}
+          className="flex-1 py-3 rounded-xl text-base"
+        >
+          Разобрать ответы
+        </Button>
       </div>
     </div>
   );

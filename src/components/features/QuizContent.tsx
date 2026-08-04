@@ -80,28 +80,33 @@ export function QuizContent({ id }: { id: string }) {
   }, [quizData, currentQuiz, dispatch]);
 
   useEffect(() => {
-  if (isFinished && questions.length > 0 && !savedRef.current) {
-    savedRef.current = true;
-    const attempt = {
-      quizId: id,
-      score: answers.filter(a => a.isCorrect).length,
-      totalQuestions: questions.length,
-      answers: answers,
-    };
-    saveAttempt(attempt)
-      .then((result) => {
-        // ✅ Сохраняем ID попытки
-        if (result?.data?.id) {
-          setAttemptId(result.data.id);
-        }})
-      .catch((error) => {
-        console.error('Ошибка сохранения:', error);
-        if (!isAuthenticated) {
-          warning('Нет сети, результат не сохранён');
-        }
-      });
-  }
-}, [isFinished, questions, answers, id, saveAttempt, dispatch]);
+    if (isFinished && questions.length > 0 && !savedRef.current) {
+      savedRef.current = true;
+      
+      // ✅ Генерируем ID локально и сразу показываем кнопку
+      const localAttemptId = crypto.randomUUID();
+      setAttemptId(localAttemptId);
+
+      const attempt = {
+        id: localAttemptId, // ✅ передаём ID на сервер
+        quizId: id,
+        score: answers.filter(a => a.isCorrect).length,
+        totalQuestions: questions.length,
+        answers: answers,
+      };
+
+      saveAttempt(attempt)
+        .then((result) => {
+          console.log('✅ Сохранено успешно');
+        })
+        .catch((error) => {
+          console.error('Ошибка сохранения:', error);
+          if (!isAuthenticated) {
+            warning('Нет сети, результат не сохранён');
+          }
+        });
+    }
+  }, [isFinished, questions, answers, id, saveAttempt, dispatch]);
 
   if (isFinished) {
     return (

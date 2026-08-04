@@ -12,8 +12,16 @@ export async function GET(
     const quiz = await prisma.quiz.findUnique({
       where: { id },
       include: {
-        category: true, // ← ДОБАВЛЯЕМ КАТЕГОРИЮ
+        category: true,
         questions: {
+          select: {
+            id: true,
+            text: true,
+            options: true,
+            correct_option_id: true,
+            explanation: true, // ✅ добавляем
+            order: true,
+          },
           orderBy: { order: 'asc' },
         },
       },

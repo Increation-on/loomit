@@ -21,6 +21,7 @@ interface Question {
   text: string;
   options: Option[];
   correctOptionId: string;
+  explanation?: string; // ✅ добавляем поле
 }
 
 export default function NewQuizPage() {
@@ -54,6 +55,7 @@ export default function NewQuizPage() {
           { id: crypto.randomUUID(), text: '' },
         ],
         correctOptionId: '',
+        explanation: '', // ✅ добавляем пустое объяснение
       },
     ]);
   };
@@ -83,6 +85,12 @@ export default function NewQuizPage() {
   const setCorrectOption = (questionIndex: number, optionId: string) => {
     const updated = [...questions];
     updated[questionIndex].correctOptionId = optionId;
+    setQuestions(updated);
+  };
+
+  const updateExplanation = (index: number, text: string) => {
+    const updated = [...questions];
+    updated[index].explanation = text;
     setQuestions(updated);
   };
 
@@ -205,6 +213,20 @@ export default function NewQuizPage() {
                   </Button>
                 </div>
               ))}
+
+              {/* ✅ Поле для объяснения */}
+              <div className="mt-2">
+                <label className="block text-sm text-(--loom-white)/60 mb-1">
+                  Объяснение (необязательно)
+                </label>
+                <textarea
+                  value={q.explanation || ''}
+                  onChange={(e) => updateExplanation(qi, e.target.value)}
+                  placeholder="Почему этот ответ правильный?"
+                  className="w-full bg-(--loom-black) border border-(--loom-white)/10 rounded-xl px-3 py-2 text-(--loom-white) focus:outline-none focus:border-(--loom-cyan) resize-y"
+                  rows={3}
+                />
+              </div>
 
               {/* Кнопка добавления варианта */}
               <div className="pt-2">

@@ -97,7 +97,6 @@ export function QuizContent({ id }: { id: string }) {
 
       saveAttempt(attempt)
         .then((result) => {
-          console.log('✅ Сохранено успешно');
         })
         .catch((error) => {
           console.error('Ошибка сохранения:', error);

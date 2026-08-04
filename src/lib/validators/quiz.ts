@@ -1,4 +1,3 @@
-// src/lib/validators/quiz.ts
 import { z } from 'zod'
 
 export const quizSchema = z.object({
@@ -31,6 +30,7 @@ export const adminQuizCreateSchema = z.object({
         })
       ).length(4, 'Должно быть ровно 4 варианта'),
       correctOptionId: z.string().min(1, 'Выберите правильный вариант'),
+      explanation: z.string().optional(), // ✅ добавляем поле
     })
   ).min(1, 'Минимум 1 вопрос'),
 });

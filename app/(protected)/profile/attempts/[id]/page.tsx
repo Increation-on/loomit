@@ -15,11 +15,16 @@ export default function AttemptDetailPage() {
   const quizId = searchParams.get('quizId');
 
   const { data: attempt, isLoading: attemptLoading } = useGetAttemptByIdQuery(id);
-  const { data: quiz, isLoading: quizLoading } = useGetQuizByIdQuery(quizId ?? '', {
-    skip: !quizId,
+  
+  // ✅ Если quizId не передан в URL, берём его из попытки
+  const effectiveQuizId = quizId || attempt?.quiz_id;
+console.log('🔍 attempt.quiz_id:', attempt?.quiz_id);
+console.log('🔍 effectiveQuizId:', effectiveQuizId);
+  const { data: quiz, isLoading: quizLoading } = useGetQuizByIdQuery(effectiveQuizId ?? '', {
+    skip: !effectiveQuizId,
   });
 
-  const isLoading = attemptLoading || (quizId ? quizLoading : false);
+  const isLoading = attemptLoading || (effectiveQuizId ? quizLoading : false);
 
   if (isLoading) {
     return (
@@ -110,10 +115,8 @@ export default function AttemptDetailPage() {
             return correctId;
           };
 
-          // ✅ Получаем объяснение из загруженного квиза
-          const explanation = quiz?.questions?.find(
-            (q: any) => q.id === a.questionId || q.id === a.question_id
-          )?.explanation;
+          // ✅ Находим объяснение по индексу вопроса
+          const explanation = quiz?.questions?.[i]?.explanation;
 
           return (
             <div

@@ -3,7 +3,6 @@
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/core/Button';
 import { StarButton } from '@/components/ui/core/StarButton';
-import { cn } from '@/lib/utils';
 
 interface QuizFinishScreenProps {
   id: string;
@@ -31,8 +30,8 @@ export function QuizFinishScreen({
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-(--loom-black) flex flex-col items-center justify-center p-6 text-center space-y-6">
-      <h2 className="text-4xl font-bold text-(--loom-yellow) glitch-text" data-text="Квиз завершён!">
+    <div className="min-h-screen bg-(--loom-black) flex flex-col items-center justify-center p-6 text-center space-y-6 -mt-18">
+      <h2 className="text-4xl font-bold text-(--loom-yellow) glitch-text" data-text="Квиз завершён! mt-">
         Квиз завершён!
       </h2>
 
@@ -85,8 +84,8 @@ export function QuizFinishScreen({
         <Button
           variant="glitch"
           onClick={() => {
-            if (attemptId) {
-              router.push(`/profile/attempts/${attemptId}`);
+            if (attemptId && id) {
+              router.push(`/profile/attempts/${attemptId}?quizId=${id}`);
             }
           }}
           className="flex-1 py-3 rounded-xl text-base"

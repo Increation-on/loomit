@@ -42,13 +42,13 @@ export async function POST(request: Request) {
   if (!categoryId) {
     return NextResponse.json({ error: 'Category is required' }, { status: 400 });
   }
-
+console.log('📤 Вопросы с объяснениями:', JSON.stringify(questions, null, 2));
   const quiz = await prisma.quiz.create({
     data: {
       id: crypto.randomUUID(),
       title,
       description: description || '',
-      category_id: categoryId, // ✅ записываем в базу
+      category_id: categoryId,
       level,
       updated_at: new Date(),
       questions: {
@@ -57,6 +57,7 @@ export async function POST(request: Request) {
           text: q.text,
           options: q.options,
           correct_option_id: q.correctOptionId,
+          explanation: q.explanation, // ✅ ВОТ ЭТА СТРОКА
           order: index,
         })),
       },

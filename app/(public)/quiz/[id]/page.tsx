@@ -6,11 +6,19 @@ import { QuizPlayer } from '@/components/features/QuizPlayer';
 import { useEffect } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useDispatch } from 'react-redux';
+import { resetQuiz } from '@/store/slices/quizSlice';
 
 export default function QuizPage() {
   const pathname = usePathname();
   const router = useRouter();
   const isPWA = usePWA();
+  const dispatch = useDispatch();
+
+  // ✅ Сбрасываем квиз при каждом заходе на страницу
+  useEffect(() => {
+    dispatch(resetQuiz());
+  }, [dispatch]);
 
   useEffect(() => {
     if (pathname.startsWith('/quiz/') && isPWA) {
@@ -22,7 +30,7 @@ export default function QuizPage() {
   }, [pathname, isPWA]);
 
   const handleBack = () => {
-    router.push('/catalog');
+    router.push('/');
   };
 
   return (
@@ -38,7 +46,7 @@ export default function QuizPage() {
           )}
         >
           <ChevronLeft size={22} />
-          В каталог
+          На главную
         </button>
       )}
 

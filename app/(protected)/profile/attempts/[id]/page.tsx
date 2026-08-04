@@ -18,8 +18,7 @@ export default function AttemptDetailPage() {
   
   // ✅ Если quizId не передан в URL, берём его из попытки
   const effectiveQuizId = quizId || attempt?.quiz_id;
-console.log('🔍 attempt.quiz_id:', attempt?.quiz_id);
-console.log('🔍 effectiveQuizId:', effectiveQuizId);
+
   const { data: quiz, isLoading: quizLoading } = useGetQuizByIdQuery(effectiveQuizId ?? '', {
     skip: !effectiveQuizId,
   });

@@ -26,7 +26,6 @@ import { Check, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useGetFavoritesQuery, useToggleFavoriteMutation } from '@/store/api/favoritesApi';
 import { useMemo } from 'react';
-import { StarButton } from '../ui/core/StarButton';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
 import { usePWA } from '@/hooks/usePWA';
 import { QuizFinishScreen } from './QuizFinishScreen';
@@ -47,6 +46,7 @@ export function QuizContent({ id }: { id: string }) {
   const { data: session } = useSession();
   const { data: favorites = [] } = useGetFavoritesQuery(undefined, { skip: !session });
   const [toggleFavorite] = useToggleFavoriteMutation();
+  const [attemptId, setAttemptId] = useState<string | null>(null);
 
   const [redirecting, setRedirecting] = useState(false);
   const hideNavigation = usePWA();
@@ -80,24 +80,28 @@ export function QuizContent({ id }: { id: string }) {
   }, [quizData, currentQuiz, dispatch]);
 
   useEffect(() => {
-    if (isFinished && questions.length > 0 && !savedRef.current) {
-      savedRef.current = true;
-      const attempt = {
-        quizId: id,
-        score: answers.filter(a => a.isCorrect).length,
-        totalQuestions: questions.length,
-        answers: answers,
-      };
-      saveAttempt(attempt)
-        .then(() => console.log('✅ Сохранено успешно'))
-        .catch((error) => {
-          console.error('Ошибка сохранения:', error);
-          if (!isAuthenticated) {
-            warning('Нет сети, результат не сохранён');
-          }
-        });
-    }
-  }, [isFinished, questions, answers, id, saveAttempt, dispatch]);
+  if (isFinished && questions.length > 0 && !savedRef.current) {
+    savedRef.current = true;
+    const attempt = {
+      quizId: id,
+      score: answers.filter(a => a.isCorrect).length,
+      totalQuestions: questions.length,
+      answers: answers,
+    };
+    saveAttempt(attempt)
+      .then((result) => {
+        // ✅ Сохраняем ID попытки
+        if (result?.data?.id) {
+          setAttemptId(result.data.id);
+        }})
+      .catch((error) => {
+        console.error('Ошибка сохранения:', error);
+        if (!isAuthenticated) {
+          warning('Нет сети, результат не сохранён');
+        }
+      });
+  }
+}, [isFinished, questions, answers, id, saveAttempt, dispatch]);
 
   if (isFinished) {
     return (
@@ -112,6 +116,7 @@ export function QuizContent({ id }: { id: string }) {
         }
         onReset={() => dispatch(resetQuiz())}
         onRedirect={() => setRedirecting(true)}
+        attemptId={attemptId}
       />
     );
   }

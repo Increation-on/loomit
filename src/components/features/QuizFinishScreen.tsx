@@ -9,11 +9,12 @@ interface QuizFinishScreenProps {
   id: string;
   score: number;
   total: number;
-  quizData?: any; // полный объект квиза для избранного
+  quizData?: any;
   favoriteIds: Set<string>;
   onToggleFavorite: (quizId: string, quiz: any) => void;
   onReset: () => void;
   onRedirect: () => void;
+  attemptId?: string | null; // ✅ новый проп
 }
 
 export function QuizFinishScreen({
@@ -25,6 +26,7 @@ export function QuizFinishScreen({
   onToggleFavorite,
   onReset,
   onRedirect,
+  attemptId,
 }: QuizFinishScreenProps) {
   const router = useRouter();
 
@@ -69,6 +71,7 @@ export function QuizFinishScreen({
         >
           Пройти заново
         </Button>
+
         <Button
           onClick={() => {
             onReset();
@@ -78,6 +81,17 @@ export function QuizFinishScreen({
         >
           В каталог
         </Button>
+
+        {/* ✅ Третья кнопка */}
+        {attemptId && (
+          <Button
+            variant="glitch"
+            onClick={() => router.push(`/profile/attempts/${attemptId}`)}
+            className="flex-1 py-3 rounded-xl text-base"
+          >
+            Разобрать ответы
+          </Button>
+        )}
       </div>
     </div>
   );

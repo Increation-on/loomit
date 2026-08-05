@@ -4,20 +4,17 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSelector, useDispatch } from 'react-redux';
 import { useGetQuizzesQuery } from '@/store/api/quizApi';
-import { useGetCategoriesQuery } from '@/store/api/categoryApi';
 import { selectQuizState, resetQuiz } from '@/store/slices/quizSlice';
 import { persistor } from '@/store/store';
 import { Modal } from '@/components/ui/feedback/Modal';
-import { Button } from '@/components/ui/core/Button';
 import { SearchWithDropdown } from '@/components/ui/core/SearchWithDropDown';
 import { TryItSkeleton, CategorySkeleton } from '@/components/ui/feedback/Skeleton';
-import { pluralize } from '@/lib/utils';
 import { TryItCard } from '@/components/features/TryItCard';
 import { CategoryList } from '@/components/features/CategoryList';
+import { ContinueQuizCard } from '@/components/features/ContinueQuizCard';
 
 export default function HomePage() {
   const { data: quizzes, isLoading: isQuizzesLoading } = useGetQuizzesQuery({});
-  const { data: categories, isLoading: isCategoriesLoading } = useGetCategoriesQuery({});
   const router = useRouter();
   const dispatch = useDispatch();
   const quizState = useSelector(selectQuizState);
@@ -106,18 +103,11 @@ export default function HomePage() {
 
       <div className="px-4 mb-6">
         {hasUnfinished ? (
-          <div className="bg-(--loom-white)/5 p-3 rounded-xl border border-(--loom-cyan)/30 flex items-center justify-between glitch-border">
-            <div className="flex flex-col">
-              <span className="text-xs text-(--loom-white)/60">Продолжить</span>
-              <span className="font-semibold text-(--loom-white) text-sm">{currentQuiz?.title}</span>
-              <span className="text-[10px] text-(--loom-white)/40 mt-0.5">
-                {answers.length} {pluralize(answers.length, 'вопрос', 'вопроса', 'вопросов')}
-              </span>
-            </div>
-            <Button variant="glitch" size="sm" onClick={() => handleQuizClick(currentQuiz!.id)}>
-              Go
-            </Button>
-          </div>
+          <ContinueQuizCard
+            title={currentQuiz!.title}
+            answersCount={answers.length}
+            onContinue={() => handleQuizClick(currentQuiz!.id)}
+          />
         ) : (
           <div>
             <div className="flex justify-between items-center mb-4">

@@ -191,9 +191,9 @@ export default function HomePage() {
                 </div>
                 <div>
                   {cat.iconUrl ? (
-                    <img src={cat.iconUrl} alt={cat.name} className="w-10 h-10 rounded-full object-contain" />
+                    <img src={cat.iconUrl} alt={cat.name} className="w-12 h-12 rounded-full object-contain" />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-(--loom-cyan)/20 flex items-center justify-center text-(--loom-cyan) font-bold">
+                    <div className="w-12 h-12 rounded-full bg-(--loom-cyan)/20 flex items-center justify-center text-(--loom-cyan) font-bold">
                       {cat.name[0]}
                     </div>
                   )}
@@ -205,7 +205,7 @@ export default function HomePage() {
           <EmptyState title="Нет доступных категорий" />
         )}
         <div className="mt-2 flex justify-end">
-          {categories && categories.length > 5 && (
+          {categories && categories.length >= 4 && (
             <Link href="/catalog" className="text-sm text-(--loom-yellow)">
               <span className='flex mt-1'> Все категории<ChevronRight size={20} /></span>
             </Link>

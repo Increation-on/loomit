@@ -31,6 +31,7 @@ import { QuizFinishScreen } from './QuizFinishScreen';
 import { Modal } from '@/components/ui/feedback/Modal';
 import { QuizOption } from './QuizOption';
 import { useSaveAttempt } from '@/hooks/useSaveAttempt';
+import { useQuizNavigation } from '@/hooks/useQuizNavigation';
 
 export function QuizContent({ id }: { id: string }) {
   const dispatch = useDispatch();
@@ -39,19 +40,13 @@ export function QuizContent({ id }: { id: string }) {
   const score = useSelector(selectScore);
   const selectedOption = useSelector(selectSelectedOption);
   const { questions, answers, currentIndex, isFinished, currentQuiz } = useSelector(selectQuizState);
-  const [saveAttempt] = useSaveAttemptMutation();
   const savedRef = useRef(false);
   const { data: quizData, isLoading: quizLoading } = useGetQuizByIdQuery(id, { skip: !!currentQuiz });
-  const { status } = useSession();
-  const isAuthenticated = status === 'authenticated';
-  const { warning } = useToast();
   const { data: session } = useSession();
   const { data: favorites = [] } = useGetFavoritesQuery(undefined, { skip: !session });
   const [toggleFavorite] = useToggleFavoriteMutation();
-
+  const { redirecting, setRedirecting } = useQuizNavigation();
   const { attemptId, save } = useSaveAttempt(id);
-
-  const [redirecting, setRedirecting] = useState(false);
   const hideNavigation = usePWA();
 
   const favoriteIds = useMemo(
@@ -60,12 +55,6 @@ export function QuizContent({ id }: { id: string }) {
   );
 
   const [selectedExplanation, setSelectedExplanation] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (redirecting) {
-      router.push('/catalog');
-    }
-  }, [redirecting, router]);
 
   useEffect(() => {
     if (currentQuiz && currentQuiz.id !== id) {

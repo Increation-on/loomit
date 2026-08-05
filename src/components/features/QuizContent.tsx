@@ -32,6 +32,7 @@ import { Modal } from '@/components/ui/feedback/Modal';
 import { QuizOption } from './QuizOption';
 import { useSaveAttempt } from '@/hooks/useSaveAttempt';
 import { useQuizNavigation } from '@/hooks/useQuizNavigation';
+import { QuizQuestion } from './QuizQuestion';
 
 export function QuizContent({ id }: { id: string }) {
   const dispatch = useDispatch();
@@ -74,12 +75,12 @@ export function QuizContent({ id }: { id: string }) {
   }, [quizData, currentQuiz, dispatch]);
 
 
-useEffect(() => {
-  if (isFinished && questions.length > 0 && !savedRef.current) {
-    const score = answers.filter(a => a.isCorrect).length;
-    save(answers, score, questions.length);
-  }
-}, [isFinished, questions, answers, save]);
+  useEffect(() => {
+    if (isFinished && questions.length > 0 && !savedRef.current) {
+      const score = answers.filter(a => a.isCorrect).length;
+      save(answers, score, questions.length);
+    }
+  }, [isFinished, questions, answers, save]);
 
 
   if (isFinished) {
@@ -106,8 +107,6 @@ useEffect(() => {
   const isCurrentConfirmed = !!currentAnswer;
   const optionLetters = ['A', 'B', 'C', 'D'];
 
-  // ✅ Вычисляем, правильный ли текущий вопрос и есть ли объяснение
-  const isCurrentCorrect = currentAnswer?.isCorrect ?? false;
   const hasExplanation = currentQuestion?.explanation ?? false;
 
   if (redirecting) {
@@ -143,101 +142,19 @@ useEffect(() => {
         </div>
       </div>
 
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={currentQuestion.id}
-          initial={{ opacity: 0, x: 40 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -40 }}
-          transition={{ duration: 0.25 }}
-          className="w-full space-y-6"
-        >
-          <h2 className="text-2xl md:text-3xl font-bold text-(--loom-white) leading-tight">
-            {currentQuestion.text}
-          </h2>
-
-          <div className="flex flex-col gap-3 w-full mx-auto">
-            {currentQuestion.options.map((opt: any, idx: number) => {
-              if (!opt || typeof opt !== 'object') return null;
-
-              const isSelected = selectedOption === opt.id;
-              const isCorrectOption = currentQuestion.correctOptionId === opt.id;
-
-              let borderClass = 'border-(--loom-white)/10 hover:border-(--loom-cyan)/40';
-              let letterClass = 'font-bold bg-gradient-to-r from-(--loom-yellow) to-(--loom-cyan) bg-clip-text text-transparent';
-              let textClass = 'text-(--loom-white)/70';
-              let icon = null;
-
-              if (isSelected && !isCurrentConfirmed) {
-                borderClass = 'glitch-border';
-                letterClass = 'text-(--loom-yellow) font-bold';
-                textClass = 'text-(--loom-yellow)';
-              }
-
-              if (isCurrentConfirmed) {
-                if (isCorrectOption) {
-                  borderClass = 'border-(--loom-cyan)';
-                  letterClass = 'text-(--loom-cyan) font-bold';
-                  textClass = 'text-(--loom-cyan)';
-                  icon = <Check size={18} className="text-(--loom-cyan) ml-auto" />;
-                } else if (currentAnswer?.selectedOptionId === opt.id && !currentAnswer?.isCorrect) {
-                  borderClass = 'border-(--glitch-pink)';
-                  letterClass = 'text-(--glitch-pink) font-bold';
-                  textClass = 'text-(--glitch-pink)/80';
-                  icon = <X size={18} className="text-(--glitch-pink) ml-auto" />;
-                }
-              }
-
-              return (
-                <QuizOption
-                  key={idx}
-                  letter={optionLetters[idx]}
-                  text={opt.text}
-                  isSelected={isSelected}
-                  isCurrentConfirmed={isCurrentConfirmed}
-                  isCorrect={isCorrectOption}
-                  isWrong={currentAnswer?.selectedOptionId === opt.id && !currentAnswer?.isCorrect}
-                  icon={icon}
-                  onClick={() => {
-                    if (!isCurrentConfirmed) {
-                      dispatch(selectOption(opt.id));
-                    }
-                  }}
-                />
-              );
-            })}
-          </div>
-
-          <div className="flex flex-col items-center gap-2 pt-8">
-            {!isCurrentConfirmed ? (
-              <Button
-                variant="glitch"
-                onClick={() => dispatch(confirmAnswer())}
-                disabled={!selectedOption}
-                className="px-12 py-2.5 text-base"
-              >
-                Ответить
-              </Button>
-            ) : currentIndex === questions.length - 1 ? (
-              <Button
-                variant="glitch"
-                onClick={() => dispatch(finishQuiz())}
-                className="px-12 py-2.5 text-base"
-              >
-                Завершить
-              </Button>
-            ) : (
-              <Button
-                variant="glitch"
-                onClick={() => dispatch(nextQuestion())}
-                className="px-12 py-2.5 text-base"
-              >
-                Далее
-              </Button>
-            )}
-          </div>
-        </motion.div>
-      </AnimatePresence>
+      <QuizQuestion
+        question={currentQuestion}
+        currentAnswer={currentAnswer}
+        selectedOption={selectedOption}
+        onSelectOption={(optionId) => dispatch(selectOption(optionId))}
+        onConfirm={() => dispatch(confirmAnswer())}
+        onNext={() => dispatch(nextQuestion())}
+        onFinish={() => dispatch(finishQuiz())}
+        isLast={currentIndex === questions.length - 1}
+        currentIndex={currentIndex}
+        total={questions.length}
+        optionLetters={optionLetters}
+      />
 
       {/* ✅ Лампочка в правом нижнем углу экрана */}
       {isCurrentConfirmed && hasExplanation && (

@@ -8,7 +8,7 @@ import { selectQuizState, resetQuiz } from '@/store/slices/quizSlice';
 import { persistor } from '@/store/store';
 import { Modal } from '@/components/ui/feedback/Modal';
 import { SearchWithDropdown } from '@/components/ui/core/SearchWithDropDown';
-import { TryItSkeleton, CategorySkeleton } from '@/components/ui/feedback/Skeleton';
+import { TryItSkeleton } from '@/components/ui/feedback/Skeleton';
 import { TryItCard } from '@/components/features/TryItCard';
 import { CategoryList } from '@/components/features/CategoryList';
 import { ContinueQuizCard } from '@/components/features/ContinueQuizCard';

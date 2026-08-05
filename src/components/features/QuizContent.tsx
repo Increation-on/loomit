@@ -23,13 +23,14 @@ import { useGetQuizByIdQuery } from '@/store/api/quizApi';
 import { useSession } from 'next-auth/react';
 import { useToast } from '@/components/ui/feedback/ToastContainer';
 import { Check, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { useGetFavoritesQuery, useToggleFavoriteMutation } from '@/store/api/favoritesApi';
 import { useMemo } from 'react';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
 import { usePWA } from '@/hooks/usePWA';
 import { QuizFinishScreen } from './QuizFinishScreen';
 import { Modal } from '@/components/ui/feedback/Modal';
+import { QuizOption } from './QuizOption';
+import { useSaveAttempt } from '@/hooks/useSaveAttempt';
 
 export function QuizContent({ id }: { id: string }) {
   const dispatch = useDispatch();
@@ -47,7 +48,8 @@ export function QuizContent({ id }: { id: string }) {
   const { data: session } = useSession();
   const { data: favorites = [] } = useGetFavoritesQuery(undefined, { skip: !session });
   const [toggleFavorite] = useToggleFavoriteMutation();
-  const [attemptId, setAttemptId] = useState<string | null>(null);
+
+  const { attemptId, save } = useSaveAttempt(id);
 
   const [redirecting, setRedirecting] = useState(false);
   const hideNavigation = usePWA();
@@ -57,7 +59,6 @@ export function QuizContent({ id }: { id: string }) {
     [favorites]
   );
 
-  // ✅ Состояние для модалки с объяснением
   const [selectedExplanation, setSelectedExplanation] = useState<string | null>(null);
 
   useEffect(() => {
@@ -83,33 +84,14 @@ export function QuizContent({ id }: { id: string }) {
     }
   }, [quizData, currentQuiz, dispatch]);
 
-  useEffect(() => {
-    if (isFinished && questions.length > 0 && !savedRef.current) {
-      savedRef.current = true;
 
-      // ✅ Генерируем ID локально и сразу показываем кнопку
-      const localAttemptId = crypto.randomUUID();
-      setAttemptId(localAttemptId);
+useEffect(() => {
+  if (isFinished && questions.length > 0 && !savedRef.current) {
+    const score = answers.filter(a => a.isCorrect).length;
+    save(answers, score, questions.length);
+  }
+}, [isFinished, questions, answers, save]);
 
-      const attempt = {
-        id: localAttemptId, // ✅ передаём ID на сервер
-        quizId: id,
-        score: answers.filter(a => a.isCorrect).length,
-        totalQuestions: questions.length,
-        answers: answers,
-      };
-
-      saveAttempt(attempt)
-        .then((result) => {
-        })
-        .catch((error) => {
-          console.error('Ошибка сохранения:', error);
-          if (!isAuthenticated) {
-            warning('Нет сети, результат не сохранён');
-          }
-        });
-    }
-  }, [isFinished, questions, answers, id, saveAttempt, dispatch]);
 
   if (isFinished) {
     return (
@@ -134,6 +116,10 @@ export function QuizContent({ id }: { id: string }) {
   const currentAnswer = answers.find(a => a.questionId === currentQuestion.id);
   const isCurrentConfirmed = !!currentAnswer;
   const optionLetters = ['A', 'B', 'C', 'D'];
+
+  // ✅ Вычисляем, правильный ли текущий вопрос и есть ли объяснение
+  const isCurrentCorrect = currentAnswer?.isCorrect ?? false;
+  const hasExplanation = currentQuestion?.explanation ?? false;
 
   if (redirecting) {
     return (
@@ -214,41 +200,26 @@ export function QuizContent({ id }: { id: string }) {
               }
 
               return (
-                <motion.div
+                <QuizOption
                   key={idx}
-                  whileHover={!isCurrentConfirmed ? { scale: 1.01 } : {}}
-                  whileTap={!isCurrentConfirmed ? { scale: 0.98 } : {}}
+                  letter={optionLetters[idx]}
+                  text={opt.text}
+                  isSelected={isSelected}
+                  isCurrentConfirmed={isCurrentConfirmed}
+                  isCorrect={isCorrectOption}
+                  isWrong={currentAnswer?.selectedOptionId === opt.id && !currentAnswer?.isCorrect}
+                  icon={icon}
                   onClick={() => {
                     if (!isCurrentConfirmed) {
                       dispatch(selectOption(opt.id));
                     }
                   }}
-                  className={cn(
-                    'flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 w-full',
-                    'bg-(--loom-white)/5',
-                    borderClass
-                  )}
-                >
-                  <span className={cn('text-lg font-bold w-6', letterClass)}>{optionLetters[idx]}</span>
-                  <span className={cn('flex-1', textClass)}>{opt.text}</span>
-                  {icon}
-
-                  {/* ✅ Кнопка с лампочкой для объяснения */}
-                  {isCurrentConfirmed && isCorrectOption && currentQuestion.explanation && (
-                    <button
-                      onClick={() => setSelectedExplanation(currentQuestion.explanation ?? null)}
-                      className="absolute bottom-4 right-4 flex items-center gap-1 px-4 py-2 rounded-full bg-(--loom-cyan)/10 hover:bg-(--loom-cyan)/20 text-(--loom-cyan) text-sm transition-colors border border-(--loom-cyan)/20"
-                    >
-                      <span>💡</span>
-                      <span className="hidden sm:inline">Объяснение</span>
-                    </button>
-                  )}
-                </motion.div>
+                />
               );
             })}
           </div>
 
-          <div className="flex flex-col items-center gap-2 pt-2">
+          <div className="flex flex-col items-center gap-2 pt-8">
             {!isCurrentConfirmed ? (
               <Button
                 variant="glitch"
@@ -278,6 +249,16 @@ export function QuizContent({ id }: { id: string }) {
           </div>
         </motion.div>
       </AnimatePresence>
+
+      {/* ✅ Лампочка в правом нижнем углу экрана */}
+      {isCurrentConfirmed && hasExplanation && (
+        <button
+          onClick={() => setSelectedExplanation(currentQuestion.explanation ?? null)}
+          className="fixed bottom-4 right-4 z-40 flex items-center justify-center w-13 h-10 rounded-full bg-(--loom-cyan)/10 hover:bg-(--loom-cyan)/20 text-(--loom-cyan) text-lg transition-colors border border-(--loom-cyan)/20 shadow-lg"
+        >
+          💡
+        </button>
+      )}
 
       {/* ✅ Модалка с объяснением */}
       {selectedExplanation && (

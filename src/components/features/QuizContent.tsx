@@ -14,29 +14,23 @@ import {
   nextQuestion,
   finishQuiz,
 } from '@/store/slices/quizSlice';
-import { Button } from '@/components/ui/core/Button';
-import { useSaveAttemptMutation } from '@/store/api/attemptsApi';
 import { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { persistor } from '@/store/store';
 import { useGetQuizByIdQuery } from '@/store/api/quizApi';
 import { useSession } from 'next-auth/react';
-import { useToast } from '@/components/ui/feedback/ToastContainer';
-import { Check, X } from 'lucide-react';
 import { useGetFavoritesQuery, useToggleFavoriteMutation } from '@/store/api/favoritesApi';
 import { useMemo } from 'react';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
 import { usePWA } from '@/hooks/usePWA';
 import { QuizFinishScreen } from './QuizFinishScreen';
 import { Modal } from '@/components/ui/feedback/Modal';
-import { QuizOption } from './QuizOption';
 import { useSaveAttempt } from '@/hooks/useSaveAttempt';
 import { useQuizNavigation } from '@/hooks/useQuizNavigation';
 import { QuizQuestion } from './QuizQuestion';
+import { QuizSkeleton } from '@/components/ui/feedback/Skeleton';
 
 export function QuizContent({ id }: { id: string }) {
   const dispatch = useDispatch();
-  const router = useRouter();
   const currentQuestion = useSelector(selectCurrentQuestion);
   const score = useSelector(selectScore);
   const selectedOption = useSelector(selectSelectedOption);
@@ -74,14 +68,12 @@ export function QuizContent({ id }: { id: string }) {
     }
   }, [quizData, currentQuiz, dispatch]);
 
-
   useEffect(() => {
     if (isFinished && questions.length > 0 && !savedRef.current) {
       const score = answers.filter(a => a.isCorrect).length;
       save(answers, score, questions.length);
     }
   }, [isFinished, questions, answers, save]);
-
 
   if (isFinished) {
     return (
@@ -101,7 +93,12 @@ export function QuizContent({ id }: { id: string }) {
     );
   }
 
-  if (!currentQuestion) return null;
+  // ✅ Скелетон показываем перед проверкой currentQuestion
+  const shouldShowSkeleton = !currentQuestion;
+
+  if (shouldShowSkeleton) {
+    return <QuizSkeleton />
+  }
 
   const currentAnswer = answers.find(a => a.questionId === currentQuestion.id);
   const isCurrentConfirmed = !!currentAnswer;

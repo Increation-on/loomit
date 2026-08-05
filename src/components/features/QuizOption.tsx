@@ -75,7 +75,7 @@ export function QuizOption({
       </div>
 
       {icon && (
-        <div className="flex items-center justify-center px-4 py-3 border-l border-(--loom-white)/10 shrink-0">
+        <div className="flex items-center justify-center px-2 py-2 border-l border-(--loom-white)/10 shrink-0">
           {icon}
         </div>
       )}

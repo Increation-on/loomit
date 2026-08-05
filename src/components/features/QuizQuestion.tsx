@@ -3,7 +3,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/core/Button';
 import { QuizOption } from './QuizOption';
-import { cn } from '@/lib/utils';
 import { Check, X } from 'lucide-react';
 
 interface QuizQuestionProps {

@@ -82,19 +82,44 @@ export function CategorySkeleton() {
 }
 
 // CatalogCardSkeleton
+// CatalogCardSkeleton — под новую карточку
 export function CatalogCardSkeleton() {
   return (
-    <div className="p-4 bg-(--loom-white)/5 rounded-xl glitch-border">
-      <div className="space-y-3">
-        <Skeleton className="h-6 w-3/4" />
-        <div className="flex justify-between items-center">
-          <Skeleton className="h-4 w-16" />
-          <Skeleton className="h-4 w-20" />
+    <div className="overflow-hidden flex flex-row p-4 gap-3 min-h-39 bg-(--loom-white)/5 rounded-xl glitch-border">
+      {/* Левая часть */}
+      <div className="flex-1 flex flex-col h-full min-w-0">
+        {/* Заголовок + иконка */}
+        <div className="flex items-start gap-3 h-13">
+          <Skeleton className="w-12 h-12 rounded-full shrink-0" />
+          <div className="flex flex-col min-w-0 space-y-2 flex-1">
+            <Skeleton className="h-5 w-3/4" />
+            <Skeleton className="h-3 w-full" />
+          </div>
         </div>
-        <div className="flex items-center gap-2">
+
+        {/* Теги */}
+        <div className="flex flex-wrap justify-center gap-3 mt-2">
           <Skeleton className="h-4 w-12" />
-          <Skeleton className="h-2 w-2 rounded-full" />
+          <Skeleton className="h-4 w-4 rounded-full" />
+          <Skeleton className="h-4 w-16" />
+          <Skeleton className="h-4 w-4 rounded-full" />
+          <Skeleton className="h-4 w-14" />
         </div>
+
+        {/* Попытки */}
+        <div className="flex justify-center mt-1">
+          <Skeleton className="h-5 w-12" />
+        </div>
+
+        {/* Кнопка */}
+        <div className="mt-auto pt-2">
+          <Skeleton className="h-11 w-full rounded-xl" />
+        </div>
+      </div>
+
+      {/* Правая часть (разделитель + звезда) */}
+      <div className="flex flex-col items-center justify-center shrink-0 w-12 h-full pl-3 border-l border-(--loom-white)/10">
+        <Skeleton className="w-7 h-7 rounded-full" variant="glitch" />
       </div>
     </div>
   );

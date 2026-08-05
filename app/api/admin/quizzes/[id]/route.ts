@@ -73,7 +73,7 @@ export async function PUT(
 
   // Удаляем старые вопросы
   await prisma.question.deleteMany({ where: { quiz_id: id } });
-
+console.log('📤 PUT body:', JSON.stringify(body, null, 2));
   // Обновляем квиз
   const quiz = await prisma.quiz.update({
     where: { id },
@@ -89,6 +89,7 @@ export async function PUT(
           text: q.text,
           options: q.options,
           correct_option_id: q.correctOptionId,
+          explanation: q.explanation, // ✅ ВОТ ЭТА СТРОКА
           order: index,
         })),
       },

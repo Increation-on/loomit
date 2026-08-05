@@ -1,16 +1,29 @@
 'use client';
 
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useGetAttemptByIdQuery } from '@/store/api/profileApi';
+import { useGetQuizByIdQuery } from '@/store/api/quizApi';
 import { Check, X, ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
 
 export default function AttemptDetailPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const id = params.id as string;
-  const { data: attempt, isLoading } = useGetAttemptByIdQuery(id);
+  const quizId = searchParams.get('quizId');
+
+  const { data: attempt, isLoading: attemptLoading } = useGetAttemptByIdQuery(id);
+  
+  // ✅ Если quizId не передан в URL, берём его из попытки
+  const effectiveQuizId = quizId || attempt?.quiz_id;
+
+  const { data: quiz, isLoading: quizLoading } = useGetQuizByIdQuery(effectiveQuizId ?? '', {
+    skip: !effectiveQuizId,
+  });
+
+  const isLoading = attemptLoading || (effectiveQuizId ? quizLoading : false);
 
   if (isLoading) {
     return (
@@ -101,6 +114,9 @@ export default function AttemptDetailPage() {
             return correctId;
           };
 
+          // ✅ Находим объяснение по индексу вопроса
+          const explanation = quiz?.questions?.[i]?.explanation;
+
           return (
             <div
               key={i}
@@ -133,6 +149,14 @@ export default function AttemptDetailPage() {
                     </span>
                   )}
                 </div>
+
+                {/* ✅ Отображение объяснения */}
+                {explanation && (
+                  <div className="mt-2 text-sm text-(--loom-white)/60 bg-(--loom-white)/5 p-3 rounded-lg">
+                    <span className="text-(--loom-cyan) font-medium">Объяснение: </span>
+                    {explanation}
+                  </div>
+                )}
               </div>
             </div>
           );

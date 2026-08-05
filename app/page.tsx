@@ -15,6 +15,7 @@ import { SearchWithDropdown } from '@/components/ui/core/SearchWithDropDown';
 import { TryItSkeleton, CategorySkeleton } from '@/components/ui/feedback/Skeleton';
 import { cn, pluralize } from '@/lib/utils';
 import { TryItCard } from '@/components/features/TryItCard';
+import { ChevronRight } from 'lucide-react';
 
 export default function HomePage() {
   const { data: quizzes, isLoading: isQuizzesLoading } = useGetQuizzesQuery({});
@@ -163,9 +164,6 @@ export default function HomePage() {
       <div className="px-4 mt-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-bold">Категории</h2>
-          {categories && categories.length > 4 && (
-            <Link href="/catalog" className="text-sm text-(--loom-yellow)">Все категории</Link>
-          )}
         </div>
 
         {isCategoriesLoading ? (
@@ -193,9 +191,9 @@ export default function HomePage() {
                 </div>
                 <div>
                   {cat.iconUrl ? (
-                    <img src={cat.iconUrl} alt={cat.name} className="w-10 h-10 rounded-full object-contain" />
+                    <img src={cat.iconUrl} alt={cat.name} className="w-12 h-12 rounded-full object-contain" />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-(--loom-cyan)/20 flex items-center justify-center text-(--loom-cyan) font-bold">
+                    <div className="w-12 h-12 rounded-full bg-(--loom-cyan)/20 flex items-center justify-center text-(--loom-cyan) font-bold">
                       {cat.name[0]}
                     </div>
                   )}
@@ -207,8 +205,10 @@ export default function HomePage() {
           <EmptyState title="Нет доступных категорий" />
         )}
         <div className="mt-2 flex justify-end">
-          {categories && categories.length > 4 && (
-            <Link href="/catalog" className="text-sm text-(--loom-yellow)">Все категории</Link>
+          {categories && categories.length >= 4 && (
+            <Link href="/catalog" className="text-sm text-(--loom-yellow)">
+              <span className='flex mt-1'> Все категории<ChevronRight size={20} /></span>
+            </Link>
           )}
         </div>
       </div>

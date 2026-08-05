@@ -18,6 +18,9 @@ export const attemptsApi = createApi({
         method: 'POST',
         body: attempt,
       }),
+      transformResponse: (response: any) => {
+        return response.attempt;
+      },
       invalidatesTags: ['Attempts'],
     }),
 

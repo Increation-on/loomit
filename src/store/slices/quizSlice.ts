@@ -5,13 +5,19 @@ export interface UserAnswer {
   questionId: string;
   selectedOptionId: string;
   isCorrect: boolean;
-   questionText: string;
+  questionText: string;
   correctOptionId: string;
 }
 
 interface QuizState {
   currentQuiz: { id: string; title: string } | null;
-  questions: { id: string; text: string; options: string[]; correctOptionId: string }[];
+  questions: {
+    id: string;
+    text: string;
+    options: string[];
+    correctOptionId: string;
+    explanation?: string; // ✅ добавляем
+  }[];
   answers: UserAnswer[];
   currentIndex: number;
   selectedOption: string | null; 
@@ -35,7 +41,13 @@ const quizSlice = createSlice({
   reducers: {
     startQuiz(state, action: PayloadAction<{ quiz: { id: string; title: string }; questions: any[] }>) {
       state.currentQuiz = action.payload.quiz;
-      state.questions = action.payload.questions;
+      state.questions = action.payload.questions.map((q: any) => ({
+        id: q.id,
+        text: q.text,
+        options: q.options.map((o: any) => (typeof o === 'string' ? { id: crypto.randomUUID(), text: o } : o)),
+        correctOptionId: q.correct_option_id || q.correctOptionId || '',
+        explanation: q.explanation || '', // ✅ добавляем
+      }));
       state.answers = [];
       state.currentIndex = 0;
       state.selectedOption = null;
@@ -46,27 +58,27 @@ const quizSlice = createSlice({
       state.selectedOption = action.payload;
     },
     confirmAnswer(state) {
-  const question = state.questions[state.currentIndex];
-  const selectedOption = state.selectedOption;
-  if (!question || !selectedOption) return;
+      const question = state.questions[state.currentIndex];
+      const selectedOption = state.selectedOption;
+      if (!question || !selectedOption) return;
 
-  const isCorrect = question.correctOptionId === selectedOption;
-  const existing = state.answers.find(a => a.questionId === question.id);
-  if (existing) {
-    existing.selectedOptionId = selectedOption;
-    existing.isCorrect = isCorrect;
-    existing.questionText = question.text;
-    existing.correctOptionId = question.correctOptionId;
-  } else {
-    state.answers.push({
-      questionId: question.id,
-      selectedOptionId: selectedOption,
-      isCorrect,
-      questionText: question.text,
-      correctOptionId: question.correctOptionId,
-    });
-  }
-},
+      const isCorrect = question.correctOptionId === selectedOption;
+      const existing = state.answers.find(a => a.questionId === question.id);
+      if (existing) {
+        existing.selectedOptionId = selectedOption;
+        existing.isCorrect = isCorrect;
+        existing.questionText = question.text;
+        existing.correctOptionId = question.correctOptionId;
+      } else {
+        state.answers.push({
+          questionId: question.id,
+          selectedOptionId: selectedOption,
+          isCorrect,
+          questionText: question.text,
+          correctOptionId: question.correctOptionId,
+        });
+      }
+    },
     nextQuestion(state) {
       if (state.currentIndex < state.questions.length - 1) {
         state.currentIndex++;
@@ -76,7 +88,6 @@ const quizSlice = createSlice({
     previousQuestion(state) {
       if (state.currentIndex > 0) {
         state.currentIndex--;
-        // восстанавливаем выбранный вариант для этого вопроса, если он был отвечен
         const prevAnswer = state.answers.find(a => a.questionId === state.questions[state.currentIndex]?.id);
         state.selectedOption = prevAnswer?.selectedOptionId || null;
       }

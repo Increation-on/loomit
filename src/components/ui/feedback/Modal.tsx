@@ -1,4 +1,3 @@
-// src/components/ui/feedback/Modal.tsx
 'use client';
 
 import { useEffect, useRef, ReactNode } from 'react';
@@ -24,7 +23,7 @@ export function Modal({
   title,
   children,
   confirmText = 'Подтвердить',
-  cancelText = 'Отмена',
+  cancelText,
   onConfirm,
   variant = 'default',
 }: ModalProps) {
@@ -70,14 +69,13 @@ export function Modal({
         aria-modal="true"
         aria-labelledby={title ? 'modal-title' : undefined}
       >
-        {/* Заголовок + крестик */}
         <div className="px-6 pt-5 pb-2 flex items-center justify-between">
           {title ? (
             <h2 id="modal-title" className="text-xl font-bold text-(--loom-white)">
               {title}
             </h2>
           ) : (
-            <div /> // пустой div для отступа, если нет заголовка
+            <div />
           )}
           <button
             onClick={onClose}
@@ -88,34 +86,35 @@ export function Modal({
           </button>
         </div>
 
-        {/* Контент */}
         <div className="px-6 py-3 text-(--loom-white)/70">
           {children}
         </div>
 
-        {/* Кнопки */}
-       {(onConfirm || cancelText) && (
-  <div className="px-6 pb-5 pt-2 flex flex-wrap items-center justify-end gap-2">
-    <Button variant="secondary" onClick={onCancel || onClose} className="flex-1 min-w-20">
-      {cancelText}
-    </Button>
-    {onConfirm && (
-      <Button
-        variant="glitch"
-        className={cn(
-          "flex-1 min-w-20",
-          variant === 'danger' && 'bg-red-600 text-white border-red-600'
+        {/* Кнопки — только если есть onConfirm или cancelText */}
+        {(onConfirm || cancelText) && (
+          <div className="px-6 pb-5 pt-2 flex flex-wrap items-center justify-end gap-2">
+            {cancelText && (
+              <Button variant="secondary" onClick={onCancel || onClose} className="flex-1 min-w-20">
+                {cancelText}
+              </Button>
+            )}
+            {onConfirm && (
+              <Button
+                variant="glitch"
+                className={cn(
+                  "flex-1 min-w-20",
+                  variant === 'danger' && 'bg-red-600 text-white border-red-600'
+                )}
+                onClick={() => {
+                  onConfirm();
+                  onClose();
+                }}
+              >
+                {confirmText}
+              </Button>
+            )}
+          </div>
         )}
-        onClick={() => {
-          onConfirm();
-          onClose();
-        }}
-      >
-        {confirmText}
-      </Button>
-    )}
-  </div>
-)}
       </div>
     </div>
   );

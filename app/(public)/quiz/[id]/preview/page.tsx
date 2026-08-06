@@ -13,7 +13,7 @@ import {
 import { Button } from '@/components/ui/core/Button';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
 import { cn } from '@/lib/utils';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ChevronLeft } from 'lucide-react';
 import { StarButton } from '@/components/ui/core/StarButton';
 
 export default function QuizPreviewPage() {
@@ -77,7 +77,7 @@ export default function QuizPreviewPage() {
           }}
           className="inline-flex items-center gap-2 text-(--loom-white)/60 hover:text-(--loom-white) transition-colors"
         >
-          <ArrowLeft size={18} />
+          <ChevronLeft size={22} />
           Назад
         </button>
       </div>

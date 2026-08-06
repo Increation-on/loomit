@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Home, Book, Star, User } from 'lucide-react';
 import { useMediaQuery } from 'usehooks-ts';
+import AnimatedLink from './AnimatedLink';
 
 export default function Footer() {
   const pathname = usePathname();
@@ -42,7 +43,7 @@ export default function Footer() {
       </div>
 
       <div className="flex justify-around items-center h-16 max-w-md mx-auto relative z-10">
-        <Link 
+        <AnimatedLink
           href="/"
           onContextMenu={(e) => e.preventDefault()} 
           className={`flex flex-col items-center gap-1 transition-all duration-100 ${
@@ -53,9 +54,9 @@ export default function Footer() {
         >
           <Home size={24} />
           <span className="text-xs">Главная</span>
-        </Link>
-        
-        <Link 
+        </AnimatedLink>
+
+        <AnimatedLink
           href="/catalog"
           onContextMenu={(e) => e.preventDefault()} 
           className={`flex flex-col items-center gap-1 transition-all duration-100 ${
@@ -66,9 +67,9 @@ export default function Footer() {
         >
           <Book size={24} />
           <span className="text-xs">Каталог</span>
-        </Link>
-        
-        <Link 
+        </AnimatedLink>
+
+        <AnimatedLink
           href="/favorites"
           onContextMenu={(e) => e.preventDefault()} 
           className={`flex flex-col items-center gap-1 transition-all duration-100 ${
@@ -79,9 +80,9 @@ export default function Footer() {
         >
           <Star size={24} />
           <span className="text-xs">Избранное</span>
-        </Link>
+        </AnimatedLink>
         
-        <Link 
+        <AnimatedLink 
           href="/profile"
           onContextMenu={(e) => e.preventDefault()} 
           className={`flex flex-col items-center gap-1 transition-all duration-100 ${
@@ -92,7 +93,7 @@ export default function Footer() {
         >
           <User size={24} />
           <span className="text-xs">Профиль</span>
-        </Link>
+        </AnimatedLink>
       </div>
     </nav>
   );

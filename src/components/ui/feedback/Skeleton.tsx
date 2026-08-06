@@ -82,39 +82,45 @@ export function CategorySkeleton() {
 }
 
 // CatalogCardSkeleton
-// CatalogCardSkeleton — под новую карточку
 export function CatalogCardSkeleton() {
   return (
     <div className="overflow-hidden flex flex-row p-4 gap-3 min-h-39 bg-(--loom-white)/5 rounded-xl glitch-border">
       {/* Левая часть */}
-      <div className="flex-1 flex flex-col h-full min-w-0">
-        {/* Заголовок + иконка */}
-        <div className="flex items-start gap-3 h-13">
+      <div className="flex-1 flex flex-col h-full min-w-0 gap-2">
+        
+        {/* 1. Иконка + Заголовок + Описание */}
+        <div className="flex items-start gap-3">
           <Skeleton className="w-12 h-12 rounded-full shrink-0" />
-          <div className="flex flex-col min-w-0 space-y-2 flex-1">
-            <Skeleton className="h-5 w-3/4" />
-            <Skeleton className="h-3 w-full" />
+          <div className="flex flex-col min-w-0 space-y-1.5 flex-1">
+            <Skeleton className="h-6 w-3/4 rounded-md" />
+            <Skeleton className="h-4 w-full rounded-md" />
           </div>
         </div>
 
-        {/* Теги */}
-        <div className="flex flex-wrap justify-center gap-3 mt-2">
-          <Skeleton className="h-4 w-12" />
-          <Skeleton className="h-4 w-4 rounded-full" />
-          <Skeleton className="h-4 w-16" />
-          <Skeleton className="h-4 w-4 rounded-full" />
-          <Skeleton className="h-4 w-14" />
+        {/* 2. Теги в одну строку: Вопросы • Категория • Уровень */}
+        <div className="flex flex-wrap justify-center gap-2 mt-1">
+          <Skeleton className="h-4 w-14 rounded-md" />
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-4 w-4 rounded-full" />
+            <Skeleton className="h-4 w-20 rounded-md" />
+            <Skeleton className="h-4 w-4 rounded-full" />
+            <Skeleton className="h-4 w-16 rounded-md" />
+          </div>
         </div>
 
-        {/* Попытки */}
-        <div className="flex justify-center mt-1">
-          <Skeleton className="h-5 w-12" />
+        {/* 3. Отдельная строка: Попытки (слева) + Результат (справа) */}
+        <div className="flex flex-wrap justify-center gap-4 mt-1">
+          <Skeleton className="h-4 w-24 rounded-md" />
+          <div className="flex items-center gap-1">
+            <Skeleton className="h-4 w-10 bg-(--loom-yellow)/10 rounded-md animate-pulse" />
+          </div>
         </div>
 
-        {/* Кнопка */}
+        {/* 4. Кнопка */}
         <div className="mt-auto pt-2">
           <Skeleton className="h-11 w-full rounded-xl" />
         </div>
+
       </div>
 
       {/* Правая часть (разделитель + звезда) */}

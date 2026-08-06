@@ -66,8 +66,9 @@ export function TryItCard({
           )}
         </div>
         <div className="flex items-center gap-2">
-          {lastAttempt && (
-            <>
+          {/* ✅ Фиксированное место для lastAttempt + скелетон */}
+          <div className="min-h-5 min-w-10 flex items-center justify-center">
+            {lastAttempt ? (
               <span
                 className={cn(
                   'text-xs font-semibold',
@@ -79,9 +80,11 @@ export function TryItCard({
               >
                 {lastAttempt.score}/{lastAttempt.totalQuestions}
               </span>
-              <span className="text-(--loom-white)/30">•</span>
-            </>
-          )}
+            ) : (
+              <div className="h-4 w-10 bg-(--loom-white)/5 rounded animate-pulse" />
+            )}
+          </div>
+          <span className="text-(--loom-white)/30">•</span>
           {quiz.level && (
             <span className={cn('text-xs font-semibold', levelColor)}>
               {levelLabel}

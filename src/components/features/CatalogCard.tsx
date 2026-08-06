@@ -116,9 +116,8 @@ export function CatalogCard({
                   {attemptsCount} {pluralize(attemptsCount, 'попытка', 'попытки', 'попыток')}
                 </span>
               )}
-              {lastAttempt && (
-                <>
-                  {attemptsCount > 0 && <span className="text-(--loom-white)/30">•</span>}
+              <div className="min-h-5 min-w-10 flex items-center justify-center">
+                {lastAttempt ? (
                   <span
                     className={cn(
                       'text-sm font-semibold',
@@ -129,8 +128,10 @@ export function CatalogCard({
                   >
                     {lastAttempt.score}/{lastAttempt.totalQuestions}
                   </span>
-                </>
-              )}
+                ) : (
+                  <div className="h-4 w-10 bg-(--loom-white)/5 rounded animate-pulse" />
+                )}
+              </div>
             </>
           )}
         </div>
@@ -159,7 +160,7 @@ export function CatalogCard({
             active={isFavorited}
             size={28}
             className="hover:scale-110 transition-transform"
-            onClick={onFavoriteToggle ?? (() => {})}
+            onClick={onFavoriteToggle ?? (() => { })}
           />
         </div>
       )}

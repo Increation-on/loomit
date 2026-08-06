@@ -199,6 +199,50 @@ h1, h2, h3, .font-display {
 
 
 
+/* Анимация глитч-линий при навигации */
+
+.noise-line {
+  position: absolute;
+  height: 1px;
+  border-radius: 999px;
+
+  opacity: 0;
+
+  animation: glitch-noise .32s steps(1) forwards;
+}
+
+@keyframes glitch-noise {
+
+  0% {
+    opacity: 0;
+    transform: scaleX(.6);
+  }
+
+  15% {
+    opacity: 1;
+  }
+
+  35% {
+    opacity: .2;
+    transform: translateX(-2px);
+  }
+
+  55% {
+    opacity: .9;
+    transform: translateX(1px);
+  }
+
+  80% {
+    opacity: .35;
+  }
+
+  100% {
+    opacity: 0;
+    transform: scaleX(.7);
+  }
+
+}
+
 
 /* ===== Браузерные артефакты — только для PWA ===== */
 .pwa-mode * {

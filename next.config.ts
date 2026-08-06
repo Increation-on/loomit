@@ -14,6 +14,11 @@ const withSerwist = withSerwistInit({
 })
 
 const nextConfig: NextConfig = {
+
+  experimental: {
+    viewTransition: true,
+  },
+
   typescript: {
     ignoreBuildErrors: true,
   },

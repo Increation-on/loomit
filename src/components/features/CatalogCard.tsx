@@ -81,7 +81,9 @@ export function CatalogCard({
           </div>
 
           <div className="flex flex-col min-w-0">
-            <h3 className="text-lg font-semibold text-(--loom-white) truncate">{quiz.title}</h3>
+            <h3 className="text-lg font-semibold text-(--loom-white) line-clamp-2 leading-tight">
+              {quiz.title}
+            </h3>
             <p className="text-sm text-(--loom-white)/60 line-clamp-1 min-h-5">
               {quiz.description || ' '}
             </p>
@@ -89,7 +91,7 @@ export function CatalogCard({
         </div>
 
         {/* Теги */}
-        <div className="flex flex-wrap justify-center gap-3 text-xs mt-1">
+        <div className="flex flex-wrap justify-center gap-2 text-xs mt-5">
           <span className="text-(--loom-white)/50 whitespace-nowrap">
             {questionsCount}{' '}
             {pluralize(questionsCount, 'вопрос', 'вопроса', 'вопросов')}
@@ -116,9 +118,8 @@ export function CatalogCard({
                   {attemptsCount} {pluralize(attemptsCount, 'попытка', 'попытки', 'попыток')}
                 </span>
               )}
-              {lastAttempt && (
-                <>
-                  {attemptsCount > 0 && <span className="text-(--loom-white)/30">•</span>}
+              <div className="min-h-5 min-w-10 flex items-center justify-center">
+                {lastAttempt ? (
                   <span
                     className={cn(
                       'text-sm font-semibold',
@@ -129,8 +130,10 @@ export function CatalogCard({
                   >
                     {lastAttempt.score}/{lastAttempt.totalQuestions}
                   </span>
-                </>
-              )}
+                ) : (
+                  <div className="h-4 w-10 bg-(--loom-white)/5 rounded animate-pulse" />
+                )}
+              </div>
             </>
           )}
         </div>
@@ -159,7 +162,7 @@ export function CatalogCard({
             active={isFavorited}
             size={28}
             className="hover:scale-110 transition-transform"
-            onClick={onFavoriteToggle ?? (() => {})}
+            onClick={onFavoriteToggle ?? (() => { })}
           />
         </div>
       )}

@@ -1,4 +1,3 @@
-// src/components/ui/feedback/Skeleton.tsx
 import { cn } from '@/lib/utils';
 
 interface SkeletonProps {
@@ -55,6 +54,7 @@ export function QuestionSkeleton() {
   );
 }
 
+// TryItSkeleton
 export function TryItSkeleton() {
   return (
     <div className="w-50 h-46 shrink-0 snap-start rounded-xl overflow-hidden">
@@ -63,6 +63,7 @@ export function TryItSkeleton() {
   );
 }
 
+// CategorySkeleton
 export function CategorySkeleton() {
   return (
     <div className="bg-(--loom-white)/5 rounded-2xl p-5 glitch-border relative overflow-hidden">
@@ -80,24 +81,57 @@ export function CategorySkeleton() {
   );
 }
 
+// CatalogCardSkeleton
 export function CatalogCardSkeleton() {
   return (
-    <div className="p-4 bg-(--loom-white)/5 rounded-xl glitch-border">
-      <div className="space-y-3">
-        <Skeleton className="h-6 w-3/4" />
-        <div className="flex justify-between items-center">
-          <Skeleton className="h-4 w-16" />
-          <Skeleton className="h-4 w-20" />
+    <div className="overflow-hidden flex flex-row p-4 gap-3 min-h-39 bg-(--loom-white)/5 rounded-xl glitch-border">
+      {/* Левая часть */}
+      <div className="flex-1 flex flex-col h-full min-w-0 gap-2">
+        
+        {/* 1. Иконка + Заголовок + Описание */}
+        <div className="flex items-start gap-3">
+          <Skeleton className="w-12 h-12 rounded-full shrink-0" />
+          <div className="flex flex-col min-w-0 space-y-1.5 flex-1">
+            <Skeleton className="h-6 w-3/4 rounded-md" />
+            <Skeleton className="h-4 w-full rounded-md" />
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Skeleton className="h-4 w-12" />
-          <Skeleton className="h-2 w-2 rounded-full" />
+
+        {/* 2. Теги в одну строку: Вопросы • Категория • Уровень */}
+        <div className="flex flex-wrap justify-center gap-2 mt-1">
+          <Skeleton className="h-4 w-14 rounded-md" />
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-4 w-4 rounded-full" />
+            <Skeleton className="h-4 w-20 rounded-md" />
+            <Skeleton className="h-4 w-4 rounded-full" />
+            <Skeleton className="h-4 w-16 rounded-md" />
+          </div>
         </div>
+
+        {/* 3. Отдельная строка: Попытки (слева) + Результат (справа) */}
+        <div className="flex flex-wrap justify-center gap-4 mt-1">
+          <Skeleton className="h-4 w-24 rounded-md" />
+          <div className="flex items-center gap-1">
+            <Skeleton className="h-4 w-10 bg-(--loom-yellow)/10 rounded-md animate-pulse" />
+          </div>
+        </div>
+
+        {/* 4. Кнопка */}
+        <div className="mt-auto pt-2">
+          <Skeleton className="h-11 w-full rounded-xl" />
+        </div>
+
+      </div>
+
+      {/* Правая часть (разделитель + звезда) */}
+      <div className="flex flex-col items-center justify-center shrink-0 w-12 h-full pl-3 border-l border-(--loom-white)/10">
+        <Skeleton className="w-7 h-7 rounded-full" variant="glitch" />
       </div>
     </div>
   );
 }
 
+// AdminQuizRowSkeleton
 export function AdminQuizRowSkeleton() {
   return (
     <div className="p-4 bg-(--loom-white)/5 rounded-xl glitch-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -115,6 +149,51 @@ export function AdminQuizRowSkeleton() {
         <Skeleton className="h-8 w-20 rounded-full" />
         <Skeleton className="h-8 w-16 rounded-full" />
         <Skeleton className="h-8 w-20 rounded-full" />
+      </div>
+    </div>
+  );
+}
+
+// ✅ Новый скелетон для страницы квиза
+export function QuizSkeleton() {
+  return (
+    <div className="min-h-screen bg-(--loom-black) pb-24 px-4 flex flex-col items-center max-w-2xl mx-auto pt-16">
+      {/* Заголовок квиза */}
+      <div className="w-full mb-6 flex flex-col items-center">
+        <Skeleton className="h-8 w-64 mb-2" variant="glitch" />
+
+        <div className="flex items-center gap-4 w-full max-w-md">
+          <Skeleton className="h-4 w-16" />
+          <Skeleton className="h-1 flex-1 bg-(--loom-white)/10" />
+          <Skeleton className="h-4 w-12" />
+        </div>
+      </div>
+
+      {/* Вопрос */}
+      <div className="w-full max-w-md mx-auto mb-6">
+        <Skeleton className="h-10 w-full" variant="glitch" />
+      </div>
+
+      {/* Варианты ответов (4 штуки, как на экране) */}
+      <div className="flex flex-col gap-3 w-full max-w-md mx-auto">
+        {[1, 2, 3, 4].map((i) => (
+          <div
+            key={i}
+            className="flex items-stretch rounded-xl border border-(--loom-white)/10 overflow-hidden bg-(--loom-white)/5"
+          >
+            <div className="flex items-center justify-center px-4 py-3 border-r border-(--loom-white)/10 shrink-0">
+              <Skeleton className="h-5 w-5" />
+            </div>
+            <div className="flex-1 px-4 py-3">
+              <Skeleton className="h-4 w-full" />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Кнопка */}
+      <div className="mt-8 w-full max-w-md mx-auto">
+        <Skeleton className="h-12 w-full rounded-xl" variant="glitch" />
       </div>
     </div>
   );

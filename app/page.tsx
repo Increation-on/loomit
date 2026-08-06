@@ -3,23 +3,18 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSelector, useDispatch } from 'react-redux';
-import Link from 'next/link';
 import { useGetQuizzesQuery } from '@/store/api/quizApi';
-import { useGetCategoriesQuery } from '@/store/api/categoryApi';
 import { selectQuizState, resetQuiz } from '@/store/slices/quizSlice';
 import { persistor } from '@/store/store';
 import { Modal } from '@/components/ui/feedback/Modal';
-import { EmptyState } from '@/components/ui/feedback/EmptyState';
-import { Button } from '@/components/ui/core/Button';
 import { SearchWithDropdown } from '@/components/ui/core/SearchWithDropDown';
-import { TryItSkeleton, CategorySkeleton } from '@/components/ui/feedback/Skeleton';
-import { cn, pluralize } from '@/lib/utils';
+import { TryItSkeleton } from '@/components/ui/feedback/Skeleton';
 import { TryItCard } from '@/components/features/TryItCard';
-import { ChevronRight } from 'lucide-react';
+import { CategoryList } from '@/components/features/CategoryList';
+import { ContinueQuizCard } from '@/components/features/ContinueQuizCard';
 
 export default function HomePage() {
   const { data: quizzes, isLoading: isQuizzesLoading } = useGetQuizzesQuery({});
-  const { data: categories, isLoading: isCategoriesLoading } = useGetCategoriesQuery({});
   const router = useRouter();
   const dispatch = useDispatch();
   const quizState = useSelector(selectQuizState);
@@ -108,18 +103,11 @@ export default function HomePage() {
 
       <div className="px-4 mb-6">
         {hasUnfinished ? (
-          <div className="bg-(--loom-white)/5 p-3 rounded-xl border border-(--loom-cyan)/30 flex items-center justify-between glitch-border">
-            <div className="flex flex-col">
-              <span className="text-xs text-(--loom-white)/60">Продолжить</span>
-              <span className="font-semibold text-(--loom-white) text-sm">{currentQuiz?.title}</span>
-              <span className="text-[10px] text-(--loom-white)/40 mt-0.5">
-                {answers.length} {pluralize(answers.length, 'вопрос', 'вопроса', 'вопросов')}
-              </span>
-            </div>
-            <Button variant="glitch" size="sm" onClick={() => handleQuizClick(currentQuiz!.id)}>
-              Go
-            </Button>
-          </div>
+          <ContinueQuizCard
+            title={currentQuiz!.title}
+            answersCount={answers.length}
+            onContinue={() => handleQuizClick(currentQuiz!.id)}
+          />
         ) : (
           <div>
             <div className="flex justify-between items-center mb-4">
@@ -162,55 +150,7 @@ export default function HomePage() {
       </div>
 
       <div className="px-4 mt-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-bold">Категории</h2>
-        </div>
-
-        {isCategoriesLoading ? (
-          <div className="space-y-3">
-            {[1, 2, 3, 4].map((i) => (
-              <CategorySkeleton key={i} />
-            ))}
-          </div>
-        ) : categories && categories.length > 0 ? (
-          <div className="space-y-3 relative overflow-hidden">
-            {categories.slice(0, 4).map((cat: any) => (
-              <div
-                key={cat.id}
-                onClick={() => router.push(`/catalog?category=${cat.id}`)}
-                className="bg-(--loom-white)/5 rounded-2xl p-5 cursor-pointer flex justify-between items-center relative glitch-border hover:bg-(--loom-white)/10 transition-colors overflow-hidden"
-              >
-                <div className="absolute inset-0 pointer-events-none">
-                  <div className="absolute left-0 right-0 mx-auto w-full h-0.75 glitch-scanline-gradient opacity-50 blur-[1px] animate-scanline" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg text-(--loom-magenta)">{cat.name}</h3>
-                  <p className="text-sm text-(--loom-white)/60">
-                    {cat._count?.quizzes || 0} {pluralize(cat._count?.quizzes || 0, 'квиз', 'квиза', 'квизов')}
-                  </p>
-                </div>
-                <div>
-                  {cat.iconUrl ? (
-                    <img src={cat.iconUrl} alt={cat.name} className="w-12 h-12 rounded-full object-contain" />
-                  ) : (
-                    <div className="w-12 h-12 rounded-full bg-(--loom-cyan)/20 flex items-center justify-center text-(--loom-cyan) font-bold">
-                      {cat.name[0]}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <EmptyState title="Нет доступных категорий" />
-        )}
-        <div className="mt-2 flex justify-end">
-          {categories && categories.length >= 4 && (
-            <Link href="/catalog" className="text-sm text-(--loom-yellow)">
-              <span className='flex mt-1'> Все категории<ChevronRight size={20} /></span>
-            </Link>
-          )}
-        </div>
+        <CategoryList limit={4} />
       </div>
 
       <Modal

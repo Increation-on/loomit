@@ -177,7 +177,7 @@ export default function EditQuizPage() {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
-        
+
         <label className="block text-xl font-medium text-(--loom-white)/80 mb-2">Описание</label>
         <div className="glitch-border rounded-xl bg-(--loom-white)/5 w-full overflow-hidden">
           <textarea
@@ -290,10 +290,12 @@ export default function EditQuizPage() {
       </div>
 
       <div className="flex gap-3 mb-20">
-        <Button variant="secondary" onClick={addQuestion}>
-          <Plus size={16} className="mr-2" />
-          Добавить вопрос
-        </Button>
+        {questions.length < 4 && (
+          <Button variant="secondary" onClick={addQuestion}>
+            <Plus size={16} className="mr-2" />
+            Добавить вопрос
+          </Button>
+        )}
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-(--loom-black)/90 backdrop-blur-sm border-t border-(--loom-white)/10 flex gap-3 justify-end">

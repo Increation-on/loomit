@@ -10,6 +10,7 @@ import { Trash2, Plus, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useGetCategoriesQuery } from '@/store/api/categoryApi';
 import { Filters } from '@/components/ui/core/Filters';
+import { Modal } from '@/components/ui/feedback/Modal';
 
 interface Option {
   id: string;
@@ -35,7 +36,13 @@ export default function NewQuizPage() {
   const { success, error: showError } = useToast();
   const { data: categories } = useGetCategoriesQuery({});
 
-  const categoryOptions = categories?.map((cat: any) => ({ value: cat.id, label: cat.name })) || [];
+  // Модалка для редактирования варианта
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingOption, setEditingOption] = useState<{
+    questionIndex: number;
+    optionIndex: number;
+    text: string;
+  } | null>(null);
 
   const addQuestion = () => {
     setQuestions([
@@ -63,12 +70,6 @@ export default function NewQuizPage() {
 
   const deleteQuestion = (index: number) => {
     setQuestions(questions.filter((_, i) => i !== index));
-  };
-
-  const updateOptionText = (questionIndex: number, optionIndex: number, text: string) => {
-    const updated = [...questions];
-    updated[questionIndex].options[optionIndex].text = text;
-    setQuestions(updated);
   };
 
   const setCorrectOption = (questionIndex: number, optionId: string) => {
@@ -161,10 +162,12 @@ export default function NewQuizPage() {
             </CardHeader>
 
             <CardContent className="p-0 space-y-3">
-              <Input
+              <textarea
                 placeholder={`Вопрос ${qi + 1}`}
                 value={q.text}
                 onChange={(e) => updateQuestionText(qi, e.target.value)}
+                className="w-full bg-(--loom-black) border border-(--loom-white)/10 rounded-xl px-3 py-2 text-(--loom-white) focus:outline-none focus:border-(--loom-cyan) resize-none min-h-12"
+                rows={Math.max(2, q.text.split('\n').length)}
               />
 
               {q.options.map((opt, oi) => (
@@ -182,10 +185,14 @@ export default function NewQuizPage() {
                   </button>
 
                   <Input
-                    className="flex-1"
+                    className="flex-1 cursor-pointer"
                     placeholder={`Вариант ${oi + 1}`}
                     value={opt.text}
-                    onChange={(e) => updateOptionText(qi, oi, e.target.value)}
+                    onClick={() => {
+                      setEditingOption({ questionIndex: qi, optionIndex: oi, text: opt.text });
+                      setModalOpen(true);
+                    }}
+                    readOnly
                   />
                 </div>
               ))}
@@ -217,6 +224,33 @@ export default function NewQuizPage() {
           {saving ? 'Сохранение...' : 'Сохранить'}
         </Button>
       </div>
+
+      {/* Модалка для редактирования варианта */}
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title="Редактировать вариант"
+      >
+        <textarea
+          value={editingOption?.text || ''}
+          onChange={(e) => setEditingOption(prev => prev ? { ...prev, text: e.target.value } : null)}
+          className="w-full bg-(--loom-black) border border-(--loom-white)/10 rounded-xl px-3 py-2 text-(--loom-white) focus:outline-none focus:border-(--loom-cyan) resize-y min-h-20"
+          placeholder="Введите текст варианта"
+        />
+        <div className="flex justify-end gap-2 mt-4">
+          <Button variant="ghost" onClick={() => setModalOpen(false)}>Отмена</Button>
+          <Button variant="glitch" onClick={() => {
+            if (editingOption) {
+              const updated = [...questions];
+              updated[editingOption.questionIndex].options[editingOption.optionIndex].text = editingOption.text;
+              setQuestions(updated);
+              setModalOpen(false);
+            }
+          }}>
+            Сохранить
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 }

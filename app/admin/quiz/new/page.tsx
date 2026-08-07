@@ -1,3 +1,5 @@
+// app\admin\quiz\new\page.tsx
+
 'use client';
 
 import { useState, useEffect } from 'react';

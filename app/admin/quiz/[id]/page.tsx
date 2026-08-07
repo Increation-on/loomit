@@ -141,7 +141,7 @@ export default function EditQuizPage() {
       success('Квиз обновлён!');
       router.push('/admin');
     } catch (err: any) {
-      showError(err.message);
+      showError(err.data?.error || err.message || 'Ошибка сохранения');
     }
   };
 
@@ -272,17 +272,19 @@ export default function EditQuizPage() {
               </div>
 
               <div className="pt-2">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => {
-                    const updated = [...questions];
-                    updated[qi].options.push({ id: crypto.randomUUID(), text: '' });
-                    setQuestions(updated);
-                  }}
-                >
-                  + Вариант
-                </Button>
+                {q.options.length < 4 && (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => {
+                      const updated = [...questions];
+                      updated[qi].options.push({ id: crypto.randomUUID(), text: '' });
+                      setQuestions(updated);
+                    }}
+                  >
+                    + Вариант
+                  </Button>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -290,12 +292,10 @@ export default function EditQuizPage() {
       </div>
 
       <div className="flex gap-3 mb-20">
-        {questions.length < 4 && (
-          <Button variant="secondary" onClick={addQuestion}>
-            <Plus size={16} className="mr-2" />
-            Добавить вопрос
-          </Button>
-        )}
+        <Button variant="secondary" onClick={addQuestion}>
+          <Plus size={16} className="mr-2" />
+          Добавить вопрос
+        </Button>
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-(--loom-black)/90 backdrop-blur-sm border-t border-(--loom-white)/10 flex gap-3 justify-end">

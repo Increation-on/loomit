@@ -54,13 +54,13 @@ export async function PUT(
   }
 
   const body = await request.json();
-
   // Валидируем входящие данные
   const validated = adminQuizCreateSchema.safeParse(body);
+ 
   if (!validated.success) {
     return NextResponse.json(
-      { error: z.treeifyError(validated.error) },
-      { status: 400 }
+      { error: validated.error.issues.map((i) => i.message).join(', ') },
+  { status: 400 }
     );
   }
 
@@ -73,7 +73,6 @@ export async function PUT(
 
   // Удаляем старые вопросы
   await prisma.question.deleteMany({ where: { quiz_id: id } });
-console.log('📤 PUT body:', JSON.stringify(body, null, 2));
   // Обновляем квиз
   const quiz = await prisma.quiz.update({
     where: { id },

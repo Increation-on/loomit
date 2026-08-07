@@ -22,7 +22,7 @@ interface Question {
   text: string;
   options: Option[];
   correctOptionId: string;
-  explanation?: string; // ✅ добавляем поле
+  explanation?: string;
 }
 
 export default function EditQuizPage() {
@@ -37,7 +37,6 @@ export default function EditQuizPage() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
   const { success, error: showError } = useToast();
-
   const [updateQuiz, { isLoading: isUpdating }] = useUpdateQuizMutation();
 
   useEffect(() => {
@@ -58,7 +57,7 @@ export default function EditQuizPage() {
             typeof o === 'string' ? { id: crypto.randomUUID(), text: o } : o
           ) : [],
           correctOptionId: q.correct_option_id || q.correctOptionId || '',
-          explanation: q.explanation || '', // ✅ загружаем объяснение
+          explanation: q.explanation || '',
         })));
       } catch (err) {
         console.error('Ошибка загрузки:', err);
@@ -84,7 +83,7 @@ export default function EditQuizPage() {
           { id: crypto.randomUUID(), text: '' },
         ],
         correctOptionId: '',
-        explanation: '', // ✅ добавляем пустое объяснение
+        explanation: '',
       },
     ]);
   };
@@ -102,12 +101,6 @@ export default function EditQuizPage() {
   const updateOptionText = (questionIndex: number, optionIndex: number, text: string) => {
     const updated = [...questions];
     updated[questionIndex].options[optionIndex].text = text;
-    setQuestions(updated);
-  };
-
-  const deleteOption = (questionIndex: number, optionIndex: number) => {
-    const updated = [...questions];
-    updated[questionIndex].options = updated[questionIndex].options.filter((_, i) => i !== optionIndex);
     setQuestions(updated);
   };
 
@@ -203,9 +196,7 @@ export default function EditQuizPage() {
         {questions.map((q, qi) => (
           <Card key={q.id} className="p-4">
             <CardHeader className="flex flex-row items-start justify-between p-0 pb-3">
-              <CardTitle className="text-base">
-                Вопрос {qi + 1}
-              </CardTitle>
+              <CardTitle className="text-base">Вопрос {qi + 1}</CardTitle>
               <Button
                 variant="ghost"
                 size="icon"
@@ -234,9 +225,7 @@ export default function EditQuizPage() {
                         : 'border-(--loom-white)/30 hover:border-(--loom-white)/50'
                     )}
                   >
-                    {q.correctOptionId === opt.id && (
-                      <Check size={12} className="text-(--loom-cyan)" />
-                    )}
+                    {q.correctOptionId === opt.id && <Check size={12} className="text-(--loom-cyan)" />}
                   </button>
 
                   <Input
@@ -245,23 +234,11 @@ export default function EditQuizPage() {
                     value={opt.text}
                     onChange={(e) => updateOptionText(qi, oi, e.target.value)}
                   />
-
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => deleteOption(qi, oi)}
-                    className="h-8 w-8 text-red-400 hover:text-red-300 hover:bg-red-400/10 shrink-0"
-                  >
-                    <Trash2 size={14} />
-                  </Button>
                 </div>
               ))}
 
-              {/* ✅ Поле для объяснения */}
               <div className="mt-2">
-                <label className="block text-sm text-(--loom-white)/60 mb-1">
-                  Объяснение (необязательно)
-                </label>
+                <label className="block text-sm text-(--loom-white)/60 mb-1">Объяснение (необязательно)</label>
                 <textarea
                   value={q.explanation || ''}
                   onChange={(e) => updateExplanation(qi, e.target.value)}
@@ -270,22 +247,6 @@ export default function EditQuizPage() {
                   rows={3}
                 />
               </div>
-
-              <div className="pt-2">
-                {q.options.length < 4 && (
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => {
-                      const updated = [...questions];
-                      updated[qi].options.push({ id: crypto.randomUUID(), text: '' });
-                      setQuestions(updated);
-                    }}
-                  >
-                    + Вариант
-                  </Button>
-                )}
-              </div>
             </CardContent>
           </Card>
         ))}
@@ -293,15 +254,12 @@ export default function EditQuizPage() {
 
       <div className="flex gap-3 mb-20">
         <Button variant="secondary" onClick={addQuestion}>
-          <Plus size={16} className="mr-2" />
-          Добавить вопрос
+          <Plus size={16} className="mr-2" /> Добавить вопрос
         </Button>
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-(--loom-black)/90 backdrop-blur-sm border-t border-(--loom-white)/10 flex gap-3 justify-end">
-        <Button variant="ghost" onClick={() => router.back()}>
-          Отмена
-        </Button>
+        <Button variant="ghost" onClick={() => router.back()}>Отмена</Button>
         <Button variant="glitch" onClick={saveQuiz} disabled={isUpdating}>
           {isUpdating ? 'Сохранение...' : 'Сохранить'}
         </Button>

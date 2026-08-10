@@ -215,7 +215,7 @@ export default function EditQuizPage() {
                 placeholder={`Вопрос ${qi + 1}`}
                 value={q.text}
                 onChange={(e) => updateQuestionText(qi, e.target.value)}
-                className="w-full bg-(--loom-black) border border-(--loom-white)/10 rounded-xl px-3 py-2 text-(--loom-white) focus:outline-none focus:border-(--loom-cyan) resize-none min-h-[48px]"
+                className="w-full bg-(--loom-black) border border-(--loom-white)/10 rounded-xl px-3 py-2 text-(--loom-white) focus:outline-none focus:border-(--loom-cyan) resize-none min-h-12"
                 rows={Math.max(2, q.text.split('\n').length)}
               />
 
@@ -283,7 +283,7 @@ export default function EditQuizPage() {
         <textarea
           value={editingOption?.text || ''}
           onChange={(e) => setEditingOption(prev => prev ? { ...prev, text: e.target.value } : null)}
-          className="w-full bg-(--loom-black) border border-(--loom-white)/10 rounded-xl px-3 py-2 text-(--loom-white) focus:outline-none focus:border-(--loom-cyan) resize-y min-h-[80px]"
+          className="w-full bg-(--loom-black) border border-(--loom-white)/10 rounded-xl px-3 py-2 text-(--loom-white) focus:outline-none focus:border-(--loom-cyan) resize-y min-h-20"
           placeholder="Введите текст варианта"
         />
         <div className="flex justify-end gap-2 mt-4">

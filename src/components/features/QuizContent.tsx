@@ -55,52 +55,52 @@ export function QuizContent({ id }: { id: string }) {
   const [selectedExplanation, setSelectedExplanation] = useState<string | null>(null);
 
   const questionTexts = useMemo(
-  () => questions.map((question) => question.text),
-  [questions]
-);
+    () => questions.map((question) => question.text),
+    [questions]
+  );
 
-const titleTexts = useMemo(
-  () => (currentQuiz ? [currentQuiz.title] : []),
-  [currentQuiz?.title]
-);
+  const titleTexts = useMemo(
+    () => (currentQuiz ? [currentQuiz.title] : []),
+    [currentQuiz?.title]
+  );
 
-const optionTexts = useMemo(
-  () => currentQuestion?.options?.map((option) => option.text) ?? [],
-  [currentQuestion]
-);
-
-const {
-  fontSizes: optionFontSizes,
-  ready: optionFontReady,
-} = useQuizFontSize({
-  texts: optionTexts,
-  containerHeight: 33,
-  horizontalPadding: 32,
-  minFontSize: 12,
-  maxFontSize: 18,
-});
+  const optionTexts = useMemo(
+    () => currentQuestion?.options?.map((option) => option.text) ?? [],
+    [currentQuestion]
+  );
 
   const {
-  fontSize: questionFontSize,
-  ready: questionFontReady,
-} = useQuizFontSize({
-  texts: questionTexts,
-  containerHeight: 112,
-  horizontalPadding: 24,
-  minFontSize: 16,
-  maxFontSize: 28,
-});
+    fontSizes: optionFontSizes,
+    ready: optionFontReady,
+  } = useQuizFontSize({
+    texts: optionTexts,
+    containerHeight: 33,
+    horizontalPadding: 32,
+    minFontSize: 12,
+    maxFontSize: 18,
+  });
 
-const {
-  fontSize: titleFontSize,
-  ready: titleFontReady,
-} = useQuizFontSize({
-  texts:  titleTexts,
-  containerHeight: 60,
-  horizontalPadding: 24,
-  minFontSize: 18,
-  maxFontSize: 28,
-});
+  const {
+    fontSize: questionFontSize,
+    ready: questionFontReady,
+  } = useQuizFontSize({
+    texts: questionTexts,
+    containerHeight: 112,
+    horizontalPadding: 24,
+    minFontSize: 16,
+    maxFontSize: 28,
+  });
+
+  const {
+    fontSize: titleFontSize,
+    ready: titleFontReady,
+  } = useQuizFontSize({
+    texts: titleTexts,
+    containerHeight: 60,
+    horizontalPadding: 24,
+    minFontSize: 18,
+    maxFontSize: 28,
+  });
 
   useEffect(() => {
     if (currentQuiz && currentQuiz.id !== id) {
@@ -145,13 +145,13 @@ const {
     );
   }
 
-const shouldShowSkeleton =
-  !currentQuestion ||
-  !questionFontReady ||
-  questionFontSize === null ||
-  !titleFontReady ||
-  titleFontSize === null ||
-  !optionFontReady;
+  const shouldShowSkeleton =
+    !currentQuestion ||
+    !questionFontReady ||
+    questionFontSize === null ||
+    !titleFontReady ||
+    titleFontSize === null ||
+    !optionFontReady;
 
   if (shouldShowSkeleton) {
     return <QuizSkeleton />;
@@ -207,26 +207,26 @@ const shouldShowSkeleton =
 
       <div className="w-full max-w-2xl px-4">
         <QuizQuestion
-  question={currentQuestion}
-  questionFontSize={questionFontSize}
-  optionFontSizes={optionFontSizes}
-  currentAnswer={currentAnswer}
-  selectedOption={selectedOption}
-  onSelectOption={(optionId) => dispatch(selectOption(optionId))}
-  onConfirm={() => dispatch(confirmAnswer())}
-  onNext={() => dispatch(nextQuestion())}
-  onFinish={() => dispatch(finishQuiz())}
-  isLast={currentIndex === questions.length - 1}
-  currentIndex={currentIndex}
-  total={questions.length}
-  optionLetters={optionLetters}
-/>
+          question={currentQuestion}
+          questionFontSize={questionFontSize}
+          optionFontSizes={optionFontSizes}
+          currentAnswer={currentAnswer}
+          selectedOption={selectedOption}
+          onSelectOption={(optionId) => dispatch(selectOption(optionId))}
+          onConfirm={() => dispatch(confirmAnswer())}
+          onNext={() => dispatch(nextQuestion())}
+          onFinish={() => dispatch(finishQuiz())}
+          isLast={currentIndex === questions.length - 1}
+          currentIndex={currentIndex}
+          total={questions.length}
+          optionLetters={optionLetters}
+        />
       </div>
 
       {isCurrentConfirmed && hasExplanation && (
         <button
           onClick={() => setSelectedExplanation(currentQuestion.explanation ?? null)}
-          className="fixed bottom-4 right-4 z-40 flex items-center justify-center w-13 h-10 rounded-full bg-(--loom-cyan)/10 hover:bg-(--loom-cyan)/20 text-(--loom-cyan) text-lg transition-colors border border-(--loom-cyan)/20 shadow-lg"
+          className="fixed bottom-4 right-4 z-50 flex items-center justify-center w-13 h-10 rounded-full bg-(--loom-cyan)/10 hover:bg-(--loom-cyan)/20 text-(--loom-cyan) text-lg transition-colors border border-(--loom-cyan)/20 shadow-lg"
         >
           💡
         </button>

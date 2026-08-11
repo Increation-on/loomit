@@ -66,13 +66,13 @@ export function QuizQuestion({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.25 }}
-          className="space-y-4 border-amber-500"
+          className="space-y-4"
         >
           <div
             className="h-28 flex items-center justify-center overflow-hidden"
           >
             <h2
-              className="w-full font-bold text-(--loom-white) text-center border-amber-400"
+              className="w-full font-bold text-(--loom-white) text-center"
               style={{
                 fontSize: `${questionFontSize}px`,
                 lineHeight: '1.3',
@@ -136,7 +136,7 @@ export function QuizQuestion({
         </motion.div>
       </AnimatePresence>
 
-      <div className="mt-auto sticky bottom-0 bg-(--loom-black)/90 backdrop-blur-sm border-t border-(--loom-white)/10 flex justify-center z-50 py-4">
+     <div className="fixed bottom-8 left-0 right-0 bg-(--loom-black)/90 backdrop-blur-sm border-t border-(--loom-white)/10 flex justify-center z-50 py-4">
         {!isCurrentConfirmed ? (
           <Button
             variant="glitch"

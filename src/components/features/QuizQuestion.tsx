@@ -83,7 +83,7 @@ export function QuizQuestion({
             </h2>
           </div>
 
-          <div className="flex flex-col gap-3 w-full mx-auto">
+          <div className="flex flex-col gap-4 w-full mx-auto">
             {question.options.map((opt: any, idx: number) => {
               const isSelected = selectedOption === opt.id;
               const isCorrectOption =

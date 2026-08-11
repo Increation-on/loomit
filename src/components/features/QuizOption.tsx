@@ -1,4 +1,4 @@
-// QuizOption.tsx
+// src\components\features\QuizOption.tsx
 'use client';
 
 import { motion } from 'framer-motion';
@@ -77,7 +77,7 @@ export function QuizOption({
         </span>
       </div>
 
-      <div className="relative flex-1 flex items-center px-4 py-2 pr-16 min-h-0 overflow-hidden">
+      <div className="relative flex-1 flex items-center px-4 py-2 min-h-0 overflow-hidden">
         <span
           className={cn('text-(--loom-white)/70', textClass)}
           style={{

@@ -1,3 +1,5 @@
+//src\components\features\QuizContent.tsx
+
 'use client';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -72,7 +74,7 @@ const {
   ready: optionFontReady,
 } = useQuizFontSize({
   texts: optionTexts,
-  containerHeight: 34,
+  containerHeight: 33,
   horizontalPadding: 32,
   minFontSize: 12,
   maxFontSize: 18,

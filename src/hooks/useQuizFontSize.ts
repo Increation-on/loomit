@@ -1,3 +1,5 @@
+//// src\hooks\useQuizFontSize.ts
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -63,7 +65,8 @@ export function useQuizFontSize({
       measureElement.style.fontSize = `${currentSize}px`;
 
       while (
-        measureElement.scrollHeight > containerHeight &&
+        (measureElement.scrollHeight > containerHeight ||
+          measureElement.scrollWidth > measureElement.clientWidth) &&
         currentSize > minFontSize
       ) {
         currentSize -= 1;

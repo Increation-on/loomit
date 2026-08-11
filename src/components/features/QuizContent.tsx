@@ -47,6 +47,13 @@ export function QuizContent({ id }: { id: string }) {
   const { attemptId, save } = useSaveAttempt(id);
   const hideNavigation = usePWA();
 
+  useEffect(() => {
+  document.body.style.overflow = 'hidden';
+  return () => {
+    document.body.style.overflow = '';
+  };
+}, []);
+
   const favoriteIds = useMemo(
     () => new Set(favorites.map((fav) => fav.quiz.id)),
     [favorites]
@@ -172,7 +179,7 @@ export function QuizContent({ id }: { id: string }) {
   }
 
   return (
-    <div className={`min-h-screen bg-(--loom-black) pb-24 flex flex-col items-center mx-auto ${hideNavigation ? 'pt-10' : 'pt-16'}`}>
+    <div className={`min-h-screen bg-(--loom-black) pb-24 flex flex-col items-center mx-auto overflow-hidden ${hideNavigation ? 'pt-10' : 'pt-16'}`}>
       <div className="w-full max-w-2xl px-4 mb-6">
         {currentQuiz && (
           <div className="flex items-center justify-center gap-3 mb-2">

@@ -14,13 +14,16 @@ interface QuizState {
   questions: {
     id: string;
     text: string;
-    options: string[];
+    options: {
+      id: string;
+      text: string;
+    }[];
     correctOptionId: string;
     explanation?: string; // ✅ добавляем
   }[];
   answers: UserAnswer[];
   currentIndex: number;
-  selectedOption: string | null; 
+  selectedOption: string | null;
   isFinished: boolean;
   startedAt: string | null;
 }

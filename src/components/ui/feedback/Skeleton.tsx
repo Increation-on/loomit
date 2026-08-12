@@ -12,7 +12,7 @@ export function Skeleton({ className, variant = 'default' }: SkeletonProps) {
         'relative overflow-hidden rounded-xl',
         variant === 'default' && 'bg-(--loom-white)/5',
         variant === 'glitch' && 'bg-(--loom-cyan)/10',
-        'before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite]',
+        'before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:content-[""]',
         'before:bg-linear-to-r before:from-transparent before:via-(--loom-white)/10 before:to-transparent',
         className
       )}
@@ -86,7 +86,7 @@ export function CatalogCardSkeleton() {
   return (
     <div className="overflow-hidden flex flex-row p-4 gap-3 min-h-39 bg-(--loom-white)/5 rounded-xl glitch-border">
       {/* Левая часть */}
-      <div className="flex-1 flex flex-col h-full min-w-0 gap-2">
+      <div className="flex-1 flex flex-col h-full min-w-0 gap-2">P
         
         {/* 1. Иконка + Заголовок + Описание */}
         <div className="flex items-start gap-3">
@@ -154,46 +154,103 @@ export function AdminQuizRowSkeleton() {
   );
 }
 
-// ✅ Новый скелетон для страницы квиза
 export function QuizSkeleton() {
   return (
-    <div className="min-h-screen bg-(--loom-black) pb-24 px-4 flex flex-col items-center max-w-2xl mx-auto pt-16">
-      {/* Заголовок квиза */}
-      <div className="w-full mb-6 flex flex-col items-center">
-        <Skeleton className="h-8 w-64 mb-2" variant="glitch" />
+    <div className="min-h-screen bg-(--loom-black) flex flex-col items-center pt-16 overflow-hidden">
+      
+      {/* Header */}
+      <div className="w-full max-w-2xl px-4 mb-6">
+        
+        {/* Quiz title */}
+        <div className="flex items-center justify-center mb-2">
+          <Skeleton
+            className="h-15 w-65 rounded-xl"
+            variant="glitch"
+          />
+        </div>
 
-        <div className="flex items-center gap-4 w-full max-w-md">
-          <Skeleton className="h-4 w-16" />
-          <Skeleton className="h-1 flex-1 bg-(--loom-white)/10" />
-          <Skeleton className="h-4 w-12" />
+        {/* Progress */}
+        <div className="flex items-center gap-4 text-sm mb-2">
+          <Skeleton className="h-4 w-24 rounded-md bg-(--loom-white)/5" />
+          <Skeleton className="flex-1 h-1 rounded-full bg-(--loom-white)/10" />
+          <Skeleton className="h-4 w-10 rounded-md bg-(--loom-white)/5" />
         </div>
       </div>
 
-      {/* Вопрос */}
-      <div className="w-full max-w-md mx-auto mb-6">
-        <Skeleton className="h-10 w-full" variant="glitch" />
-      </div>
-
-      {/* Варианты ответов (4 штуки, как на экране) */}
-      <div className="flex flex-col gap-3 w-full max-w-md mx-auto">
-        {[1, 2, 3, 4].map((i) => (
-          <div
-            key={i}
-            className="flex items-stretch rounded-xl border border-(--loom-white)/10 overflow-hidden bg-(--loom-white)/5"
-          >
-            <div className="flex items-center justify-center px-4 py-3 border-r border-(--loom-white)/10 shrink-0">
-              <Skeleton className="h-5 w-5" />
-            </div>
-            <div className="flex-1 px-4 py-3">
-              <Skeleton className="h-4 w-full" />
-            </div>
+      {/* Question & Options */}
+      <div className="w-full max-w-2xl px-4 flex-1">
+        <div className="space-y-4">
+          {/* Question text */}
+          <div className="h-28 flex items-center justify-center overflow-hidden">
+            <Skeleton
+              className="h-17.5 w-70 rounded-xl"
+              variant="glitch"
+            />
           </div>
-        ))}
+
+          {/* Options */}
+          <div className="flex flex-col gap-4 w-full mx-auto pb-28">
+            {['A', 'B', 'C', 'D'].map((letter) => (
+              <div
+                key={letter}
+                className="
+                  h-15.5
+                  w-full
+                  flex
+                  items-stretch
+                  overflow-hidden
+                  rounded-xl
+                  border
+                  border-(--loom-white)/10
+                  bg-(--loom-white)/5
+                "
+              >
+                {/* Letter */}
+                <div
+                  className="
+                    w-11
+                    shrink-0
+                    flex
+                    items-center
+                    justify-center
+                    border-r
+                    border-(--loom-white)/10
+                  "
+                >
+                  <Skeleton className="h-5 w-5 rounded-md bg-(--loom-white)/10" />
+                </div>
+
+                {/* Text */}
+                <div className="flex-1 px-4 flex items-center">
+                  <Skeleton className="h-4 w-[70%] rounded-md bg-(--loom-white)/10" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {/* Кнопка */}
-      <div className="mt-8 w-full max-w-md mx-auto">
-        <Skeleton className="h-12 w-full rounded-xl" variant="glitch" />
+      {/* Fixed bottom action bar */}
+      <div
+        className="
+          fixed
+          bottom-0
+          left-0
+          right-0
+          bg-(--loom-black)/90
+          backdrop-blur-sm
+          border-t
+          border-(--loom-white)/10
+          flex
+          justify-center
+          z-50
+          py-4
+        "
+      >
+        <Skeleton
+          className="h-12 min-w-42 rounded-xl"
+          variant="glitch"
+        />
       </div>
     </div>
   );

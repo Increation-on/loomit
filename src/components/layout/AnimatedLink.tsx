@@ -1,5 +1,6 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { MouseEvent } from 'react';
@@ -23,6 +24,7 @@ export default function AnimatedLink({
 }: AnimatedLinkProps) {
     const { startNavigation } = useNavigationTransition();
     const router = useRouter();
+    const pathname = usePathname(); // ✅ добавили
 
     const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
         if (
@@ -33,6 +35,12 @@ export default function AnimatedLink({
             e.altKey ||
             e.button !== 0
         ) {
+            return;
+        }
+
+        // ✅ проверка на текущий путь
+        if (pathname === href) {
+            e.preventDefault();
             return;
         }
 

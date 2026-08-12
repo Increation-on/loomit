@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { authOptions } from 'app/api/auth/[...nextauth]/route';
 import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/prisma';
-import { z } from 'zod';
 import { adminQuizCreateSchema } from '@/lib/validators/quiz';
 
 export async function GET(
@@ -43,6 +42,17 @@ export async function GET(
   return NextResponse.json(formatted);
 }
 
+/**
+ * PUT /api/admin/quizzes/[id]
+ * 
+ * Updates the quiz as an aggregate:
+ * - updates quiz fields (title, description, category, level)
+ * - creates new questions
+ * - updates existing questions (via deleteMany + create)
+ * - removes deleted questions
+ * 
+ * Questions are child entities — they are saved only through the parent quiz.
+ */
 export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -54,27 +64,24 @@ export async function PUT(
   }
 
   const body = await request.json();
-
-  // Валидируем входящие данные
   const validated = adminQuizCreateSchema.safeParse(body);
+
   if (!validated.success) {
     return NextResponse.json(
-      { error: z.treeifyError(validated.error) },
+      { error: validated.error.issues.map((i) => i.message).join(', ') },
       { status: 400 }
     );
   }
 
   const { title, description, categoryId, level, questions } = validated.data;
 
-  // Проверяем, что категория выбрана
   if (!categoryId) {
     return NextResponse.json({ error: 'Category is required' }, { status: 400 });
   }
 
-  // Удаляем старые вопросы
+  // Delete old questions (they will be recreated from the new state)
   await prisma.question.deleteMany({ where: { quiz_id: id } });
-console.log('📤 PUT body:', JSON.stringify(body, null, 2));
-  // Обновляем квиз
+
   const quiz = await prisma.quiz.update({
     where: { id },
     data: {
@@ -89,7 +96,7 @@ console.log('📤 PUT body:', JSON.stringify(body, null, 2));
           text: q.text,
           options: q.options,
           correct_option_id: q.correctOptionId,
-          explanation: q.explanation, // ✅ ВОТ ЭТА СТРОКА
+          explanation: q.explanation,
           order: index,
         })),
       },
@@ -100,6 +107,13 @@ console.log('📤 PUT body:', JSON.stringify(body, null, 2));
   return NextResponse.json(quiz);
 }
 
+/**
+ * DELETE /api/admin/quizzes/[id]
+ * 
+ * Deletes the entire quiz.
+ * All child entities (questions) are deleted automatically via Prisma cascade.
+ * Attempts are deleted manually to avoid foreign key constraint violations.
+ */
 export async function DELETE(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -110,6 +124,10 @@ export async function DELETE(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
   }
 
+  // Delete all attempts associated with this quiz first
+  await prisma.attempt.deleteMany({ where: { quiz_id: id } });
+
+  // Now delete the quiz (cascade will remove questions)
   await prisma.quiz.delete({ where: { id } });
 
   return NextResponse.json({ success: true });

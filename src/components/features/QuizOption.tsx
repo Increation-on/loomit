@@ -1,7 +1,9 @@
+// src\components\features\QuizOption.tsx
 'use client';
 
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+
 
 interface QuizOptionProps {
   letter: string;
@@ -13,6 +15,8 @@ interface QuizOptionProps {
   icon?: React.ReactNode;
   onClick: () => void;
   className?: string;
+  containerHeight?: number;
+  fontSize: number;
 }
 
 export function QuizOption({
@@ -25,7 +29,11 @@ export function QuizOption({
   icon,
   onClick,
   className,
+  fontSize,
+  containerHeight = 62,
 }: QuizOptionProps) {
+
+
   let borderClass = 'border-(--loom-white)/10 hover:border-(--loom-cyan)/40';
   let letterClass = 'font-bold bg-gradient-to-r from-(--loom-yellow) to-(--loom-cyan) bg-clip-text text-transparent';
   let textClass = 'text-(--loom-white)/70';
@@ -56,29 +64,39 @@ export function QuizOption({
       role="button"
       aria-label={`Вариант ${letter}`}
       className={cn(
-        'flex items-stretch rounded-xl border-2 cursor-pointer transition-all duration-200 w-full overflow-hidden',
+        'flex items-stretch rounded-xl border-2 cursor-pointer transition-colors duration-200 w-full overflow-hidden',
         'bg-(--loom-white)/5',
         borderClass,
         className
       )}
+      style={{ height: containerHeight }}
     >
-      <div className="flex items-center justify-center px-4 py-3 border-r border-(--loom-white)/10 shrink-0">
+      <div className="flex items-center justify-center px-4 py-2 border-r border-(--loom-white)/10 shrink-0">
         <span className={cn('text-lg font-bold', letterClass)}>
           {letter}
         </span>
       </div>
 
-      <div className="flex-1 flex items-center px-4 py-3 min-h-14">
-        <span className={cn('text-(--loom-white)/70', textClass)}>
+      <div className="relative flex-1 flex items-center px-4 py-2 min-h-0 overflow-hidden">
+        <span
+          className={cn('text-(--loom-white)/70', textClass)}
+          style={{
+            fontSize: `${fontSize}px`,
+            lineHeight: '1.2',
+            display: 'block',
+            width: '100%',
+          }}
+        >
           {text}
         </span>
+
+        {icon && (
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center">
+            {icon}
+          </div>
+        )}
       </div>
 
-      {icon && (
-        <div className="flex items-center justify-center px-2 py-2 border-l border-(--loom-white)/10 shrink-0">
-          {icon}
-        </div>
-      )}
     </motion.div>
   );
 }

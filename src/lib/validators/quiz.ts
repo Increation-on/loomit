@@ -20,19 +20,19 @@ export const adminQuizCreateSchema = z.object({
   description: z.string().max(1000).optional(),
   categoryId: z.string().min(1, 'Категория обязательна'),
   level: z.enum(['JUNIOR', 'MIDDLE', 'SENIOR']).default('JUNIOR'),
-  questions: z.array(
-    z.object({
-      text: z.string().min(1, 'Текст вопроса обязателен'),
-      options: z.array(
-        z.object({
-          id: z.string(),
-          text: z.string().min(1, 'Вариант обязателен'),
-        })
-      ).length(4, 'Должно быть ровно 4 варианта'),
-      correctOptionId: z.string().min(1, 'Выберите правильный вариант'),
-      explanation: z.string().optional(), // ✅ добавляем поле
-    })
-  ).min(1, 'Минимум 1 вопрос'),
+questions: z.array(
+  z.object({
+    text: z.string().min(1, 'Текст вопроса обязателен'),
+    options: z.array(
+      z.object({
+        id: z.string(),
+        text: z.string().min(1, 'Вариант обязателен'),
+      })
+    ).length(4, 'Должно быть ровно 4 варианта'),
+    correctOptionId: z.string().min(1, 'Выберите правильный вариант'),
+    explanation: z.string().optional(),
+  })
+).min(1, 'Минимум 1 вопрос'),
 });
 
 export type Quiz = z.infer<typeof quizSchema>

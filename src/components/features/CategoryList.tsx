@@ -40,6 +40,7 @@ export function CategoryList({
 
   return (
     <div className={cn('space-y-3 relative overflow-hidden', className)}>
+       <span className="flex mt-1 text-lg">Категории</span>
       {displayed.map((cat: any) => (
         <div
           key={cat.id}

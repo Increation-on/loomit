@@ -12,23 +12,25 @@ export async function GET() {
 
   const userId = session.user.id;
 
-  const [totalAttempts, avgResult] = await Promise.all([
+  const [totalAttempts, attempts] = await Promise.all([
     prisma.attempt.count({ where: { user_id: userId } }),
-    prisma.attempt.aggregate({
+    prisma.attempt.findMany({
       where: { user_id: userId },
-      _avg: { score: true },
+      select: { score: true, total_questions: true },
     }),
   ]);
 
-  const totalQuestions = await prisma.attempt.aggregate({
-    where: { user_id: userId },
-    _sum: { total_questions: true },
-  });
+  // Считаем средний процент вручную
+  let averageScore = 0;
+  if (attempts.length > 0) {
+    const totalPercentage = attempts.reduce((acc, a) => {
+      return acc + (a.total_questions > 0 ? (a.score / a.total_questions) * 100 : 0);
+    }, 0);
+    averageScore = Math.round(totalPercentage / attempts.length);
+  }
 
   return NextResponse.json({
     totalAttempts,
-    averageScore: avgResult._avg.score
-      ? Math.round((avgResult._avg.score / (totalQuestions._sum.total_questions || 1)) * 100)
-      : 0,
+    averageScore,
   });
 }

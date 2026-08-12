@@ -9,7 +9,6 @@ import { Skeleton } from '@/components/ui/feedback/Skeleton';
 export default function ProfilePage() {
   const { data: session } = useSession();
   const userName = session?.user?.name || 'пользователь';
-  const userEmail = session?.user?.email || '';
   const isAdmin = session?.user?.role === 'admin';
   const date = new Date().toLocaleDateString('ru-RU');
 

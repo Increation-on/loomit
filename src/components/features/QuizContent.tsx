@@ -81,7 +81,7 @@ export function QuizContent({ id }: { id: string }) {
     ready: optionFontReady,
   } = useQuizFontSize({
     texts: optionTexts,
-    containerHeight: 36,
+    containerHeight: 52,
     horizontalPadding: 32,
     minFontSize: 12,
     maxFontSize: 18,

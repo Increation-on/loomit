@@ -136,7 +136,7 @@ export function QuizQuestion({
         </motion.div>
       </AnimatePresence>
 
-     <div className="fixed bottom-8 left-0 right-0 bg-(--loom-black)/90 backdrop-blur-sm border-t border-(--loom-white)/10 flex justify-center z-50 py-4">
+     <div className="fixed bottom-1 left-0 right-0 bg-(--loom-black)/90 backdrop-blur-sm border-t border-(--loom-white)/10 flex justify-center z-50 py-4">
         {!isCurrentConfirmed ? (
           <Button
             variant="glitch"

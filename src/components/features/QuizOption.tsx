@@ -30,7 +30,7 @@ export function QuizOption({
   onClick,
   className,
   fontSize,
-  containerHeight = 60,
+  containerHeight = 62,
 }: QuizOptionProps) {
 
 

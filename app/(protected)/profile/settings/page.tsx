@@ -1,24 +1,19 @@
 'use client';
 
 import { useTheme } from '@/hooks/useTheme';
-import Link from 'next/link';
-import { ArrowLeft, Bell, Sun, Moon } from 'lucide-react';
+import { Bell, Sun, Moon } from 'lucide-react';
+import { BackLink } from '@/components/layout/BackLink';
 
 export default function SettingsPage() {
   const { theme, toggleTheme } = useTheme();
 
   return (
     <div className="p-6 max-w-2xl mx-auto space-y-6 pb-24">
-      {/* Хедер страницы */}
-      <div className="flex items-center gap-3">
-        <Link
-          href="/profile"
-          className="p-2 rounded-xl bg-(--loom-white)/5 glitch-border hover:bg-(--loom-white)/10 active:scale-[0.98] transition-all duration-100"
-        >
-          <ArrowLeft size={24} className="text-(--loom-white)" />
-        </Link>
-        <h1 className="text-2xl font-bold text-(--loom-white)">Настройки</h1>
-      </div>
+      {/* Назад */}
+      <BackLink fallback="/profile" />
+
+      {/* Заголовок */}
+      <h1 className="text-2xl font-bold text-(--loom-white)">Настройки</h1>
 
       {/* Тема */}
       <div className="bg-(--loom-white)/5 rounded-2xl p-5 glitch-border relative overflow-hidden">

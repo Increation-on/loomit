@@ -13,11 +13,16 @@ import { Plus, Pencil, Eye, Trash2 } from 'lucide-react';
 import { cn, pluralize } from '@/lib/utils';
 import { Filters } from '@/components/ui/core/Filters';
 import { Skeleton, AdminQuizRowSkeleton } from '@/components/ui/feedback/Skeleton';
+import { useNavigationTransition } from '@/components/layout/NavigationProvider';
+import { useRouter } from 'next/navigation';
 
 export default function AdminDashboard() {
   const { data: quizzes, isLoading, refetch } = useGetQuizzesQuery({}, {
     refetchOnMountOrArgChange: true,
   });
+
+  const router = useRouter();
+  const { setQuizOrigin } = useNavigationTransition();
 
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const { success, error: showError } = useToast();
@@ -153,12 +158,17 @@ export default function AdminDashboard() {
                 </div>
               </div>
               <div className="flex gap-2 flex-wrap">
-                <Link href={`/quiz/${quiz.id}/preview`}>
-                  <Button variant="ghost" size="sm">
-                    <Eye size={14} className="mr-1" />
-                    Смотреть
-                  </Button>
-                </Link>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setQuizOrigin('/admin');
+                    router.push(`/quiz/${quiz.id}/preview`);
+                  }}
+                >
+                  <Eye size={14} className="mr-1" />
+                  Смотреть
+                </Button>
                 <Link href={`/admin/quiz/${quiz.id}`}>
                   <Button variant="outline" size="sm">
                     <Pencil size={14} className="mr-1" />

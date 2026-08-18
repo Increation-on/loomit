@@ -8,7 +8,7 @@ import { ToastContainer } from '@/components/ui/feedback/ToastContainer';
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { useTheme } from '@/hooks/useTheme';
-import { usePWA } from '@/hooks/usePWA'; // ← НОВЫЙ ИМПОРТ
+import { usePWA } from '@/hooks/usePWA';
 
 import { Session } from 'next-auth';
 

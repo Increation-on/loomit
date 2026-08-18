@@ -6,7 +6,6 @@ import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Providers } from "./providers";
-import PageTransition from "./PageTransitions";
 import { NavigationProvider } from "@/components/layout/NavigationProvider";
 
 const spaceGrotesk = Space_Grotesk({

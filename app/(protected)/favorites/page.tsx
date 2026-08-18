@@ -116,6 +116,7 @@ export default function FavoritesPage() {
             lastAttempt={attemptStatuses[fav.quiz.id]}
             showFavorite
             isFavorited={true}
+            origin="/favorites" 
             onFavoriteToggle={() =>
               toggleFavorite({
                 quizId: fav.quiz.id,

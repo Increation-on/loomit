@@ -12,11 +12,13 @@ import { TryItSkeleton } from '@/components/ui/feedback/Skeleton';
 import { TryItCard } from '@/components/features/TryItCard';
 import { CategoryList } from '@/components/features/CategoryList';
 import { ContinueQuizCard } from '@/components/features/ContinueQuizCard';
+import { useNavigationTransition } from '@/components/layout/NavigationProvider';
 
 export default function HomePage() {
   const { data: quizzes, isLoading: isQuizzesLoading } = useGetQuizzesQuery({});
   const router = useRouter();
   const dispatch = useDispatch();
+  const { setQuizOrigin } = useNavigationTransition();
   const quizState = useSelector(selectQuizState);
   const currentQuiz = quizState.currentQuiz;
   const answers = quizState.answers;
@@ -69,12 +71,14 @@ export default function HomePage() {
 
   const handleQuizClick = (quizId: string) => {
     if (currentQuiz?.id === quizId) {
+      setQuizOrigin('/');
       router.push(`/quiz/${quizId}`);
       return;
     }
     if (hasUnfinished) {
       setPendingQuizId(quizId);
     } else {
+      setQuizOrigin('/');
       router.push(`/quiz/${quizId}/preview`);
     }
   };
@@ -82,11 +86,13 @@ export default function HomePage() {
   const handleStartNew = async () => {
     await persistor.purge();
     dispatch(resetQuiz());
+    setQuizOrigin('/');
     if (pendingQuizId) router.push(`/quiz/${pendingQuizId}`);
     setPendingQuizId(null);
   };
 
   const handleContinue = () => {
+    setQuizOrigin('/');
     if (isSameQuiz) {
       router.push(`/quiz/${pendingQuizId}`);
     } else {

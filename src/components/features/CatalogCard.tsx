@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/core/Card';
 import { StarButton } from '@/components/ui/core/StarButton';
 import { Button } from '@/components/ui/core/Button';
 import { cn, pluralize } from '@/lib/utils';
+import { useNavigationTransition } from '../layout/NavigationProvider';
 
 interface CatalogCardProps {
   quiz: {
@@ -35,6 +36,7 @@ interface CatalogCardProps {
   showFavorite?: boolean;
   isFavorited?: boolean;
   onFavoriteToggle?: () => void;
+  origin?: string;
 }
 
 export function CatalogCard({
@@ -44,6 +46,7 @@ export function CatalogCard({
   showFavorite = false,
   isFavorited = false,
   onFavoriteToggle,
+  origin = '/catalog',
 }: CatalogCardProps) {
   const router = useRouter();
 
@@ -59,6 +62,8 @@ export function CatalogCard({
 
   const questionsCount = quiz._count?.questions ?? quiz.questions?.length ?? 0;
   const attemptsCount = quiz._count?.attempts ?? 0;
+
+  const { setQuizOrigin } = useNavigationTransition();
 
   return (
     <Card className={cn('overflow-hidden flex flex-row p-4 gap-3 min-h-39', className)}>
@@ -143,7 +148,10 @@ export function CatalogCard({
           <Button
             variant="outline"
             className="w-full glitch-border text-(--loom-cyan) hover:text-(--loom-white) hover:bg-(--loom-cyan)/10 transition-all flex items-center justify-center relative"
-            onClick={() => router.push(`/quiz/${quiz.id}/preview`)}
+            onClick={() => {
+              setQuizOrigin(origin); // 👈 использовать origin
+              router.push(`/quiz/${quiz.id}/preview`);
+            }}
           >
             <span>Открыть квиз</span>
             <ChevronRight size={22} className="absolute right-2" />

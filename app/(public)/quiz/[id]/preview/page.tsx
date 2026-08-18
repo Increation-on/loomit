@@ -15,6 +15,7 @@ import { Skeleton } from '@/components/ui/feedback/Skeleton';
 import { cn } from '@/lib/utils';
 import { ArrowLeft, ChevronLeft } from 'lucide-react';
 import { StarButton } from '@/components/ui/core/StarButton';
+import { BackLink } from '@/components/layout/BackLink';
 
 export default function QuizPreviewPage() {
   const params = useParams();
@@ -65,21 +66,8 @@ export default function QuizPreviewPage() {
 
   return (
     <div className="min-h-[calc(100vh-140px)] flex flex-col p-4">
-      <div className="max-w-md w-full mx-auto mb-4">
-        <button
-          onClick={() => {
-            const referrer = document.referrer;
-            if (referrer && !referrer.includes('/quiz/')) {
-              router.push(referrer);
-            } else {
-              router.push('/catalog');
-            }
-          }}
-          className="inline-flex items-center gap-2 text-(--loom-white)/60 hover:text-(--loom-white) transition-colors"
-        >
-          <ChevronLeft size={22} />
-          Назад
-        </button>
+      <div className="max-w-md w-full mt-3">
+       <BackLink fallback="/catalog" />
       </div>
 
       <div className="flex-1 flex items-center justify-center">

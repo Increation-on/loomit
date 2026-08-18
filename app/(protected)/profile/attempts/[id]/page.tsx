@@ -1,12 +1,14 @@
+// app/profile/attempts/[id]/page.tsx
+
 'use client';
 
 import { useParams, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
 import { useGetAttemptByIdQuery } from '@/store/api/profileApi';
 import { useGetQuizByIdQuery } from '@/store/api/quizApi';
-import { Check, X, ArrowLeft } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
+import { BackLink } from '@/components/layout/BackLink';
 
 export default function AttemptDetailPage() {
   const params = useParams();
@@ -16,7 +18,6 @@ export default function AttemptDetailPage() {
 
   const { data: attempt, isLoading: attemptLoading } = useGetAttemptByIdQuery(id);
   
-  // ✅ Если quizId не передан в URL, берём его из попытки
   const effectiveQuizId = quizId || attempt?.quiz_id;
 
   const { data: quiz, isLoading: quizLoading } = useGetQuizByIdQuery(effectiveQuizId ?? '', {
@@ -52,13 +53,7 @@ export default function AttemptDetailPage() {
 
   return (
     <div className="p-6 max-w-2xl mx-auto pb-24 space-y-8">
-      <Link
-        href="/profile/history"
-        className="flex items-center gap-2 text-(--loom-white)/60 hover:text-(--loom-white) transition-colors text-sm"
-      >
-        <ArrowLeft size={16} />
-        Назад к истории
-      </Link>
+      <BackLink fallback="/profile/history" />
 
       <div>
         <h1 className="text-2xl font-bold text-(--loom-white) mb-2">{attempt.quizTitle}</h1>
@@ -114,7 +109,6 @@ export default function AttemptDetailPage() {
             return correctId;
           };
 
-          // ✅ Находим объяснение по индексу вопроса
           const explanation = quiz?.questions?.[i]?.explanation;
 
           return (
@@ -150,7 +144,6 @@ export default function AttemptDetailPage() {
                   )}
                 </div>
 
-                {/* ✅ Отображение объяснения */}
                 {explanation && (
                   <div className="mt-2 text-sm text-(--loom-white)/60 bg-(--loom-white)/5 p-3 rounded-lg">
                     <span className="text-(--loom-cyan) font-medium">Объяснение: </span>

@@ -1,8 +1,11 @@
+// src/components/features/QuizFinishScreen.tsx
+
 'use client';
 
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/core/Button';
 import { StarButton } from '@/components/ui/core/StarButton';
+import { useNavigationTransition } from '../layout/NavigationProvider';
 
 interface QuizFinishScreenProps {
   id: string;
@@ -28,6 +31,7 @@ export function QuizFinishScreen({
   attemptId,
 }: QuizFinishScreenProps) {
   const router = useRouter();
+  const { setAttemptReturnTo } = useNavigationTransition();
 
   return (
     <div className="min-h-screen bg-(--loom-black) flex flex-col items-center justify-center p-6 text-center space-y-6 -mt-18">
@@ -85,6 +89,7 @@ export function QuizFinishScreen({
           variant="glitch"
           onClick={() => {
             if (attemptId && id) {
+              setAttemptReturnTo(`/quiz/${id}/preview`);
               router.push(`/profile/attempts/${attemptId}?quizId=${id}`);
             }
           }}

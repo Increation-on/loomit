@@ -1,3 +1,5 @@
+// src/components/features/NavigationProvider.tsx
+
 'use client';
 
 import {
@@ -12,6 +14,12 @@ import { usePathname } from 'next/navigation';
 type NavigationContextType = {
   startNavigation: () => void;
   finishNavigation: () => void;
+  quizOrigin: string | null;
+  setQuizOrigin: (origin: string) => void;
+  clearQuizOrigin: () => void;
+  attemptReturnTo: string | null;
+  setAttemptReturnTo: (route: string) => void;
+  clearAttemptReturnTo: () => void;
 };
 
 type NoiseLine = {
@@ -33,22 +41,14 @@ const COLORS = [
 function generateNoise(): NoiseLine[] {
   return Array.from({ length: 10 }, (_, i) => ({
     id: i,
-
-    // положение
     top: 10 + Math.random() * 80,
     left: 5 + Math.random() * 80,
-
-    // иногда длинная линия
     width:
       Math.random() > 0.85
         ? 20 + Math.random() * 10
         : 4 + Math.random() * 12,
-
     color: COLORS[Math.floor(Math.random() * COLORS.length)],
-
     delay: Math.random() * 0.12,
-
-    // небольшой наклон
     rotate: Math.random() * 2 - 1,
   }));
 }
@@ -64,6 +64,12 @@ export function NavigationProvider({
   const [noise, setNoise] = useState<NoiseLine[]>([]);
   const pathname = usePathname();
 
+  const [quizOrigin, setQuizOrigin] = useState<string | null>(null);
+  const [attemptReturnTo, setAttemptReturnTo] = useState<string | null>(null);
+
+  const clearQuizOrigin = () => setQuizOrigin(null);
+  const clearAttemptReturnTo = () => setAttemptReturnTo(null);
+
   useEffect(() => {
     setLoading(false);
   }, [pathname]);
@@ -78,6 +84,12 @@ export function NavigationProvider({
       value={{
         startNavigation,
         finishNavigation: () => setLoading(false),
+        quizOrigin,
+        setQuizOrigin,
+        clearQuizOrigin,
+        attemptReturnTo,
+        setAttemptReturnTo,
+        clearAttemptReturnTo,
       }}
     >
       {children}

@@ -5,10 +5,13 @@ import { useNavigationTransition } from '@/components/layout/NavigationProvider'
 
 export function useQuizReturn(fallback: string = '/catalog') {
   const router = useRouter();
-  const { quizOrigin, attemptReturnTo, clearQuizOrigin, clearAttemptReturnTo } =
+  const { quizOrigin, attemptReturnTo, clearQuizOrigin, clearAttemptReturnTo, startGlitchTransition } =
     useNavigationTransition();
 
   const goBack = () => {
+
+     startGlitchTransition();
+
     if (attemptReturnTo) {
       router.push(attemptReturnTo);
       clearAttemptReturnTo();

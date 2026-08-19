@@ -12,8 +12,8 @@ import {
 import { usePathname } from 'next/navigation';
 
 type NavigationContextType = {
-  startNavigation: () => void;
-  finishNavigation: () => void;
+  startGlitchTransition: () => void;
+  finishGlitchTransition: () => void;
   quizOrigin: string | null;
   setQuizOrigin: (origin: string) => void;
   clearQuizOrigin: () => void;
@@ -74,7 +74,7 @@ export function NavigationProvider({
     setLoading(false);
   }, [pathname]);
 
-  const startNavigation = () => {
+  const startGlitchTransition = () => {
     setNoise(generateNoise());
     setLoading(true);
   };
@@ -82,8 +82,8 @@ export function NavigationProvider({
   return (
     <NavigationContext.Provider
       value={{
-        startNavigation,
-        finishNavigation: () => setLoading(false),
+        startGlitchTransition,
+        finishGlitchTransition: () => setLoading(false),
         quizOrigin,
         setQuizOrigin,
         clearQuizOrigin,

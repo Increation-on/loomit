@@ -6,7 +6,6 @@ import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Providers } from "./providers";
-import { NavigationProvider } from "@/components/layout/NavigationProvider";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -52,13 +51,11 @@ export default async function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <Providers session={session}>
-          <NavigationProvider>
             <Header />
             <main className="flex-1">
               {children}
             </main>
             <Footer />
-          </NavigationProvider>
         </Providers>
       </body>
     </html>

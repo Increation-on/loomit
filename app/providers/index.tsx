@@ -1,3 +1,5 @@
+// app/providers/index.tsx
+
 'use client';
 
 import { SessionProvider } from 'next-auth/react';
@@ -9,6 +11,7 @@ import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { useTheme } from '@/hooks/useTheme';
 import { usePWA } from '@/hooks/usePWA';
+import { NavigationProvider } from '@/components/layout/NavigationProvider';
 
 import { Session } from 'next-auth';
 
@@ -23,7 +26,6 @@ export function Providers({
   const { mounted } = useTheme();
   const isPWA = usePWA();
 
-  // PWA-класс на <html>
   useEffect(() => {
     if (isPWA) {
       document.documentElement.classList.add('pwa-mode');
@@ -32,7 +34,6 @@ export function Providers({
     }
   }, [isPWA]);
 
-  // MutationObserver для статус-бара
   useEffect(() => {
     const updateMeta = () => {
       const isDark = document.documentElement.classList.contains('dark');
@@ -61,7 +62,9 @@ export function Providers({
       <ReduxProvider store={store}>
         <PersistGate loading={<div className="p-4 text-center text-loom-white">Загрузка...</div>} persistor={persistor}>
           <ToastContainer>
-            {children}
+            <NavigationProvider>  {/* 👈 обёртка здесь */}
+              {children}
+            </NavigationProvider>
           </ToastContainer>
         </PersistGate>
       </ReduxProvider>

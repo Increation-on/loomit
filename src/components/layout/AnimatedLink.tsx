@@ -22,7 +22,7 @@ export default function AnimatedLink({
     onClick,
     ...props
 }: AnimatedLinkProps) {
-    const { startNavigation } = useNavigationTransition();
+    const { startGlitchTransition } = useNavigationTransition();
     const router = useRouter();
     const pathname = usePathname(); // ✅ добавили
 
@@ -50,7 +50,7 @@ export default function AnimatedLink({
 
         e.preventDefault();
 
-        startNavigation();
+        startGlitchTransition();
 
         setTimeout(() => {
             router.push(href);

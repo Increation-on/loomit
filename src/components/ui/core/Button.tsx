@@ -1,3 +1,5 @@
+// src/components/ui/core/Button.tsx
+
 import { forwardRef, ButtonHTMLAttributes } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
@@ -17,6 +19,8 @@ const buttonVariants = cva(
         outline: 'border border-(--loom-yellow) text-(--loom-yellow) hover:bg-(--loom-yellow)/10',
         // Совсем без фона
         ghost: 'bg-transparent text-(--loom-white) hover:bg-(--loom-white)/10',
+        // 👇 НОВЫЙ ВАРИАНТ
+        danger: 'bg-red-500 text-white hover:bg-red-600 transition-colors',
       },
       size: {
         sm: 'h-8 px-3 text-xs',

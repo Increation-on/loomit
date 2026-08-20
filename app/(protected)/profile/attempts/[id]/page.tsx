@@ -8,7 +8,7 @@ import { useGetQuizByIdQuery } from '@/store/api/quizApi';
 import { Check, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
-import { BackLink } from '@/components/layout/BackLink';
+import { BackLink } from '@/components/navigation/BackLink';
 
 export default function AttemptDetailPage() {
   const params = useParams();

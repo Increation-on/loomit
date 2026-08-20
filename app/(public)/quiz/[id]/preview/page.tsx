@@ -13,9 +13,8 @@ import {
 import { Button } from '@/components/ui/core/Button';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, ChevronLeft } from 'lucide-react';
 import { StarButton } from '@/components/ui/core/StarButton';
-import { BackLink } from '@/components/layout/BackLink';
+import { BackLink } from '@/components/navigation/BackLink';
 
 export default function QuizPreviewPage() {
   const params = useParams();

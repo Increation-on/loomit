@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 
 import { EmptyState } from '@/components/ui/feedback/EmptyState';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
-import { CatalogCard } from '@/components/features/CatalogCard';
+import { CatalogCard } from '@/components/cards/CatalogCard';
 import { pluralize } from '@/lib/utils';
 
 import {

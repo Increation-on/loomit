@@ -9,9 +9,9 @@ import { persistor } from '@/store/store';
 import { Modal } from '@/components/ui/feedback/Modal';
 import { SearchWithDropdown } from '@/components/ui/core/SearchWithDropDown';
 import { TryItSkeleton } from '@/components/ui/feedback/Skeleton';
-import { TryItCard } from '@/components/features/TryItCard';
-import { CategoryList } from '@/components/features/CategoryList';
-import { ContinueQuizCard } from '@/components/features/ContinueQuizCard';
+import { TryItCard } from '@/components/cards/TryItCard';
+import { CategoryList } from '@/components/common/CategoryList';
+import { ContinueQuizCard } from '@/components/cards/ContinueQuizCard';
 import { useNavigationTransition } from '@/components/layout/NavigationProvider';
 
 export default function HomePage() {

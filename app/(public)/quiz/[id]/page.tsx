@@ -4,7 +4,7 @@
 
 import { usePathname } from 'next/navigation';
 import { usePWA } from '@/hooks/usePWA';
-import { QuizPlayer } from '@/components/features/QuizPlayer';
+import { QuizPlayer } from '@/components/quiz/QuizPlayer';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { resetQuiz } from '@/store/slices/quizSlice';

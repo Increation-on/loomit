@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { MouseEvent } from 'react';
-import { useNavigationTransition } from './NavigationProvider';
+import { useNavigationTransition } from '../layout/NavigationProvider';
 
 type AnimatedLinkProps = Omit<
     React.AnchorHTMLAttributes<HTMLAnchorElement>,

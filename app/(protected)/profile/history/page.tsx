@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useGetAllAttemptsQuery } from '@/store/api/profileApi';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
 import { useNavigationTransition } from '@/components/layout/NavigationProvider';
-import { BackLink } from '@/components/layout/BackLink';
+import { BackLink } from '@/components/navigation/BackLink';
 
 export default function HistoryPage() {
   const router = useRouter();

@@ -17,7 +17,7 @@ import {
   Skeleton,
   CatalogCardSkeleton,
 } from '@/components/ui/feedback/Skeleton';
-import { CatalogCard } from '@/components/features/CatalogCard';
+import { CatalogCard } from '@/components/cards/CatalogCard';
 
 
 export default function CatalogPage() {

@@ -2,7 +2,7 @@
 
 import { useTheme } from '@/hooks/useTheme';
 import { Bell, Sun, Moon, Trash2 } from 'lucide-react';
-import { BackLink } from '@/components/layout/BackLink';
+import { BackLink } from '@/components/navigation/BackLink';
 import { Button } from '@/components/ui/core/Button';
 import { useState } from 'react';
 import { Modal } from '@/components/ui/feedback/Modal';

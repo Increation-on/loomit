@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Home, Book, Star, User } from 'lucide-react';
 import { useMediaQuery } from 'usehooks-ts';
-import AnimatedLink from './AnimatedLink';
+import AnimatedLink from '../navigation/AnimatedLink';
 
 export default function Footer() {
   const pathname = usePathname();

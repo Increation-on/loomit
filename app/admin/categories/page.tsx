@@ -9,6 +9,7 @@ import { useToast } from '@/components/ui/feedback/ToastContainer';
 import { Modal } from '@/components/ui/feedback/Modal';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
 import { cn } from '@/lib/utils';
+import { BackLink } from '@/components/navigation/BackLink';
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<any[]>([]);
@@ -219,6 +220,8 @@ export default function CategoriesPage() {
 
   return (
     <div className="p-4 max-w-2xl mx-auto pb-24">
+      <div className='mt-2 mb-2'><BackLink fallback="/admin" className="mb-4" /></div>
+      
       <h1 className="text-2xl font-bold text-(--loom-white) mb-6">Управление категориями</h1>
 
       <div className="flex flex-col gap-3 mb-6">

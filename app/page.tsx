@@ -70,17 +70,8 @@ export default function HomePage() {
   const isSameQuiz = currentQuiz?.id === pendingQuizId;
 
   const handleQuizClick = (quizId: string) => {
-    if (currentQuiz?.id === quizId) {
-      setQuizOrigin('/');
-      router.push(`/quiz/${quizId}`);
-      return;
-    }
-    if (hasUnfinished) {
-      setPendingQuizId(quizId);
-    } else {
       setQuizOrigin('/');
       router.push(`/quiz/${quizId}/preview`);
-    }
   };
 
   const handleStartNew = async () => {

@@ -152,6 +152,7 @@ export default function CatalogPage() {
         <SearchWithDropdown
           items={quizzes || []}
           placeholder="Поиск квизов..."
+          origin="/catalog"
         />
       </div>
 

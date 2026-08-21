@@ -5,21 +5,25 @@ import { useRouter } from 'next/navigation';
 import { Input } from './Input';
 import { Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useNavigationTransition } from '@/components/layout/NavigationProvider';
 
 interface SearchWithDropdownProps {
   items: any[];
   isLoading?: boolean;
   placeholder?: string;
   className?: string;
+  origin?: string; // 👈 добавляем
 }
 
 export function SearchWithDropdown({ 
   items, 
   isLoading, 
   placeholder = 'Поиск...',
-  className 
+  className,
+  origin = '/', // 👈 дефолт — главная
 }: SearchWithDropdownProps) {
   const router = useRouter();
+  const { setQuizOrigin } = useNavigationTransition();
   const [searchQuery, setSearchQuery] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [suggestions, setSuggestions] = useState<any[]>([]);
@@ -72,7 +76,8 @@ export function SearchWithDropdown({
             <button
               key={quiz.id}
               onClick={() => {
-                router.push(`/quiz/${quiz.id}`);
+                setQuizOrigin(origin); // 👈 используем origin
+                router.push(`/quiz/${quiz.id}/preview`);
                 setIsDropdownOpen(false);
                 setSearchQuery('');
               }}

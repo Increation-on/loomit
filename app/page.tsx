@@ -95,7 +95,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-(--loom-black) text-(--loom-white) pb-24">
       <div className="p-4 mb-2">
-        <SearchWithDropdown items={quizzes || []} placeholder="Поиск квизов..." />
+        <SearchWithDropdown items={quizzes || []} placeholder="Поиск квизов..." origin="/"/>
       </div>
 
       <div className="px-4 mb-6">

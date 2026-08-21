@@ -5,16 +5,21 @@ import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
 import { Settings, Shield, LogOut } from 'lucide-react';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
+import { useNavigationTransition } from '@/components/layout/NavigationProvider';
+import { useRouter } from 'next/navigation';
 
 export default function ProfilePage() {
   const { data: session } = useSession();
   const userName = session?.user?.name || 'пользователь';
   const isAdmin = session?.user?.role === 'admin';
   const date = new Date().toLocaleDateString('ru-RU');
+  const router = useRouter();
 
   const { data: stats, isLoading: statsLoading } = useGetStatsQuery({}, { refetchOnMountOrArgChange: true });
   const { data: attemptsData, isLoading: attemptsLoading } = useGetAttemptsQuery({}, { refetchOnMountOrArgChange: true });
   const attempts = attemptsData?.attempts;
+  const { setAttemptReturnTo } = useNavigationTransition();
+
 
   return (
     <div className="p-6 max-w-2xl mx-auto space-y-8 pb-24">
@@ -82,12 +87,15 @@ export default function ProfilePage() {
                       {a.syncStatus === 'synced' ? 'Сохранено' : a.syncStatus === 'pending' ? 'Ожидает' : 'Не удалось'}
                     </p>
                   </div>
-                  <Link
-                    href={`/profile/attempts/${a.id}`}
-                    className="text-(--loom-cyan) text-sm hover:text-(--loom-yellow) transition-colors active:scale-[0.98]"
+                  <button
+                    onClick={() => {
+                      setAttemptReturnTo('/profile');
+                      router.push(`/profile/attempts/${a.id}`);
+                    }}
+                    className="text-(--loom-cyan) text-sm hover:text-(--loom-yellow) active:scale-[0.98] transition-all duration-100"
                   >
                     Подробнее
-                  </Link>
+                  </button>
                 </div>
               ))}
             </div>

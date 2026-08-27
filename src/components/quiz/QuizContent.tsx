@@ -47,12 +47,15 @@ export function QuizContent({ id }: { id: string }) {
   const { attemptId, save } = useSaveAttempt(id);
   const hideNavigation = usePWA();
 
+
   useEffect(() => {
-  document.body.style.overflow = 'hidden';
-  return () => {
-    document.body.style.overflow = '';
-  };
-}, []);
+    if (hideNavigation) {
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [hideNavigation]);
 
   const favoriteIds = useMemo(
     () => new Set(favorites.map((fav) => fav.quiz.id)),

@@ -1,9 +1,10 @@
-// src\components\features\QuizOption.tsx
+// src/components/quiz/QuizOption.tsx
+
 'use client';
 
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-
+import { useQuizFontSize } from '@/hooks/useQuizFontSize';
 
 interface QuizOptionProps {
   letter: string;
@@ -16,7 +17,6 @@ interface QuizOptionProps {
   onClick: () => void;
   className?: string;
   containerHeight?: number;
-  fontSize: number;
 }
 
 export function QuizOption({
@@ -29,13 +29,18 @@ export function QuizOption({
   icon,
   onClick,
   className,
-  fontSize,
   containerHeight = 62,
 }: QuizOptionProps) {
-
+  const { fontSize, ref } = useQuizFontSize({
+    text,
+    minFontSize: 13,
+    maxFontSize: 18,
+    step: 0.5,
+  });
 
   let borderClass = 'border-(--loom-white)/10 hover:border-(--loom-cyan)/40';
-  let letterClass = 'font-bold bg-gradient-to-r from-(--loom-yellow) to-(--loom-cyan) bg-clip-text text-transparent';
+  let letterClass =
+    'font-bold bg-gradient-to-r from-(--loom-yellow) to-(--loom-cyan) bg-clip-text text-transparent';
   let textClass = 'text-(--loom-white)/70';
 
   if (isSelected && !isCurrentConfirmed) {
@@ -72,17 +77,22 @@ export function QuizOption({
       style={{ height: containerHeight }}
     >
       <div className="flex items-center justify-center px-4 py-2 border-r border-(--loom-white)/10 shrink-0">
-        <span className={cn('text-lg font-bold', letterClass)}>
-          {letter}
-        </span>
+        <span className={cn('text-lg font-bold', letterClass)}>{letter}</span>
       </div>
 
-      <div className="relative flex-1 flex items-center px-4 py-2 min-h-0 overflow-hidden">
+      <div
+        ref={ref}
+        className="relative flex-1 flex items-center px-4 py-2 min-h-0 overflow-hidden"
+        style={{
+          fontSize: `${fontSize}px`,
+          lineHeight: '1.2',
+          wordBreak: 'break-word',
+        }}
+      >
         <span
           className={cn('text-(--loom-white)/70', textClass)}
           style={{
-            fontSize: `${fontSize}px`,
-            lineHeight: '1.2',
+            fontSize: 'inherit',
             display: 'block',
             width: '100%',
           }}
@@ -96,7 +106,6 @@ export function QuizOption({
           </div>
         )}
       </div>
-
     </motion.div>
   );
 }

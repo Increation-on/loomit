@@ -1,4 +1,4 @@
-// src\components\features\QuizQuestion.tsx
+// src/components/quiz/QuizQuestion.tsx
 
 'use client';
 
@@ -33,9 +33,6 @@ interface QuizQuestionProps {
   total: number;
 
   optionLetters: string[];
-
-  questionFontSize: number;
-  optionFontSizes: number[];
 }
 
 export function QuizQuestion({
@@ -48,14 +45,9 @@ export function QuizQuestion({
   onFinish,
   isLast,
   optionLetters,
-  questionFontSize,
-  optionFontSizes
 }: QuizQuestionProps) {
 
   const isCurrentConfirmed = !!currentAnswer;
-  
-
-  const availableHeight = 420;
 
   return (
     <div className="flex flex-col h-full">
@@ -68,15 +60,12 @@ export function QuizQuestion({
           transition={{ duration: 0.25 }}
           className="space-y-4"
         >
-          <div
-            className="h-28 flex items-center justify-center overflow-hidden"
-          >
+          <div className="h-28 flex items-center justify-center overflow-hidden">
             <h2
-              className="w-full font-bold text-(--loom-white) text-center"
+              className="w-full font-bold text-(--loom-white) text-center text-lg"
               style={{
-                fontSize: `${questionFontSize}px`,
                 lineHeight: '1.3',
-                maxHeight: `${availableHeight}px`,
+                maxHeight: '420px',
               }}
             >
               {question.text}
@@ -118,7 +107,6 @@ export function QuizQuestion({
                   key={idx}
                   letter={optionLetters[idx]}
                   text={opt.text}
-                  fontSize={optionFontSizes[idx]}
                   isSelected={isSelected}
                   isCurrentConfirmed={isCurrentConfirmed}
                   isCorrect={isCorrectOption}
@@ -136,7 +124,7 @@ export function QuizQuestion({
         </motion.div>
       </AnimatePresence>
 
-     <div className="fixed bottom-1 left-0 right-0 bg-(--loom-black)/90 backdrop-blur-sm border-t border-(--loom-white)/10 flex justify-center z-50 py-4">
+      <div className="fixed bottom-1 left-0 right-0 bg-(--loom-black)/90 backdrop-blur-sm border-t border-(--loom-white)/10 flex justify-center z-50 py-4">
         {!isCurrentConfirmed ? (
           <Button
             variant="glitch"

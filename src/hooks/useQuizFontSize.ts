@@ -1,100 +1,96 @@
-//// src\hooks\useQuizFontSize.ts
+// src/hooks/useQuizFontSize.ts
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 
-interface UseQuizFontSizeOptions {
-  texts: string[];
-  containerHeight?: number;
-  horizontalPadding?: number;
+interface UseQuizFontSizeProps {
+  text: string;
   minFontSize?: number;
   maxFontSize?: number;
-  width?: string;
+  step?: number;
 }
 
-export function useQuizFontSize({
-  texts,
-  containerHeight = 112,
-  horizontalPadding = 24,
-  minFontSize = 16,
-  maxFontSize = 28,
-  width,
-}: UseQuizFontSizeOptions) {
-  const [fontSize, setFontSize] = useState<number | null>(null);
-  const [fontSizes, setFontSizes] = useState<number[]>([]);
-  const [ready, setReady] = useState(false);
+export const useQuizFontSize = ({
+  text,
+  minFontSize = 12,
+  maxFontSize = 24,
+  step = 1,
+}: UseQuizFontSizeProps) => {
+  const [fontSize, setFontSize] = useState<number>(maxFontSize);
+  const elementRef = useRef<HTMLElement | null>(null);
 
-  useEffect(() => {
-    if (!texts.length) {
-      setFontSize(null);
-      setFontSizes([]);
-      setReady(false);
-      return;
-    }
+  const adjustFontSize = useCallback(
+    (node: HTMLElement) => {
+      if (!node || !text) return;
 
-    const measureElement = document.createElement('div');
+      const computedStyle = window.getComputedStyle(node);
+      const paddingX =
+        parseFloat(computedStyle.paddingLeft) +
+        parseFloat(computedStyle.paddingRight);
+      const paddingY =
+        parseFloat(computedStyle.paddingTop) +
+        parseFloat(computedStyle.paddingBottom);
 
-    Object.assign(measureElement.style, {
-      position: 'absolute',
-      visibility: 'hidden',
-      pointerEvents: 'none',
-      left: '0',
-      top: '0',
+      const availableWidth = node.clientWidth - paddingX;
+      const availableHeight = node.clientHeight - paddingY;
 
-      width: width ?? `calc(100vw - ${horizontalPadding * 2}px)`,
+      if (availableWidth <= 0 || availableHeight <= 0) return;
 
-      height: `${containerHeight}px`,
-      overflow: 'hidden',
-      fontWeight: '700',
-      lineHeight: '1.2',
-      whiteSpace: 'normal',
-      wordBreak: 'break-word',
-      boxSizing: 'border-box',
-    });
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      if (!context) return;
 
-    document.body.appendChild(measureElement);
-
-    const calculatedFontSizes: number[] = [];
-
-    for (const text of texts) {
-      measureElement.textContent = text;
+      const fontFamily = computedStyle.fontFamily || 'sans-serif';
+      const fontWeight = computedStyle.fontWeight || 'normal';
 
       let currentSize = maxFontSize;
 
-      measureElement.style.fontSize = `${currentSize}px`;
+      while (currentSize > minFontSize) {
+        context.font = `${fontWeight} ${currentSize}px ${fontFamily}`;
+        const metrics = context.measureText(text);
+        const textWidth = metrics.width;
+        const textHeight = currentSize * 1.2;
 
-      while (
-        (measureElement.scrollHeight > containerHeight ||
-          measureElement.scrollWidth > measureElement.clientWidth) &&
-        currentSize > minFontSize
-      ) {
-        currentSize -= 1;
-        measureElement.style.fontSize = `${currentSize}px`;
+        if (textWidth <= availableWidth && textHeight <= availableHeight) {
+          break;
+        }
+        currentSize -= step;
       }
 
-      calculatedFontSizes.push(currentSize);
+      setFontSize(currentSize);
+    },
+    [text, minFontSize, maxFontSize, step]
+  );
+
+  const refCallback = useCallback(
+    (node: HTMLElement | null) => {
+      if (node) {
+        elementRef.current = node;
+        adjustFontSize(node);
+
+        const resizeObserver = new ResizeObserver(() => {
+          adjustFontSize(node);
+        });
+        resizeObserver.observe(node);
+
+        (node as any)._ro = resizeObserver;
+      } else if (elementRef.current) {
+        const oldNode = elementRef.current as any;
+        if (oldNode._ro) {
+          oldNode._ro.disconnect();
+        }
+        elementRef.current = null;
+      }
+    },
+    [adjustFontSize]
+  );
+
+  useEffect(() => {
+    if (elementRef.current) {
+      adjustFontSize(elementRef.current);
     }
+  }, [text, adjustFontSize]);
 
-    document.body.removeChild(measureElement);
-
-    const smallestFontSize = Math.min(...calculatedFontSizes);
-
-    setFontSize(smallestFontSize);
-    setFontSizes(calculatedFontSizes);
-    setReady(true);
-  }, [
-    texts,
-    containerHeight,
-    horizontalPadding,
-    minFontSize,
-    maxFontSize,
-    width,
-  ]);
-
-  return {
-    fontSize,
-    fontSizes,
-    ready,
-  };
-}
+  return { fontSize, ref: refCallback };
+};

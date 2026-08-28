@@ -1,5 +1,3 @@
-// src/hooks/useQuizFontSize.ts
-
 'use client';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
@@ -9,6 +7,7 @@ interface UseQuizFontSizeProps {
   minFontSize?: number;
   maxFontSize?: number;
   step?: number;
+  dependencies?: any[]; // Новое: зависимости для сброса стейта
 }
 
 export const useQuizFontSize = ({
@@ -16,8 +15,10 @@ export const useQuizFontSize = ({
   minFontSize = 12,
   maxFontSize = 24,
   step = 1,
+  dependencies = [], // По умолчанию пустой массив
 }: UseQuizFontSizeProps) => {
   const [fontSize, setFontSize] = useState<number>(maxFontSize);
+  const [isReady, setIsReady] = useState<boolean>(false); // Новое: убирает прыжки
   const elementRef = useRef<HTMLElement | null>(null);
 
   const adjustFontSize = useCallback(
@@ -59,6 +60,11 @@ export const useQuizFontSize = ({
       }
 
       setFontSize(currentSize);
+      
+      // Показываем текст только после того, как размер точно подогнан
+      requestAnimationFrame(() => {
+        setIsReady(true);
+      });
     },
     [text, minFontSize, maxFontSize, step]
   );
@@ -86,11 +92,13 @@ export const useQuizFontSize = ({
     [adjustFontSize]
   );
 
+  // Следим за текстом и внешними изменениями (клик, появление иконки)
   useEffect(() => {
     if (elementRef.current) {
+      setIsReady(false); // Скрываем текст на мгновение перед перерасчетом
       adjustFontSize(elementRef.current);
     }
-  }, [text, adjustFontSize]);
+  }, [text, adjustFontSize, ...dependencies]);
 
-  return { fontSize, ref: refCallback };
+  return { fontSize, isReady, ref: refCallback };
 };

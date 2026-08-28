@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/core/Button';
 import { QuizOption } from './QuizOption';
 import { Check, X } from 'lucide-react';
+import { useQuizFontSize } from '@/hooks/useQuizFontSize';
 
 interface QuizQuestionProps {
   question: {
@@ -35,6 +36,23 @@ interface QuizQuestionProps {
   optionLetters: string[];
 }
 
+const formatQuestionText = (text: string) => {
+  const parts = text.split(/(`[^`]+`)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('`') && part.endsWith('`')) {
+      return (
+        <code
+          key={i}
+          className="font-mono bg-(--loom-white)/10 px-1.5 py-0.5 rounded text-(--loom-yellow) wrap-break-word"
+        >
+          {part.slice(1, -1)}
+        </code>
+      );
+    }
+    return part;
+  });
+};
+
 export function QuizQuestion({
   question,
   currentAnswer,
@@ -49,6 +67,17 @@ export function QuizQuestion({
 
   const isCurrentConfirmed = !!currentAnswer;
 
+  const { fontSize, isReady, ref: questionRef } = useQuizFontSize({
+    text: question.text,
+    minFontSize: 14,
+    maxFontSize: 24, // Слегка уменьшим максимум, чтобы 100% влезать в контейнер h-30
+    step: 0.5,
+    mode: 'dom', // ИСПОЛЬЗУЕМ НОВЫЙ РЕЖИМ РАБОТЫ
+    dependencies: [question.id], // Хук пересчитает размер при смене вопроса
+  });
+
+  console.log(fontSize)
+
   return (
     <div className="flex flex-col h-full">
       <AnimatePresence mode="wait">
@@ -60,15 +89,17 @@ export function QuizQuestion({
           transition={{ duration: 0.25 }}
           className="space-y-4"
         >
-          <div className="h-28 flex items-center justify-center overflow-hidden">
+          <div className="h-30 flex items-center justify-center overflow-hidden -mt-4">
             <h2
-              className="w-full font-bold text-(--loom-white) text-center text-lg"
+              ref={questionRef}
+              className="w-full font-bold text-(--loom-white) text-center"
               style={{
+                fontSize: `${fontSize}px`,
                 lineHeight: '1.3',
                 maxHeight: '420px',
               }}
             >
-              {question.text}
+              {formatQuestionText(question.text)}
             </h2>
           </div>
 

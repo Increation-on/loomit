@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/core/Button';
 import { QuizOption } from './QuizOption';
 import { Check, X } from 'lucide-react';
 import { useQuizFontSize } from '@/hooks/useQuizFontSize';
+import { cn } from '@/lib/utils';
 
 interface QuizQuestionProps {
   question: {
@@ -34,6 +35,7 @@ interface QuizQuestionProps {
   total: number;
 
   optionLetters: string[];
+  isPWA?: boolean; // 👈 добавляем
 }
 
 const formatQuestionText = (text: string) => {
@@ -63,6 +65,7 @@ export function QuizQuestion({
   onFinish,
   isLast,
   optionLetters,
+  isPWA = false, // 👈 дефолт
 }: QuizQuestionProps) {
 
   const isCurrentConfirmed = !!currentAnswer;
@@ -70,10 +73,10 @@ export function QuizQuestion({
   const { fontSize, isReady, ref: questionRef } = useQuizFontSize({
     text: question.text,
     minFontSize: 14,
-    maxFontSize: 24, // Слегка уменьшим максимум, чтобы 100% влезать в контейнер h-30
+    maxFontSize: 24,
     step: 0.5,
-    mode: 'dom', // ИСПОЛЬЗУЕМ НОВЫЙ РЕЖИМ РАБОТЫ
-    dependencies: [question.id], // Хук пересчитает размер при смене вопроса
+    mode: 'dom',
+    dependencies: [question.id],
   });
 
   return (
@@ -153,7 +156,10 @@ export function QuizQuestion({
         </motion.div>
       </AnimatePresence>
 
-      <div className="fixed bottom-1 left-0 right-0 bg-(--loom-black)/90 backdrop-blur-sm border-t border-(--loom-white)/10 flex justify-center z-50 py-4">
+      <div className={cn(
+        "bottom-1 left-0 right-0 bg-(--loom-black)/90 backdrop-blur-sm border-t border-(--loom-white)/10 flex justify-center z-50 py-4",
+        isPWA ? "fixed" : "sticky" // 👈 ключевое
+      )}>
         {!isCurrentConfirmed ? (
           <Button
             variant="glitch"

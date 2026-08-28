@@ -168,6 +168,7 @@ export function QuizContent({ id }: { id: string }) {
           currentIndex={currentIndex}
           total={questions.length}
           optionLetters={optionLetters}
+          isPWA={hideNavigation}
         />
       </div>
 

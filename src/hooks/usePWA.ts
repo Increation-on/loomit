@@ -16,6 +16,7 @@ export function usePWA() {
       const isDevMobile = process.env.NODE_ENV === 'development' && isMobile;
 
       setIsHidden(isStandalone || isDevMobile);
+      // setIsHidden(isStandalone);
     };
 
     check();

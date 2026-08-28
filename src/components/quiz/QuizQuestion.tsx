@@ -76,8 +76,6 @@ export function QuizQuestion({
     dependencies: [question.id], // Хук пересчитает размер при смене вопроса
   });
 
-  console.log(fontSize)
-
   return (
     <div className="flex flex-col h-full">
       <AnimatePresence mode="wait">

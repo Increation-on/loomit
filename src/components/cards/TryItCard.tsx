@@ -66,7 +66,7 @@ export function TryItCard({
           )}
         </div>
         <div className="flex items-center gap-2">
-          {/* ✅ Фиксированное место для lastAttempt + скелетон */}
+          
           <div className="min-h-5 min-w-10 flex items-center justify-center">
             {lastAttempt ? (
               <span
@@ -95,7 +95,7 @@ export function TryItCard({
       <h3 className="font-bold text-lg text-(--loom-white) truncate leading-tight mt-1">
         {quiz.title}
       </h3>
-      <p className="flex-1 text-sm text-(--loom-white)/60 mt-1">
+      <p className="flex-1 text-sm text-(--loom-white)/60 mt-1 line-clamp-4">
         {quiz.description}
       </p>
     </div>

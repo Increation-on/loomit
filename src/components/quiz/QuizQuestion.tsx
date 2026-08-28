@@ -1,4 +1,4 @@
-// src\components\features\QuizQuestion.tsx
+// src/components/quiz/QuizQuestion.tsx
 
 'use client';
 
@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/core/Button';
 import { QuizOption } from './QuizOption';
 import { Check, X } from 'lucide-react';
+import { useQuizFontSize } from '@/hooks/useQuizFontSize';
 
 interface QuizQuestionProps {
   question: {
@@ -33,10 +34,24 @@ interface QuizQuestionProps {
   total: number;
 
   optionLetters: string[];
-
-  questionFontSize: number;
-  optionFontSizes: number[];
 }
+
+const formatQuestionText = (text: string) => {
+  const parts = text.split(/(`[^`]+`)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('`') && part.endsWith('`')) {
+      return (
+        <code
+          key={i}
+          className="font-mono bg-(--loom-white)/10 px-1.5 py-0.5 rounded text-(--loom-yellow) wrap-break-word"
+        >
+          {part.slice(1, -1)}
+        </code>
+      );
+    }
+    return part;
+  });
+};
 
 export function QuizQuestion({
   question,
@@ -48,14 +63,18 @@ export function QuizQuestion({
   onFinish,
   isLast,
   optionLetters,
-  questionFontSize,
-  optionFontSizes
 }: QuizQuestionProps) {
 
   const isCurrentConfirmed = !!currentAnswer;
-  
 
-  const availableHeight = 420;
+  const { fontSize, isReady, ref: questionRef } = useQuizFontSize({
+    text: question.text,
+    minFontSize: 14,
+    maxFontSize: 24, // Слегка уменьшим максимум, чтобы 100% влезать в контейнер h-30
+    step: 0.5,
+    mode: 'dom', // ИСПОЛЬЗУЕМ НОВЫЙ РЕЖИМ РАБОТЫ
+    dependencies: [question.id], // Хук пересчитает размер при смене вопроса
+  });
 
   return (
     <div className="flex flex-col h-full">
@@ -68,18 +87,17 @@ export function QuizQuestion({
           transition={{ duration: 0.25 }}
           className="space-y-4"
         >
-          <div
-            className="h-28 flex items-center justify-center overflow-hidden"
-          >
+          <div className="h-30 flex items-center justify-center overflow-hidden -mt-4">
             <h2
+              ref={questionRef}
               className="w-full font-bold text-(--loom-white) text-center"
               style={{
-                fontSize: `${questionFontSize}px`,
+                fontSize: `${fontSize}px`,
                 lineHeight: '1.3',
-                maxHeight: `${availableHeight}px`,
+                maxHeight: '420px',
               }}
             >
-              {question.text}
+              {formatQuestionText(question.text)}
             </h2>
           </div>
 
@@ -118,7 +136,6 @@ export function QuizQuestion({
                   key={idx}
                   letter={optionLetters[idx]}
                   text={opt.text}
-                  fontSize={optionFontSizes[idx]}
                   isSelected={isSelected}
                   isCurrentConfirmed={isCurrentConfirmed}
                   isCorrect={isCorrectOption}
@@ -136,7 +153,7 @@ export function QuizQuestion({
         </motion.div>
       </AnimatePresence>
 
-     <div className="fixed bottom-1 left-0 right-0 bg-(--loom-black)/90 backdrop-blur-sm border-t border-(--loom-white)/10 flex justify-center z-50 py-4">
+      <div className="fixed bottom-1 left-0 right-0 bg-(--loom-black)/90 backdrop-blur-sm border-t border-(--loom-white)/10 flex justify-center z-50 py-4">
         {!isCurrentConfirmed ? (
           <Button
             variant="glitch"

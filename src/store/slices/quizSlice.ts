@@ -20,7 +20,7 @@ interface QuizState {
       text: string;
     }[];
     correctOptionId: string;
-    explanation?: string; // ✅ добавляем
+    explanation?: string;
   }[];
   answers: UserAnswer[];
   currentIndex: number;
@@ -44,28 +44,29 @@ const quizSlice = createSlice({
   initialState,
   reducers: {
     startQuiz(state, action: PayloadAction<{ quiz: { id: string; title: string }; questions: any[] }>) {
-  state.currentQuiz = action.payload.quiz;
-  
-  // Перемешиваем вопросы
-  const shuffledQuestions = shuffle(action.payload.questions);
-  
-  state.questions = shuffledQuestions.map((q: any) => ({
-    id: q.id,
-    text: q.text,
-    // Перемешиваем варианты внутри вопроса
-    options: shuffle(q.options.map((o: any) => 
-      typeof o === 'string' ? { id: crypto.randomUUID(), text: o } : o
-    )),
-    correctOptionId: q.correct_option_id || q.correctOptionId || '',
-    explanation: q.explanation || '',
-  }));
-  
-  state.answers = [];
-  state.currentIndex = 0;
-  state.selectedOption = null;
-  state.isFinished = false;
-  state.startedAt = new Date().toISOString();
-},
+      state.currentQuiz = action.payload.quiz;
+      
+      // Перемешиваем вопросы
+      const shuffledQuestions = shuffle(action.payload.questions);
+      
+      state.questions = shuffledQuestions.map((q: any) => ({
+        id: q.id,
+        text: q.text,
+        // Перемешиваем варианты внутри вопроса
+        // ФИКС: вместо crypto.randomUUID() используем текст как ID
+        options: shuffle(q.options.map((o: any) => 
+          typeof o === 'string' ? { id: o, text: o } : o
+        )),
+        correctOptionId: q.correct_option_id || q.correctOptionId || '',
+        explanation: q.explanation || '',
+      }));
+      
+      state.answers = [];
+      state.currentIndex = 0;
+      state.selectedOption = null;
+      state.isFinished = false;
+      state.startedAt = new Date().toISOString();
+    },
     selectOption(state, action: PayloadAction<string>) {
       state.selectedOption = action.payload;
     },

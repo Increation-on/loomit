@@ -1,4 +1,5 @@
-// src/components/quiz/QuizContent.tsx
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// src/components/quiz/QuizContent.tsx — ЧАСТЬ 1 из 2
 
 'use client';
 
@@ -9,6 +10,7 @@ import {
   selectSelectedOption,
   selectQuizState,
   startQuiz,
+  resumeQuizFromServer,
   resetQuiz,
   selectOption,
   confirmAnswer,
@@ -35,15 +37,24 @@ export function QuizContent({ id }: { id: string }) {
   const currentQuestion = useSelector(selectCurrentQuestion);
   const score = useSelector(selectScore);
   const selectedOption = useSelector(selectSelectedOption);
-  const { questions, answers, currentIndex, isFinished, currentQuiz } = useSelector(selectQuizState);
-  const savedRef = useRef(false);
-  const { data: quizData, isLoading: quizLoading } = useGetQuizByIdQuery(id, { skip: !!currentQuiz });
+  const { questions, answers, currentIndex, isFinished, currentQuiz, attemptId: reduxAttemptId } = useSelector(selectQuizState);
+  
+  // Добавили refetchQuiz для принудительного обновления кэша RTK Query
+  const { data: quizData, isLoading: quizLoading, isFetching, refetch: refetchQuiz } = useGetQuizByIdQuery(id);
   const { data: session } = useSession();
   const { data: favorites = [] } = useGetFavoritesQuery(undefined, { skip: !session });
   const [toggleFavorite] = useToggleFavoriteMutation();
   const { redirecting, setRedirecting } = useQuizNavigation();
-  const { attemptId, save } = useSaveAttempt(id);
+  
+  const { attemptId, setAttemptId, startNewAttempt, saveStep } = useSaveAttempt(id);
   const hideNavigation = usePWA();
+  
+  const [isSessionLoading, setIsSessionLoading] = useState(true);
+  const [selectedExplanation, setSelectedExplanation] = useState<string | null>(null);
+  const [resetCounter, setResetCounter] = useState(0);
+
+  // Реф для защиты от двойных асинхронных запросов в StrictMode
+  const isInitializingRef = useRef(false);
 
   useEffect(() => {
     if (hideNavigation) {
@@ -59,32 +70,95 @@ export function QuizContent({ id }: { id: string }) {
     [favorites]
   );
 
-  const [selectedExplanation, setSelectedExplanation] = useState<string | null>(null);
-
   useEffect(() => {
-    if (currentQuiz && currentQuiz.id !== id) {
+    if (currentQuiz && currentQuiz.id && currentQuiz.id !== id) {
       persistor.purge();
       dispatch(resetQuiz());
-      savedRef.current = false;
     }
   }, [id, currentQuiz, dispatch]);
 
+  // Сбрасываем старый кэш при монтировании компонента, чтобы забрать activeAttemptId из БД
   useEffect(() => {
-    if (quizData && !currentQuiz) {
-      dispatch(startQuiz({
-        quiz: { id: quizData.id, title: quizData.title },
-        questions: quizData.questions,
-      }));
-    }
-  }, [quizData, currentQuiz, dispatch]);
+    refetchQuiz();
+  }, [id, refetchQuiz]);
 
+  // Эффект инициализации сессии (Абсолютный источник правды — БД)
   useEffect(() => {
-    if (isFinished && questions.length > 0 && !savedRef.current) {
-      const score = answers.filter(a => a.isCorrect).length;
-      save(answers, score, questions.length);
-      savedRef.current = true;
+    if (!quizData || isInitializingRef.current) return;
+
+    const initializeQuiz = async () => {
+      isInitializingRef.current = true;
+      setIsSessionLoading(true);
+
+      const shouldResume = quizData.activeAttemptId && resetCounter === 0;
+
+      if (shouldResume) {
+        try {
+          const res = await fetch(`/api/attempts/${quizData.activeAttemptId}`, {
+            cache: 'no-store'
+          });
+          const data = await res.json();
+
+          if (data.success && data.attempt) {
+            setAttemptId(data.attempt.id);
+            dispatch(resumeQuizFromServer({
+              quiz: { id: data.attempt.quizId, title: data.attempt.title },
+              questions: data.questions,
+              answers: data.attempt.answers,
+              currentIndex: data.attempt.currentIndex,
+              attemptId: data.attempt.id,
+              startedAt: data.attempt.startedAt,
+            }));
+            setIsSessionLoading(false);
+            isInitializingRef.current = false;
+            return;
+          }
+        } catch (e) {
+          console.error('Не удалось восстановить попытку с сервера, стартуем новую:', e);
+        }
+      }
+
+      try {
+        const startData = await startNewAttempt();
+        if (startData?.success && startData?.attempt && startData?.questions) {
+          setAttemptId(startData.attempt.id);
+          dispatch(startQuiz({
+            quiz: { id: quizData.id, title: quizData.title },
+            questions: startData.questions,
+            attemptId: startData.attempt.id,
+          }));
+        }
+      } catch (err) {
+        console.error('Ошибка инициализации новой попытки:', err);
+      } finally {
+        setIsSessionLoading(false);
+        isInitializingRef.current = false;
+      }
+    };
+
+    initializeQuiz();
+  }, [quizData, id, dispatch, startNewAttempt, setAttemptId, resetCounter]);
+
+  const handleConfirmAnswer = async () => {
+    if (!currentQuestion || !selectedOption) return;
+
+    const isCorrect = currentQuestion.correctOptionId === selectedOption;
+    const answerData = {
+      questionId: currentQuestion.id,
+      selectedOptionId: selectedOption,
+      isCorrect,
+      questionText: currentQuestion.text,
+      correctOptionId: currentQuestion.correctOptionId,
+    };
+
+    dispatch(confirmAnswer());
+
+    const currentActiveId = attemptId || reduxAttemptId;
+    if (currentActiveId) {
+      await saveStep(currentActiveId, answerData);
     }
-  }, [isFinished, questions, answers, save]);
+  };
+
 
   if (isFinished) {
     return (
@@ -97,22 +171,27 @@ export function QuizContent({ id }: { id: string }) {
         onToggleFavorite={(quizId, quiz) =>
           toggleFavorite({ quizId, quiz }).unwrap()
         }
-        onReset={() => dispatch(resetQuiz())}
+        onReset={async () => {
+          setIsSessionLoading(true);
+          dispatch(resetQuiz());
+          setAttemptId(null);
+          isInitializingRef.current = false;
+          setResetCounter(prev => prev + 1);
+          await refetchQuiz();
+        }}
         onRedirect={() => setRedirecting(true)}
-        attemptId={attemptId}
+        attemptId={attemptId || reduxAttemptId || undefined}
       />
     );
   }
 
-  // Показываем скелетон, если вопрос ещё не загружен
-  if (!currentQuestion) {
+  if (quizLoading || isSessionLoading || !currentQuestion || isFetching) {
     return <QuizSkeleton />;
   }
 
   const currentAnswer = answers.find(a => a.questionId === currentQuestion.id);
   const isCurrentConfirmed = !!currentAnswer;
   const optionLetters = ['A', 'B', 'C', 'D'];
-
   const hasExplanation = currentQuestion?.explanation ?? false;
 
   if (redirecting) {
@@ -161,7 +240,7 @@ export function QuizContent({ id }: { id: string }) {
           currentAnswer={currentAnswer}
           selectedOption={selectedOption}
           onSelectOption={(optionId) => dispatch(selectOption(optionId))}
-          onConfirm={() => dispatch(confirmAnswer())}
+          onConfirm={handleConfirmAnswer}
           onNext={() => dispatch(nextQuestion())}
           onFinish={() => dispatch(finishQuiz())}
           isLast={currentIndex === questions.length - 1}
@@ -195,3 +274,4 @@ export function QuizContent({ id }: { id: string }) {
     </div>
   );
 }
+

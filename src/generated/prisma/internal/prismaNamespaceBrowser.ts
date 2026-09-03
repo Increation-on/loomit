@@ -104,6 +104,8 @@ export const AttemptScalarFieldEnum = {
   score: 'score',
   total_questions: 'total_questions',
   answers: 'answers',
+  question_order: 'question_order',
+  status: 'status',
   sync_status: 'sync_status',
   created_at: 'created_at'
 } as const
@@ -202,6 +204,14 @@ export const JsonNullValueInput = {
 } as const
 
 export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const QueryMode = {

@@ -25,23 +25,31 @@ model account {
   @@unique([provider, provider_account_id])
 }
 
+enum AttemptStatus {
+  IN_PROGRESS
+  COMPLETED
+}
+
 model attempt {
-  id              String   @id @default(cuid())
+  id              String        @id @default(cuid())
   user_id         String?
   guest_id        String?
   quiz_id         String
-  score           Int
+  score           Int           @default(0)
   total_questions Int
-  answers         Json
-  sync_status     String   @default("pending")
-  created_at      DateTime @default(now())
-  quiz            quiz     @relation(fields: [quiz_id], references: [id])
-  user            user?    @relation(fields: [user_id], references: [id])
+  answers         Json          // Будет хранить массив ответов: [{ questionId: string, selectedOptionId: string, isCorrect: boolean, ... }]
+  question_order  Json?          // <-- НАШ ФИКС: Хранит зашафленный массив ID вопросов ["clx1", "clx2"]
+  status          AttemptStatus @default(IN_PROGRESS) // <-- НАШ ФИКС: Статус сессии
+  sync_status     String        @default("pending")
+  created_at      DateTime      @default(now())
+  quiz            quiz          @relation(fields: [quiz_id], references: [id])
+  user            user?         @relation(fields: [user_id], references: [id])
 
   @@index([guest_id])
   @@index([sync_status])
   @@index([user_id])
 }
+
 
 model question {
   id                String  @id @default(cuid())
@@ -70,6 +78,7 @@ model quiz {
 
   favorites favorite[]
 }
+
 
 model session {
   id            String   @id @default(cuid())

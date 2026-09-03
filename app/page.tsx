@@ -103,7 +103,7 @@ export default function HomePage() {
           <ContinueQuizCard
             title={currentQuiz!.title}
             answersCount={answers.length}
-            onContinue={() => handleQuizClick(currentQuiz!.id)}
+            onContinue={handleContinue}
           />
         ) : (
           <div>

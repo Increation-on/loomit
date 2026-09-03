@@ -43,6 +43,7 @@ export type AttemptMinAggregateOutputType = {
   quiz_id: string | null
   score: number | null
   total_questions: number | null
+  status: $Enums.AttemptStatus | null
   sync_status: string | null
   created_at: Date | null
 }
@@ -54,6 +55,7 @@ export type AttemptMaxAggregateOutputType = {
   quiz_id: string | null
   score: number | null
   total_questions: number | null
+  status: $Enums.AttemptStatus | null
   sync_status: string | null
   created_at: Date | null
 }
@@ -66,6 +68,8 @@ export type AttemptCountAggregateOutputType = {
   score: number
   total_questions: number
   answers: number
+  question_order: number
+  status: number
   sync_status: number
   created_at: number
   _all: number
@@ -89,6 +93,7 @@ export type AttemptMinAggregateInputType = {
   quiz_id?: true
   score?: true
   total_questions?: true
+  status?: true
   sync_status?: true
   created_at?: true
 }
@@ -100,6 +105,7 @@ export type AttemptMaxAggregateInputType = {
   quiz_id?: true
   score?: true
   total_questions?: true
+  status?: true
   sync_status?: true
   created_at?: true
 }
@@ -112,6 +118,8 @@ export type AttemptCountAggregateInputType = {
   score?: true
   total_questions?: true
   answers?: true
+  question_order?: true
+  status?: true
   sync_status?: true
   created_at?: true
   _all?: true
@@ -211,6 +219,8 @@ export type AttemptGroupByOutputType = {
   score: number
   total_questions: number
   answers: runtime.JsonValue
+  question_order: runtime.JsonValue | null
+  status: $Enums.AttemptStatus
   sync_status: string
   created_at: Date
   _count: AttemptCountAggregateOutputType | null
@@ -246,6 +256,8 @@ export type attemptWhereInput = {
   score?: Prisma.IntFilter<"attempt"> | number
   total_questions?: Prisma.IntFilter<"attempt"> | number
   answers?: Prisma.JsonFilter<"attempt">
+  question_order?: Prisma.JsonNullableFilter<"attempt">
+  status?: Prisma.EnumAttemptStatusFilter<"attempt"> | $Enums.AttemptStatus
   sync_status?: Prisma.StringFilter<"attempt"> | string
   created_at?: Prisma.DateTimeFilter<"attempt"> | Date | string
   quiz?: Prisma.XOR<Prisma.QuizScalarRelationFilter, Prisma.quizWhereInput>
@@ -260,6 +272,8 @@ export type attemptOrderByWithRelationInput = {
   score?: Prisma.SortOrder
   total_questions?: Prisma.SortOrder
   answers?: Prisma.SortOrder
+  question_order?: Prisma.SortOrderInput | Prisma.SortOrder
+  status?: Prisma.SortOrder
   sync_status?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   quiz?: Prisma.quizOrderByWithRelationInput
@@ -277,6 +291,8 @@ export type attemptWhereUniqueInput = Prisma.AtLeast<{
   score?: Prisma.IntFilter<"attempt"> | number
   total_questions?: Prisma.IntFilter<"attempt"> | number
   answers?: Prisma.JsonFilter<"attempt">
+  question_order?: Prisma.JsonNullableFilter<"attempt">
+  status?: Prisma.EnumAttemptStatusFilter<"attempt"> | $Enums.AttemptStatus
   sync_status?: Prisma.StringFilter<"attempt"> | string
   created_at?: Prisma.DateTimeFilter<"attempt"> | Date | string
   quiz?: Prisma.XOR<Prisma.QuizScalarRelationFilter, Prisma.quizWhereInput>
@@ -291,6 +307,8 @@ export type attemptOrderByWithAggregationInput = {
   score?: Prisma.SortOrder
   total_questions?: Prisma.SortOrder
   answers?: Prisma.SortOrder
+  question_order?: Prisma.SortOrderInput | Prisma.SortOrder
+  status?: Prisma.SortOrder
   sync_status?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   _count?: Prisma.attemptCountOrderByAggregateInput
@@ -311,6 +329,8 @@ export type attemptScalarWhereWithAggregatesInput = {
   score?: Prisma.IntWithAggregatesFilter<"attempt"> | number
   total_questions?: Prisma.IntWithAggregatesFilter<"attempt"> | number
   answers?: Prisma.JsonWithAggregatesFilter<"attempt">
+  question_order?: Prisma.JsonNullableWithAggregatesFilter<"attempt">
+  status?: Prisma.EnumAttemptStatusWithAggregatesFilter<"attempt"> | $Enums.AttemptStatus
   sync_status?: Prisma.StringWithAggregatesFilter<"attempt"> | string
   created_at?: Prisma.DateTimeWithAggregatesFilter<"attempt"> | Date | string
 }
@@ -318,9 +338,11 @@ export type attemptScalarWhereWithAggregatesInput = {
 export type attemptCreateInput = {
   id?: string
   guest_id?: string | null
-  score: number
+  score?: number
   total_questions: number
   answers: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  question_order?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  status?: $Enums.AttemptStatus
   sync_status?: string
   created_at?: Date | string
   quiz: Prisma.quizCreateNestedOneWithoutAttemptsInput
@@ -332,9 +354,11 @@ export type attemptUncheckedCreateInput = {
   user_id?: string | null
   guest_id?: string | null
   quiz_id: string
-  score: number
+  score?: number
   total_questions: number
   answers: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  question_order?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  status?: $Enums.AttemptStatus
   sync_status?: string
   created_at?: Date | string
 }
@@ -345,6 +369,8 @@ export type attemptUpdateInput = {
   score?: Prisma.IntFieldUpdateOperationsInput | number
   total_questions?: Prisma.IntFieldUpdateOperationsInput | number
   answers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  question_order?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  status?: Prisma.EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
   sync_status?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quiz?: Prisma.quizUpdateOneRequiredWithoutAttemptsNestedInput
@@ -359,6 +385,8 @@ export type attemptUncheckedUpdateInput = {
   score?: Prisma.IntFieldUpdateOperationsInput | number
   total_questions?: Prisma.IntFieldUpdateOperationsInput | number
   answers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  question_order?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  status?: Prisma.EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
   sync_status?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -368,9 +396,11 @@ export type attemptCreateManyInput = {
   user_id?: string | null
   guest_id?: string | null
   quiz_id: string
-  score: number
+  score?: number
   total_questions: number
   answers: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  question_order?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  status?: $Enums.AttemptStatus
   sync_status?: string
   created_at?: Date | string
 }
@@ -381,6 +411,8 @@ export type attemptUpdateManyMutationInput = {
   score?: Prisma.IntFieldUpdateOperationsInput | number
   total_questions?: Prisma.IntFieldUpdateOperationsInput | number
   answers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  question_order?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  status?: Prisma.EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
   sync_status?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -393,6 +425,8 @@ export type attemptUncheckedUpdateManyInput = {
   score?: Prisma.IntFieldUpdateOperationsInput | number
   total_questions?: Prisma.IntFieldUpdateOperationsInput | number
   answers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  question_order?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  status?: Prisma.EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
   sync_status?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -405,6 +439,8 @@ export type attemptCountOrderByAggregateInput = {
   score?: Prisma.SortOrder
   total_questions?: Prisma.SortOrder
   answers?: Prisma.SortOrder
+  question_order?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   sync_status?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
 }
@@ -421,6 +457,7 @@ export type attemptMaxOrderByAggregateInput = {
   quiz_id?: Prisma.SortOrder
   score?: Prisma.SortOrder
   total_questions?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   sync_status?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
 }
@@ -432,6 +469,7 @@ export type attemptMinOrderByAggregateInput = {
   quiz_id?: Prisma.SortOrder
   score?: Prisma.SortOrder
   total_questions?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   sync_status?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
 }
@@ -457,6 +495,10 @@ export type IntFieldUpdateOperationsInput = {
   decrement?: number
   multiply?: number
   divide?: number
+}
+
+export type EnumAttemptStatusFieldUpdateOperationsInput = {
+  set?: $Enums.AttemptStatus
 }
 
 export type DateTimeFieldUpdateOperationsInput = {
@@ -550,9 +592,11 @@ export type attemptUncheckedUpdateManyWithoutUserNestedInput = {
 export type attemptCreateWithoutQuizInput = {
   id?: string
   guest_id?: string | null
-  score: number
+  score?: number
   total_questions: number
   answers: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  question_order?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  status?: $Enums.AttemptStatus
   sync_status?: string
   created_at?: Date | string
   user?: Prisma.userCreateNestedOneWithoutAttemptsInput
@@ -562,9 +606,11 @@ export type attemptUncheckedCreateWithoutQuizInput = {
   id?: string
   user_id?: string | null
   guest_id?: string | null
-  score: number
+  score?: number
   total_questions: number
   answers: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  question_order?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  status?: $Enums.AttemptStatus
   sync_status?: string
   created_at?: Date | string
 }
@@ -606,6 +652,8 @@ export type attemptScalarWhereInput = {
   score?: Prisma.IntFilter<"attempt"> | number
   total_questions?: Prisma.IntFilter<"attempt"> | number
   answers?: Prisma.JsonFilter<"attempt">
+  question_order?: Prisma.JsonNullableFilter<"attempt">
+  status?: Prisma.EnumAttemptStatusFilter<"attempt"> | $Enums.AttemptStatus
   sync_status?: Prisma.StringFilter<"attempt"> | string
   created_at?: Prisma.DateTimeFilter<"attempt"> | Date | string
 }
@@ -613,9 +661,11 @@ export type attemptScalarWhereInput = {
 export type attemptCreateWithoutUserInput = {
   id?: string
   guest_id?: string | null
-  score: number
+  score?: number
   total_questions: number
   answers: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  question_order?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  status?: $Enums.AttemptStatus
   sync_status?: string
   created_at?: Date | string
   quiz: Prisma.quizCreateNestedOneWithoutAttemptsInput
@@ -625,9 +675,11 @@ export type attemptUncheckedCreateWithoutUserInput = {
   id?: string
   guest_id?: string | null
   quiz_id: string
-  score: number
+  score?: number
   total_questions: number
   answers: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  question_order?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  status?: $Enums.AttemptStatus
   sync_status?: string
   created_at?: Date | string
 }
@@ -662,9 +714,11 @@ export type attemptCreateManyQuizInput = {
   id?: string
   user_id?: string | null
   guest_id?: string | null
-  score: number
+  score?: number
   total_questions: number
   answers: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  question_order?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  status?: $Enums.AttemptStatus
   sync_status?: string
   created_at?: Date | string
 }
@@ -675,6 +729,8 @@ export type attemptUpdateWithoutQuizInput = {
   score?: Prisma.IntFieldUpdateOperationsInput | number
   total_questions?: Prisma.IntFieldUpdateOperationsInput | number
   answers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  question_order?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  status?: Prisma.EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
   sync_status?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.userUpdateOneWithoutAttemptsNestedInput
@@ -687,6 +743,8 @@ export type attemptUncheckedUpdateWithoutQuizInput = {
   score?: Prisma.IntFieldUpdateOperationsInput | number
   total_questions?: Prisma.IntFieldUpdateOperationsInput | number
   answers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  question_order?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  status?: Prisma.EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
   sync_status?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -698,6 +756,8 @@ export type attemptUncheckedUpdateManyWithoutQuizInput = {
   score?: Prisma.IntFieldUpdateOperationsInput | number
   total_questions?: Prisma.IntFieldUpdateOperationsInput | number
   answers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  question_order?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  status?: Prisma.EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
   sync_status?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -706,9 +766,11 @@ export type attemptCreateManyUserInput = {
   id?: string
   guest_id?: string | null
   quiz_id: string
-  score: number
+  score?: number
   total_questions: number
   answers: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  question_order?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  status?: $Enums.AttemptStatus
   sync_status?: string
   created_at?: Date | string
 }
@@ -719,6 +781,8 @@ export type attemptUpdateWithoutUserInput = {
   score?: Prisma.IntFieldUpdateOperationsInput | number
   total_questions?: Prisma.IntFieldUpdateOperationsInput | number
   answers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  question_order?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  status?: Prisma.EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
   sync_status?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quiz?: Prisma.quizUpdateOneRequiredWithoutAttemptsNestedInput
@@ -731,6 +795,8 @@ export type attemptUncheckedUpdateWithoutUserInput = {
   score?: Prisma.IntFieldUpdateOperationsInput | number
   total_questions?: Prisma.IntFieldUpdateOperationsInput | number
   answers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  question_order?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  status?: Prisma.EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
   sync_status?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -742,6 +808,8 @@ export type attemptUncheckedUpdateManyWithoutUserInput = {
   score?: Prisma.IntFieldUpdateOperationsInput | number
   total_questions?: Prisma.IntFieldUpdateOperationsInput | number
   answers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  question_order?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  status?: Prisma.EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
   sync_status?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -756,6 +824,8 @@ export type attemptSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   score?: boolean
   total_questions?: boolean
   answers?: boolean
+  question_order?: boolean
+  status?: boolean
   sync_status?: boolean
   created_at?: boolean
   quiz?: boolean | Prisma.quizDefaultArgs<ExtArgs>
@@ -770,6 +840,8 @@ export type attemptSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   score?: boolean
   total_questions?: boolean
   answers?: boolean
+  question_order?: boolean
+  status?: boolean
   sync_status?: boolean
   created_at?: boolean
   quiz?: boolean | Prisma.quizDefaultArgs<ExtArgs>
@@ -784,6 +856,8 @@ export type attemptSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   score?: boolean
   total_questions?: boolean
   answers?: boolean
+  question_order?: boolean
+  status?: boolean
   sync_status?: boolean
   created_at?: boolean
   quiz?: boolean | Prisma.quizDefaultArgs<ExtArgs>
@@ -798,11 +872,13 @@ export type attemptSelectScalar = {
   score?: boolean
   total_questions?: boolean
   answers?: boolean
+  question_order?: boolean
+  status?: boolean
   sync_status?: boolean
   created_at?: boolean
 }
 
-export type attemptOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "user_id" | "guest_id" | "quiz_id" | "score" | "total_questions" | "answers" | "sync_status" | "created_at", ExtArgs["result"]["attempt"]>
+export type attemptOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "user_id" | "guest_id" | "quiz_id" | "score" | "total_questions" | "answers" | "question_order" | "status" | "sync_status" | "created_at", ExtArgs["result"]["attempt"]>
 export type attemptInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   quiz?: boolean | Prisma.quizDefaultArgs<ExtArgs>
   user?: boolean | Prisma.attempt$userArgs<ExtArgs>
@@ -830,6 +906,8 @@ export type $attemptPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     score: number
     total_questions: number
     answers: runtime.JsonValue
+    question_order: runtime.JsonValue | null
+    status: $Enums.AttemptStatus
     sync_status: string
     created_at: Date
   }, ExtArgs["result"]["attempt"]>
@@ -1264,6 +1342,8 @@ export interface attemptFieldRefs {
   readonly score: Prisma.FieldRef<"attempt", 'Int'>
   readonly total_questions: Prisma.FieldRef<"attempt", 'Int'>
   readonly answers: Prisma.FieldRef<"attempt", 'Json'>
+  readonly question_order: Prisma.FieldRef<"attempt", 'Json'>
+  readonly status: Prisma.FieldRef<"attempt", 'AttemptStatus'>
   readonly sync_status: Prisma.FieldRef<"attempt", 'String'>
   readonly created_at: Prisma.FieldRef<"attempt", 'DateTime'>
 }

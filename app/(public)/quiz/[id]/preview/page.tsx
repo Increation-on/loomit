@@ -149,7 +149,7 @@ export default function QuizPreviewPage() {
                 onClick={() => router.push(`/quiz/${id}`)}
                 className="w-full py-2.5 text-sm"
               >
-                Начать квиз
+               {quiz.activeAttemptId ? 'Продолжить квиз' : 'Начать квиз'}
               </Button>
             </div>
           </div>

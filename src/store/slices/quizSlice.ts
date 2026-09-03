@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../store';
-import { shuffle } from '@/lib/utils';
 
 export interface UserAnswer {
   questionId: string;
@@ -27,6 +26,7 @@ interface QuizState {
   selectedOption: string | null;
   isFinished: boolean;
   startedAt: string | null;
+  attemptId: string | null;
 }
 
 const initialState: QuizState = {
@@ -37,27 +37,23 @@ const initialState: QuizState = {
   selectedOption: null,
   isFinished: false,
   startedAt: null,
+  attemptId: null,
 };
 
 const quizSlice = createSlice({
   name: 'quiz',
   initialState,
   reducers: {
-    startQuiz(state, action: PayloadAction<{ quiz: { id: string; title: string }; questions: any[] }>) {
+    startQuiz(state, action: PayloadAction<{ quiz: { id: string; title: string }; questions: any[]; attemptId?: string }>) {
       state.currentQuiz = action.payload.quiz;
+      state.attemptId = action.payload.attemptId || null;
       
-      // Перемешиваем вопросы
-      const shuffledQuestions = shuffle(action.payload.questions);
-      
-      state.questions = shuffledQuestions.map((q: any) => ({
+      // Сервер прислал готовые зашафленные вопросы с зашафленными вариантами ответов
+      state.questions = (action.payload.questions || []).map((q: any) => ({
         id: q.id,
         text: q.text,
-        // Перемешиваем варианты внутри вопроса
-        // ФИКС: вместо crypto.randomUUID() используем текст как ID
-        options: shuffle(q.options.map((o: any) => 
-          typeof o === 'string' ? { id: o, text: o } : o
-        )),
-        correctOptionId: q.correct_option_id || q.correctOptionId || '',
+        options: q.options || [],
+        correctOptionId: q.correctOptionId || q.correct_option_id || '',
         explanation: q.explanation || '',
       }));
       
@@ -67,6 +63,42 @@ const quizSlice = createSlice({
       state.isFinished = false;
       state.startedAt = new Date().toISOString();
     },
+
+    resumeQuizFromServer(
+      state, 
+      action: PayloadAction<{ 
+        quiz: { id: string; title: string }; 
+        questions: any[]; 
+        answers: UserAnswer[]; 
+        currentIndex: number;
+        attemptId: string;
+        startedAt: string;
+      }>
+    ) {
+      state.currentQuiz = action.payload.quiz;
+      state.attemptId = action.payload.attemptId;
+      state.answers = action.payload.answers || [];
+      
+      // Вопросы восстанавливаются строго в сохраненном порядке
+      state.questions = (action.payload.questions || []).map((q: any) => ({
+        id: q.id,
+        text: q.text,
+        options: q.options || [],
+        correctOptionId: q.correctOptionId || q.correct_option_id || '',
+        explanation: q.explanation || '',
+      }));
+
+      const targetIndex = action.payload.currentIndex;
+      state.currentIndex = targetIndex < state.questions.length ? targetIndex : state.questions.length - 1;
+      
+      const currentQuestionId = state.questions[state.currentIndex]?.id;
+      const existingAnswer = state.answers.find(a => a.questionId === currentQuestionId);
+      state.selectedOption = existingAnswer?.selectedOptionId || null;
+      
+      state.isFinished = false;
+      state.startedAt = action.payload.startedAt;
+    },
+
     selectOption(state, action: PayloadAction<string>) {
       state.selectedOption = action.payload;
     },
@@ -137,7 +169,7 @@ export const selectScore = (state: RootState) => {
 
 export const selectProgress = (state: RootState) => {
   const { currentIndex, questions } = state.quiz;
-  return (currentIndex + 1) / questions.length;
+  return questions.length > 0 ? (currentIndex + 1) / questions.length : 0;
 };
 
 export const selectIsConfirmed = (state: RootState) => {
@@ -148,5 +180,16 @@ export const selectIsConfirmed = (state: RootState) => {
 
 export const selectSelectedOption = (state: RootState) => state.quiz.selectedOption;
 
-export const { startQuiz, selectOption, confirmAnswer, nextQuestion, previousQuestion, finishQuiz, resetQuiz, goToQuestion } = quizSlice.actions;
+export const { 
+  startQuiz, 
+  resumeQuizFromServer, 
+  selectOption, 
+  confirmAnswer, 
+  nextQuestion, 
+  previousQuestion, 
+  finishQuiz, 
+  resetQuiz, 
+  goToQuestion 
+} = quizSlice.actions;
+
 export default quizSlice.reducer;

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // src/components/quiz/QuizContent.tsx — ЧАСТЬ 1 из 2
 
 'use client';

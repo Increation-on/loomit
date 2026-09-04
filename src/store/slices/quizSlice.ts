@@ -44,19 +44,42 @@ const quizSlice = createSlice({
   name: 'quiz',
   initialState,
   reducers: {
-    startQuiz(state, action: PayloadAction<{ quiz: { id: string; title: string }; questions: any[]; attemptId?: string }>) {
+    startQuiz(
+      state,
+      action: PayloadAction<{
+        quiz: { id: string; title: string };
+        questions: any[];
+        attemptId?: string;
+      }>
+    ) {
       state.currentQuiz = action.payload.quiz;
       state.attemptId = action.payload.attemptId || null;
-      
-      // Сервер прислал готовые зашафленные вопросы с зашафленными вариантами ответов
-      state.questions = (action.payload.questions || []).map((q: any) => ({
-        id: q.id,
-        text: q.text,
-        options: q.options || [],
-        correctOptionId: q.correctOptionId || q.correct_option_id || '',
-        explanation: q.explanation || '',
-      }));
-      
+
+      state.questions = (action.payload.questions || []).map((q: any) => {
+        // ✅ Нормализуем options (если строка — парсим, если массив — оставляем)
+        let options = q.options;
+        if (typeof options === 'string') {
+          try {
+            options = JSON.parse(options);
+          } catch (e) {
+            options = [];
+          }
+        }
+        if (!Array.isArray(options)) {
+          options = [];
+        }
+
+        return {
+          id: q.id,
+          text: q.text,
+          options: options.map((opt: any, idx: number) =>
+            typeof opt === 'string' ? { id: String(idx + 1), text: opt } : opt
+          ),
+          correctOptionId: q.correct_option_id || q.correctOptionId || '',
+          explanation: q.explanation || '',
+        };
+      });
+
       state.answers = [];
       state.currentIndex = 0;
       state.selectedOption = null;
@@ -65,11 +88,11 @@ const quizSlice = createSlice({
     },
 
     resumeQuizFromServer(
-      state, 
-      action: PayloadAction<{ 
-        quiz: { id: string; title: string }; 
-        questions: any[]; 
-        answers: UserAnswer[]; 
+      state,
+      action: PayloadAction<{
+        quiz: { id: string; title: string };
+        questions: any[];
+        answers: UserAnswer[];
         currentIndex: number;
         attemptId: string;
         startedAt: string;
@@ -78,7 +101,7 @@ const quizSlice = createSlice({
       state.currentQuiz = action.payload.quiz;
       state.attemptId = action.payload.attemptId;
       state.answers = action.payload.answers || [];
-      
+
       // Вопросы восстанавливаются строго в сохраненном порядке
       state.questions = (action.payload.questions || []).map((q: any) => ({
         id: q.id,
@@ -89,12 +112,13 @@ const quizSlice = createSlice({
       }));
 
       const targetIndex = action.payload.currentIndex;
-      state.currentIndex = targetIndex < state.questions.length ? targetIndex : state.questions.length - 1;
-      
+      state.currentIndex =
+        targetIndex < state.questions.length ? targetIndex : state.questions.length - 1;
+
       const currentQuestionId = state.questions[state.currentIndex]?.id;
-      const existingAnswer = state.answers.find(a => a.questionId === currentQuestionId);
+      const existingAnswer = state.answers.find((a) => a.questionId === currentQuestionId);
       state.selectedOption = existingAnswer?.selectedOptionId || null;
-      
+
       state.isFinished = false;
       state.startedAt = action.payload.startedAt;
     },
@@ -108,7 +132,7 @@ const quizSlice = createSlice({
       if (!question || !selectedOption) return;
 
       const isCorrect = question.correctOptionId === selectedOption;
-      const existing = state.answers.find(a => a.questionId === question.id);
+      const existing = state.answers.find((a) => a.questionId === question.id);
       if (existing) {
         existing.selectedOptionId = selectedOption;
         existing.isCorrect = isCorrect;
@@ -133,7 +157,9 @@ const quizSlice = createSlice({
     previousQuestion(state) {
       if (state.currentIndex > 0) {
         state.currentIndex--;
-        const prevAnswer = state.answers.find(a => a.questionId === state.questions[state.currentIndex]?.id);
+        const prevAnswer = state.answers.find(
+          (a) => a.questionId === state.questions[state.currentIndex]?.id
+        );
         state.selectedOption = prevAnswer?.selectedOptionId || null;
       }
     },
@@ -144,7 +170,7 @@ const quizSlice = createSlice({
       const index = action.payload;
       if (index >= 0 && index < state.questions.length) {
         state.currentIndex = index;
-        const answer = state.answers.find(a => a.questionId === state.questions[index]?.id);
+        const answer = state.answers.find((a) => a.questionId === state.questions[index]?.id);
         state.selectedOption = answer?.selectedOptionId || null;
       }
     },
@@ -164,7 +190,7 @@ export const selectCurrentQuestion = (state: RootState) => {
 
 export const selectScore = (state: RootState) => {
   const { answers } = state.quiz;
-  return answers.filter(a => a.isCorrect).length;
+  return answers.filter((a) => a.isCorrect).length;
 };
 
 export const selectProgress = (state: RootState) => {
@@ -175,21 +201,21 @@ export const selectProgress = (state: RootState) => {
 export const selectIsConfirmed = (state: RootState) => {
   const { answers, questions, currentIndex } = state.quiz;
   const currentQuestion = questions[currentIndex];
-  return !!answers.find(a => a.questionId === currentQuestion?.id);
+  return !!answers.find((a) => a.questionId === currentQuestion?.id);
 };
 
 export const selectSelectedOption = (state: RootState) => state.quiz.selectedOption;
 
-export const { 
-  startQuiz, 
-  resumeQuizFromServer, 
-  selectOption, 
-  confirmAnswer, 
-  nextQuestion, 
-  previousQuestion, 
-  finishQuiz, 
-  resetQuiz, 
-  goToQuestion 
+export const {
+  startQuiz,
+  resumeQuizFromServer,
+  selectOption,
+  confirmAnswer,
+  nextQuestion,
+  previousQuestion,
+  finishQuiz,
+  resetQuiz,
+  goToQuestion,
 } = quizSlice.actions;
 
 export default quizSlice.reducer;

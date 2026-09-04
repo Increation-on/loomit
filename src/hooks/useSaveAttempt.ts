@@ -6,60 +6,91 @@ export function useSaveAttempt(quizId: string) {
   const [attemptId, setAttemptId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // 1. Функция для создания новой попытки в БД (вызывается при старте квиза)
-  const startNewAttempt = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const response = await fetch('/api/attempts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quizId }),
-      });
-      const data = await response.json();
-      
-      if (data.success && data.attempt) {
-        setAttemptId(data.attempt.id);
-        return data; // Возвращаем данные попытки и зашафленные вопросы
+  const saveStep = useCallback(
+    async (
+      currentAttemptId: string | null,
+      answerData: {
+        quizId: string;
+        questionId: string;
+        selectedOptionId: string;
+        isCorrect: boolean;
+        questionText: string;
+        correctOptionId: string;
       }
-      throw new Error(data.error || 'Failed to start attempt');
-    } catch (error) {
-      console.error('Ошибка при инициализации попытки в БД:', error);
-      return null;
-    } finally {
-      setIsLoading(false);
-    }
-  }, [quizId]);
+    ) => {
+      setIsLoading(true);
 
-  // 2. Функция для сохранения ОДНОГО ответа (вызывается при клике на "Подтвердить")
-  const saveStep = useCallback(async (
-    currentAttemptId: string, 
-    answerData: {
-      questionId: string;
-      selectedOptionId: string;
-      isCorrect: boolean;
-      questionText: string;
-      correctOptionId: string;
-    }
-  ) => {
+      try {
+        // ✅ Определяем метод и URL
+        const method = currentAttemptId ? 'PATCH' : 'POST';
+        const url = currentAttemptId
+          ? `/api/attempts/${currentAttemptId}`
+          : '/api/attempts';
+
+        const response = await fetch(url, {
+          method, // ← теперь POST для создания, PATCH для обновления
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(answerData),
+        });
+
+        // Если ответ пустой — возвращаем успех
+        if (response.status === 204) {
+          return { success: true };
+        }
+
+        const text = await response.text();
+        if (!text) {
+          return { success: true };
+        }
+
+        const data = JSON.parse(text);
+
+        if (data.created && data.attempt?.id) {
+          setAttemptId(data.attempt.id);
+        }
+
+        return data;
+      } catch (error) {
+        console.error('❌ Ошибка при сохранении шага квиза:', error);
+        return null;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
+
+  const forceComplete = useCallback(async (currentAttemptId: string) => {
     if (!currentAttemptId) return;
-    
+
     try {
       const response = await fetch(`/api/attempts/${currentAttemptId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(answerData),
+        body: JSON.stringify({ forceComplete: true }),
       });
-      return await response.json();
+
+      if (response.status === 204) {
+        return { success: true };
+      }
+
+      const text = await response.text();
+      if (!text) {
+        return { success: true };
+      }
+
+      return JSON.parse(text);
     } catch (error) {
-      console.error('Ошибка при сохранении шага квиза в БД:', error);
+      console.error('❌ Ошибка при завершении попытки:', error);
+      return null;
     }
   }, []);
 
-  return { 
-    attemptId, 
-    setAttemptId, // Понадобится при возобновлении сессии
-    startNewAttempt, 
+  return {
+    attemptId,
+    setAttemptId,
     saveStep,
-    isLoading 
+    forceComplete,
+    isLoading,
   };
 }

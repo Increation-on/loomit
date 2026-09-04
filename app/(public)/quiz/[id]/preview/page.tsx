@@ -300,7 +300,7 @@ export default function QuizPreviewPage() {
               variant="outline"
               disabled={isResetting}
               onClick={handleResetOtherQuiz}
-              className="w-full py-2 text-sm text-red-500 border-red-500/30 hover:bg-red-500/10"
+              className="w-full py-2 text-sm"
             >
               {isResetting ? 'Сброс...' : 'Сбросить старый и начать этот'}
             </Button>

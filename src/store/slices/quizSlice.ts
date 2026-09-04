@@ -49,7 +49,7 @@ const quizSlice = createSlice({
       action: PayloadAction<{
         quiz: { id: string; title: string };
         questions: any[];
-        attemptId?: string;
+        attemptId?: string | null;
       }>
     ) {
       state.currentQuiz = action.payload.quiz;

@@ -27,8 +27,18 @@ export default function HomePage() {
   const [shuffledQuizzes, setShuffledQuizzes] = useState<any[]>([]);
   const [attemptStatuses, setAttemptStatuses] = useState<Record<string, any>>({});
 
+  // ✅ Перемешиваем в эффекте (чистый рендер)
+  useEffect(() => {
+    if (!quizzes || quizzes.length === 0) return;
+    const shuffled = [...quizzes].sort(() => Math.random() - 0.5).slice(0, 5);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setShuffledQuizzes(shuffled);
+  }, [quizzes]);
+
+  // ✅ Защита от повторных вызовов при монтировании
   useEffect(() => {
     if (!shuffledQuizzes.length) return;
+    let mounted = true;
     const fetchStatuses = async () => {
       const quizIds = shuffledQuizzes.map((q) => q.id);
       const res = await fetch('/api/quizzes/status', {
@@ -37,16 +47,13 @@ export default function HomePage() {
         body: JSON.stringify({ quizIds }),
       });
       const data = await res.json();
-      setAttemptStatuses(data);
+      if (mounted) {
+        setAttemptStatuses(data);
+      }
     };
     fetchStatuses();
+    return () => { mounted = false; };
   }, [shuffledQuizzes]);
-
-  useEffect(() => {
-    if (quizzes && quizzes.length > 0) {
-      setShuffledQuizzes([...quizzes].sort(() => Math.random() - 0.5).slice(0, 5));
-    }
-  }, [quizzes]);
 
   const cardWidth = useMemo(() => 160 + 16, []);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -66,12 +73,13 @@ export default function HomePage() {
     return () => el.removeEventListener('scroll', handleScroll);
   }, [shuffledQuizzes, cardWidth]);
 
+  // ⚠️ Плашка всё ещё из Redux — нужно переделать на БД
   const hasUnfinished = currentQuiz && answers.length > 0 && !isFinished;
   const isSameQuiz = currentQuiz?.id === pendingQuizId;
 
   const handleQuizClick = (quizId: string) => {
-      setQuizOrigin('/');
-      router.push(`/quiz/${quizId}/preview`);
+    setQuizOrigin('/');
+    router.push(`/quiz/${quizId}/preview`);
   };
 
   const handleStartNew = async () => {

@@ -1,9 +1,82 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+// src/app/api/attempts/[id]/route.ts
+
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+
+import { prisma } from '@/lib/prisma';
+import { shuffle } from '@/lib/utils';
+import { authOptions } from '../../auth/[...nextauth]/route';
 
 export const runtime = 'nodejs';
 
-// 1. ПОЛУЧЕНИЕ АКТИВНОЙ ПОПЫТКИ И ЕЕ ЗАШАФЛЕННЫХ ВОПРОСОВ
+// 🔹 ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ: создание попытки с первым ответом
+async function createAttemptWithFirstAnswer({
+  userId,
+  guestId,
+  quizId,
+  questionId,
+  selectedOptionId,
+  isCorrect,
+  questionText,
+  correctOptionId,
+}: any) {
+  // 1. Получаем все вопросы квиза
+  const questions = await prisma.question.findMany({
+    where: { quiz_id: quizId },
+  });
+
+  if (questions.length === 0) {
+    throw new Error('Вопросы для квиза не найдены');
+  }
+
+  // 2. Шафлим вопросы
+  const shuffledQuestions = shuffle([...questions]);
+  const shuffledIds = shuffledQuestions.map((q) => q.id);
+
+  // 3. Шафлим варианты для каждого вопроса
+  const questionsWithShuffledOptions = shuffledQuestions.map((q) => {
+    const parsedOptions = typeof q.options === 'string' ? JSON.parse(q.options) : q.options;
+    const optionsArray = Array.isArray(parsedOptions) ? parsedOptions : [];
+    const normalizedOptions = optionsArray.map((opt: any, idx: number) =>
+      typeof opt === 'string' ? { id: String(idx + 1), text: opt } : opt
+    );
+    const shuffledOptions = shuffle([...normalizedOptions]);
+    return {
+      ...q,
+      options: shuffledOptions,
+      correctOptionId: q.correct_option_id || '',
+    };
+  });
+
+  // 4. Создаём попытку
+  const attempt = await prisma.attempt.create({
+    data: {
+      user_id: userId || null,
+      guest_id: userId ? null : guestId || `guest_${Date.now()}`,
+      quiz_id: quizId,
+      score: isCorrect ? 1 : 0,
+      total_questions: questions.length,
+      answers: [
+        {
+          questionId,
+          selectedOptionId,
+          isCorrect,
+          questionText,
+          correctOptionId,
+        },
+      ],
+      question_order: shuffledIds,
+      status: 'IN_PROGRESS',
+      sync_status: 'synced',
+    },
+  });
+
+  return { attempt, questions: questionsWithShuffledOptions };
+}
+
+// ============================================================
+// 1. GET — восстановление сессии
+// ============================================================
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -11,83 +84,72 @@ export async function GET(
   try {
     const { id: attemptId } = await params;
 
-    // Ищем попытку и подтягиваем связанный квиз
     const attempt = await prisma.attempt.findUnique({
       where: { id: attemptId },
-      include: { quiz: true }
+      include: { quiz: true },
     });
 
     if (!attempt || attempt.status === 'COMPLETED') {
-      return NextResponse.json({ error: "Активная попытка не найдена" }, { status: 404 });
+      return NextResponse.json({ error: 'Активная попытка не найдена' }, { status: 404 });
     }
 
-    // Достаем ВСЕ вопросы этого квиза из базы
     const questions = await prisma.question.findMany({
       where: { quiz_id: attempt.quiz_id },
     });
 
-    // Извлекаем сохраненный при старте порядок ID
-    const orderIds = Array.isArray(attempt.question_order) 
-      ? (attempt.question_order as string[]) 
+    const orderIds = Array.isArray(attempt.question_order)
+      ? (attempt.question_order as string[])
       : [];
 
-    // Сортируем вопросы строго по сохраненному серверному порядку question_order
     const orderedQuestions = orderIds
       .map((qId) => questions.find((q) => q.id === qId))
       .filter(Boolean);
 
-    // Фолбэк на случай непредвиденных сбоев структуры
     const finalQuestions = orderedQuestions.length > 0 ? orderedQuestions : questions;
 
-    // Безопасно маппим варианты ответов для фронтенда
-       // Безопасно маппим варианты ответов для фронтенда
-    const transformedQuestions = finalQuestions.map((q) => {
-      // Так как q автоматически типизирован призмой, options имеет тип JsonValue.
-      // Приводим его к unknown, а затем проверяем, строка это или массив
-      const rawOptions = q.options as unknown;
-      const parsedOptions = typeof rawOptions === 'string' ? JSON.parse(rawOptions) : rawOptions;
+    const transformedQuestions = finalQuestions.map((q: any) => {
+      const parsedOptions = typeof q.options === 'string' ? JSON.parse(q.options) : q.options;
       const optionsArray = Array.isArray(parsedOptions) ? parsedOptions : [];
-      
-      const options = optionsArray.map((opt: unknown, idx: number) => 
-        typeof opt === 'string' ? { id: String(idx + 1), text: opt } : (opt as { id: string; text: string })
+      const options = optionsArray.map((opt: any, idx: number) =>
+        typeof opt === 'string' ? { id: String(idx + 1), text: opt } : opt
       );
-
       return {
-        id: q.id,
-        text: q.text,
+        ...q,
         options,
-        correctOptionId: q.correct_option_id,
-        explanation: q.explanation,
-        order: q.order,
-        quiz_id: q.quiz_id,
+        correctOptionId: q.correct_option_id || q.correctOptionId || '',
       };
     });
 
-
     const answersArray = Array.isArray(attempt.answers) ? attempt.answers : [];
 
-    return NextResponse.json({
-      success: true,
-      attempt: {
-        id: attempt.id,
-        quizId: attempt.quiz_id,
-        title: attempt.quiz.title,
-        answers: answersArray,
-        currentIndex: answersArray.length, // индекс — это количество отвеченных вопросов
-        startedAt: attempt.created_at.toISOString(),
+    return NextResponse.json(
+      {
+        success: true,
+        attempt: {
+          id: attempt.id,
+          quizId: attempt.quiz_id,
+          title: attempt.quiz.title,
+          answers: answersArray,
+          currentIndex: answersArray.length > 0 ? answersArray.length : 0,
+          startedAt: attempt.created_at.toISOString(),
+        },
+        questions: transformedQuestions,
       },
-      questions: transformedQuestions,
-    }, {
-      headers: { 'Cache-Control': 'no-store, max-age=0, must-revalidate' }
-    });
-
+      {
+        headers: {
+          'Cache-Control': 'no-store, max-age=0, must-revalidate',
+        },
+      }
+    );
   } catch (error) {
-    console.error("Fetch active attempt error:", error);
-    return NextResponse.json({ error: "Failed to fetch attempt" }, { status: 500 });
+    console.error('❌ Fetch active attempt error:', error);
+    return NextResponse.json({ error: 'Failed to fetch attempt' }, { status: 500 });
   }
 }
 
-// 2. СОХРАНЕНИЕ ШАГА КВИЗА
+// ============================================================
+// 2. PATCH — сохранение ответа (или создание + сохранение)
+// ============================================================
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -95,22 +157,81 @@ export async function PATCH(
   try {
     const { id: attemptId } = await params;
     const body = await request.json();
+
     const {
       questionId,
       selectedOptionId,
       isCorrect,
       questionText,
       correctOptionId,
+      forceComplete,
+      quizId, // ← добавляем quizId для создания
     } = body;
 
-    const attempt = await prisma.attempt.findUnique({
+    // ============================================================
+    // СЦЕНАРИЙ А: Принудительный сброс черновика
+    // ============================================================
+    if (forceComplete) {
+      const updatedAttempt = await prisma.attempt.update({
+        where: { id: attemptId },
+        data: { status: 'COMPLETED' },
+      });
+      return NextResponse.json({ success: true, attempt: updatedAttempt });
+    }
+
+    // ============================================================
+    // СЦЕНАРИЙ Б: Проверяем, существует ли попытка
+    // ============================================================
+    let attempt = await prisma.attempt.findUnique({
       where: { id: attemptId },
     });
 
+    // ============================================================
+    // Если попытки нет — создаём с первым ответом
+    // ============================================================
     if (!attempt) {
-      return NextResponse.json({ error: "Попытка не найдена" }, { status: 404 });
+      if (!quizId || !questionId || !selectedOptionId) {
+        return NextResponse.json(
+          { error: 'Не хватает данных для создания попытки' },
+          { status: 400 }
+        );
+      }
+
+      const session = await getServerSession(authOptions);
+      const userId = session?.user?.id;
+
+      const result = await createAttemptWithFirstAnswer({
+        userId,
+        guestId: userId ? null : `guest_${Date.now()}`,
+        quizId,
+        questionId,
+        selectedOptionId,
+        isCorrect,
+        questionText,
+        correctOptionId,
+      });
+
+      attempt = result.attempt;
+
+      // Возвращаем созданную попытку + зашафленные вопросы
+      return NextResponse.json({
+        success: true,
+        attempt: {
+          id: attempt.id,
+          quizId: attempt.quiz_id,
+          title: '',
+          answers: attempt.answers,
+          currentIndex: (attempt.answers as any[]).length,
+          startedAt: attempt.created_at.toISOString(),
+        },
+        questions: result.questions,
+        created: true, // флаг, что попытка создана
+      });
     }
 
+    // ============================================================
+    // СЦЕНАРИЙ В: Попытка существует — обновляем
+    // ============================================================
     const currentAnswers = (attempt.answers as any[]) || [];
     const existingAnswerIndex = currentAnswers.findIndex((a) => a.questionId === questionId);
 
@@ -136,13 +257,13 @@ export async function PATCH(
       data: {
         answers: currentAnswers,
         score: newScore,
-        status: isFinished ? "COMPLETED" : "IN_PROGRESS",
+        status: isFinished ? 'COMPLETED' : 'IN_PROGRESS',
       },
     });
 
-    return NextResponse.json({ success: true, attempt: updatedAttempt });
+    return NextResponse.json({ success: true, attempt: updatedAttempt, created: false });
   } catch (error) {
-    console.error("Save step attempt error:", error);
-    return NextResponse.json({ error: "Failed to save answer" }, { status: 500 });
+    console.error('❌ Save step attempt error:', error);
+    return NextResponse.json({ error: 'Failed to save answer' }, { status: 500 });
   }
 }

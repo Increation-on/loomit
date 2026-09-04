@@ -1,9 +1,12 @@
+// app/api/quizzes/[id]/route.ts
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../auth/[...nextauth]/route'; // ⚠️ Если возникнет ошибка импорта, проверь этот путь до твоих authOptions
 import { prisma } from '@/lib/prisma';
+import { authOptions } from '../../auth/[...nextauth]/route';
+
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function GET(
   request: Request,
@@ -12,8 +15,8 @@ export async function GET(
   try {
     const { id: quizId } = await params;
     const session = await getServerSession(authOptions);
+    const userId = session?.user?.id;
 
-    // 1. Получаем квиз, категорию и дефолтные вопросы
     const quiz = await prisma.quiz.findUnique({
       where: { id: quizId },
       include: {
@@ -27,7 +30,6 @@ export async function GET(
             explanation: true,
             order: true,
           },
-          orderBy: { order: 'asc' },
         },
       },
     });
@@ -36,56 +38,52 @@ export async function GET(
       return NextResponse.json({ error: 'Quiz not found' }, { status: 404 });
     }
 
-    // Трансформируем дефолтные варианты ответов (для новых стартов)
-    const transformedQuestions = quiz.questions.map((q) => {
-      const parsed = typeof q.options === 'string' ? JSON.parse(q.options) : q.options;
-      const optionsArray = Array.isArray(parsed) ? parsed : [];
-
-      const options = optionsArray.map((opt: any, idx: number) => {
-        if (typeof opt === 'string') {
-          return { id: String(idx + 1), text: opt };
-        }
-        return opt;
-      });
-
-      return {
-        ...q,
-        options,
-        correctOptionId: q.correct_option_id || '',
-      };
-    });
-
-    // 2. Ищем активную незавершенную попытку для этого юзера в БД
     let activeAttemptId = null;
-    if (session?.user?.id) {
-      const activeAttempt = await prisma.attempt.findFirst({
-        where: {
-          quiz_id: quizId,
-          user_id: session.user.id,
-          status: 'IN_PROGRESS',
-        },
+    let otherAttempt = null;
+
+    if (userId) {
+      const allActiveAttempts = await prisma.attempt.findMany({
+        where: { user_id: userId, status: 'IN_PROGRESS' },
+        include: { quiz: { select: { title: true } } },
         orderBy: { created_at: 'desc' },
-        select: { id: true },
       });
-      
-      activeAttemptId = activeAttempt?.id || null;
+
+      if (allActiveAttempts.length > 0) {
+        const globalActiveAttempt = allActiveAttempts[0];
+
+        if (globalActiveAttempt.quiz_id === quizId) {
+          activeAttemptId = globalActiveAttempt.id;
+        } else {
+          otherAttempt = {
+            id: globalActiveAttempt.id,
+            quizId: globalActiveAttempt.quiz_id,
+            quizTitle: globalActiveAttempt.quiz.title,
+          };
+        }
+      }
     }
 
-    // 3. Возвращаем всё одним ответом без кэширования Next.js
-    return NextResponse.json({
-      id: quiz.id,
-      title: quiz.title,
-      description: quiz.description,
-      category: quiz.category,
-      level: quiz.level,
-      questions: transformedQuestions, 
-      activeAttemptId, // Фронтенд сразу узнает, есть ли черновик в БД
-    }, {
-      headers: { 'Cache-Control': 'no-store, max-age=0, must-revalidate' }
-    });
-
+    return NextResponse.json(
+      {
+        id: quiz.id,
+        title: quiz.title,
+        description: quiz.description,
+        category: quiz.category,
+        level: quiz.level,
+        questions: quiz.questions,
+        activeAttemptId,
+        otherAttempt,
+      },
+      {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          Pragma: 'no-cache',
+          Expires: '0',
+        },
+      }
+    );
   } catch (error) {
-    console.error('API Error:', error);
+    console.error('[BG-GET] Ошибка API:', error);
     return NextResponse.json({ error: String(error) }, { status: 500 });
   }
 }

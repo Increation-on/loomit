@@ -1,4 +1,4 @@
-// src/components/quiz/QuizContent.tsx — ЧАСТЬ 1 из 2
+// src/components/quiz/QuizContent.tsx — ФИНАЛЬНАЯ ВЕРСИЯ
 
 'use client';
 
@@ -15,6 +15,7 @@ import {
   confirmAnswer,
   nextQuestion,
   finishQuiz,
+  selectQuestionOrder,
 } from '@/store/slices/quizSlice';
 import { useEffect, useRef, useState } from 'react';
 import { persistor } from '@/store/store';
@@ -36,25 +37,32 @@ export function QuizContent({ id }: { id: string }) {
   const currentQuestion = useSelector(selectCurrentQuestion);
   const score = useSelector(selectScore);
   const selectedOption = useSelector(selectSelectedOption);
-  const { questions, answers, currentIndex, isFinished, currentQuiz, attemptId: reduxAttemptId } = useSelector(selectQuizState);
-  
-  // Добавили refetchQuiz для принудительного обновления кэша RTK Query
-  const { data: quizData, isLoading: quizLoading, isFetching, refetch: refetchQuiz } = useGetQuizByIdQuery(id);
+  const { questions, answers, currentIndex, isFinished, currentQuiz, attemptId: reduxAttemptId } =
+    useSelector(selectQuizState);
+  const questionOrder = useSelector(selectQuestionOrder);
+
+  const {
+    data: quizData,
+    isLoading: quizLoading,
+    isFetching,
+    refetch: refetchQuiz,
+  } = useGetQuizByIdQuery(id);
   const { data: session } = useSession();
   const { data: favorites = [] } = useGetFavoritesQuery(undefined, { skip: !session });
   const [toggleFavorite] = useToggleFavoriteMutation();
   const { redirecting, setRedirecting } = useQuizNavigation();
-  
-  const { attemptId, setAttemptId, startNewAttempt, saveStep } = useSaveAttempt(id);
+
+  const { attemptId, setAttemptId, saveStep } = useSaveAttempt(id);
   const hideNavigation = usePWA();
-  
+
   const [isSessionLoading, setIsSessionLoading] = useState(true);
   const [selectedExplanation, setSelectedExplanation] = useState<string | null>(null);
   const [resetCounter, setResetCounter] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false); // ← защита от двойного нажатия
 
-  // Реф для защиты от двойных асинхронных запросов в StrictMode
   const isInitializingRef = useRef(false);
 
+  // Блокировка скролла в PWA
   useEffect(() => {
     if (hideNavigation) {
       document.body.style.overflow = 'hidden';
@@ -69,6 +77,7 @@ export function QuizContent({ id }: { id: string }) {
     [favorites]
   );
 
+  // Сброс стора при смене квиза
   useEffect(() => {
     if (currentQuiz && currentQuiz.id && currentQuiz.id !== id) {
       persistor.purge();
@@ -76,73 +85,104 @@ export function QuizContent({ id }: { id: string }) {
     }
   }, [id, currentQuiz, dispatch]);
 
-  // Сбрасываем старый кэш при монтировании компонента, чтобы забрать activeAttemptId из БД
+  // ============================================================
+  // ИНИЦИАЛИЗАЦИЯ (объединённая)
+  // ============================================================
   useEffect(() => {
-    refetchQuiz();
-  }, [id, refetchQuiz]);
-
-  // Эффект инициализации сессии (Абсолютный источник правды — БД)
-  useEffect(() => {
-    if (!quizData || isInitializingRef.current) return;
+    if (isInitializingRef.current) return;
 
     const initializeQuiz = async () => {
       isInitializingRef.current = true;
       setIsSessionLoading(true);
 
-      const shouldResume = quizData.activeAttemptId && resetCounter === 0;
+      try {
+        const freshData = await refetchQuiz().unwrap();
 
-      if (shouldResume) {
-        try {
-          const res = await fetch(`/api/attempts/${quizData.activeAttemptId}`, {
-            cache: 'no-store'
-          });
-          const data = await res.json();
+        if (!freshData) {
+          setIsSessionLoading(false);
+          isInitializingRef.current = false;
+          return;
+        }
 
-          if (data.success && data.attempt) {
-            setAttemptId(data.attempt.id);
-            dispatch(resumeQuizFromServer({
-              quiz: { id: data.attempt.quizId, title: data.attempt.title },
-              questions: data.questions,
-              answers: data.attempt.answers,
-              currentIndex: data.attempt.currentIndex,
-              attemptId: data.attempt.id,
-              startedAt: data.attempt.startedAt,
-            }));
+        // 🔹 Восстановление сессии
+        if (freshData.activeAttemptId && resetCounter === 0) {
+          try {
+            const res = await fetch(`/api/attempts/${freshData.activeAttemptId}`, {
+              cache: 'no-store',
+            });
+            const data = await res.json();
+
+            if (data.success && data.attempt) {
+              if (data.attempt.status === 'COMPLETED') {
+                setAttemptId(null);
+                dispatch(resetQuiz());
+                setIsSessionLoading(false);
+                isInitializingRef.current = false;
+                return;
+              }
+
+              setAttemptId(data.attempt.id);
+              dispatch(
+                resumeQuizFromServer({
+                  quiz: { id: data.attempt.quizId, title: data.attempt.title },
+                  questions: data.questions,
+                  answers: data.attempt.answers,
+                  currentIndex: data.attempt.currentIndex,
+                  attemptId: data.attempt.id,
+                  startedAt: data.attempt.startedAt,
+                  questionOrder: data.attempt.questionOrder || [],
+                })
+              );
+              setIsSessionLoading(false);
+              isInitializingRef.current = false;
+              return;
+            }
+          } catch (error) {
+            console.error('❌ Ошибка восстановления попытки:', error);
             setIsSessionLoading(false);
             isInitializingRef.current = false;
-            return;
           }
-        } catch (e) {
-          console.error('Не удалось восстановить попытку с сервера, стартуем новую:', e);
         }
-      }
 
-      try {
-        const startData = await startNewAttempt();
-        if (startData?.success && startData?.attempt && startData?.questions) {
-          setAttemptId(startData.attempt.id);
-          dispatch(startQuiz({
-            quiz: { id: quizData.id, title: quizData.title },
-            questions: startData.questions,
-            attemptId: startData.attempt.id,
-          }));
+        // 🔹 Если нет активной попытки — показываем вопросы
+        if (!freshData.activeAttemptId) {
+          dispatch(
+            startQuiz({
+              quiz: { id: freshData.id, title: freshData.title },
+              questions: freshData.questions,
+              attemptId: null,
+            })
+          );
+          setIsSessionLoading(false);
+          isInitializingRef.current = false;
+          return;
         }
-      } catch (err) {
-        console.error('Ошибка инициализации новой попытки:', err);
-      } finally {
+
+        setIsSessionLoading(false);
+        isInitializingRef.current = false;
+      } catch (error) {
+        console.error('❌ Ошибка инициализации квиза:', error);
         setIsSessionLoading(false);
         isInitializingRef.current = false;
       }
     };
 
     initializeQuiz();
-  }, [quizData, id, dispatch, startNewAttempt, setAttemptId, resetCounter]);
+  }, [id, dispatch, setAttemptId, resetCounter, refetchQuiz]);
 
-  const handleConfirmAnswer = async () => {
-    if (!currentQuestion || !selectedOption) return;
+  // ============================================================
+  // ПОДТВЕРЖДЕНИЕ ОТВЕТА 
+// ============================================================
+const handleConfirmAnswer = async () => {
+  if (isSubmitting || !currentQuestion || !selectedOption) return;
+  setIsSubmitting(true);
 
+  try {
     const isCorrect = currentQuestion.correctOptionId === selectedOption;
-    const answerData = {
+    const currentActiveId = attemptId || reduxAttemptId;
+
+    const answerData: any = {
+      quizId: id,
       questionId: currentQuestion.id,
       selectedOptionId: selectedOption,
       isCorrect,
@@ -150,16 +190,32 @@ export function QuizContent({ id }: { id: string }) {
       correctOptionId: currentQuestion.correctOptionId,
     };
 
-    dispatch(confirmAnswer());
-
-    const currentActiveId = attemptId || reduxAttemptId;
-    if (currentActiveId) {
-      await saveStep(currentActiveId, answerData);
+    if (!currentActiveId) {
+      answerData.questionOrder = questionOrder;
     }
-  };
 
+    const result = await saveStep(currentActiveId, answerData);
 
+    if (result?.attempt?.id) {
+      setAttemptId(result.attempt.id);
+    }
+    // ✅ Обновляем Redux (confirmAnswer)
+    dispatch(confirmAnswer());
+  } catch (error) {
+    console.error('❌ Ошибка сохранения ответа:', error);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
+  // ============================================================
+  // ФИНИШ
+  // ============================================================
   if (isFinished) {
+    const finalAttemptId = attemptId || reduxAttemptId;
+    if (!finalAttemptId) {
+      return <QuizSkeleton />;
+    }
     return (
       <QuizFinishScreen
         id={id}
@@ -171,11 +227,18 @@ export function QuizContent({ id }: { id: string }) {
           toggleFavorite({ quizId, quiz }).unwrap()
         }
         onReset={async () => {
+          if (attemptId) {
+            await fetch(`/api/attempts/${attemptId}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ forceComplete: true }),
+            });
+          }
           setIsSessionLoading(true);
           dispatch(resetQuiz());
           setAttemptId(null);
           isInitializingRef.current = false;
-          setResetCounter(prev => prev + 1);
+          setResetCounter((prev) => prev + 1);
           await refetchQuiz();
         }}
         onRedirect={() => setRedirecting(true)}
@@ -184,11 +247,14 @@ export function QuizContent({ id }: { id: string }) {
     );
   }
 
+  // ============================================================
+  // ЗАГРУЗКА
+  // ============================================================
   if (quizLoading || isSessionLoading || !currentQuestion || isFetching) {
     return <QuizSkeleton />;
   }
 
-  const currentAnswer = answers.find(a => a.questionId === currentQuestion.id);
+  const currentAnswer = answers.find((a) => a.questionId === currentQuestion.id);
   const isCurrentConfirmed = !!currentAnswer;
   const optionLetters = ['A', 'B', 'C', 'D'];
   const hasExplanation = currentQuestion?.explanation ?? false;
@@ -201,8 +267,15 @@ export function QuizContent({ id }: { id: string }) {
     );
   }
 
+  // ============================================================
+  // РЕНДЕР
+  // ============================================================
   return (
-    <div className={`min-h-screen bg-(--loom-black) pb-24 flex flex-col items-center mx-auto overflow-hidden ${hideNavigation ? 'pt-10' : 'pt-16'}`}>
+    <div
+      className={`min-h-screen bg-(--loom-black) pb-24 flex flex-col items-center mx-auto overflow-hidden ${
+        hideNavigation ? 'pt-10' : 'pt-16'
+      }`}
+    >
       <div className="w-full max-w-2xl px-4 mb-6">
         {currentQuiz && (
           <div className="flex items-center justify-center gap-3 mb-2">
@@ -220,7 +293,9 @@ export function QuizContent({ id }: { id: string }) {
         )}
 
         <div className="flex items-center gap-4 text-(--loom-white)/60 text-sm mb-2">
-          <span className="whitespace-nowrap">Вопрос {currentIndex + 1} из {questions.length}</span>
+          <span className="whitespace-nowrap">
+            Вопрос {currentIndex + 1} из {questions.length}
+          </span>
           <div className="flex-1 h-1 bg-(--loom-white)/10 rounded-full overflow-hidden min-w-10">
             <div
               className="h-full bg-(--loom-cyan) transition-all duration-300"
@@ -247,6 +322,7 @@ export function QuizContent({ id }: { id: string }) {
           total={questions.length}
           optionLetters={optionLetters}
           isPWA={hideNavigation}
+          isSubmitting={isSubmitting} // ← передаём состояние в кнопку
         />
       </div>
 
@@ -265,12 +341,9 @@ export function QuizContent({ id }: { id: string }) {
           onClose={() => setSelectedExplanation(null)}
           title="Объяснение"
         >
-          <p className="text-(--loom-white)/80 leading-relaxed">
-            {selectedExplanation}
-          </p>
+          <p className="text-(--loom-white)/80 leading-relaxed">{selectedExplanation}</p>
         </Modal>
       )}
     </div>
   );
 }
-

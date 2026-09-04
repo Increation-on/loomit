@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
-import { authOptions } from 'app/api/auth/[...nextauth]/route';
+import { authOptions } from '../../auth/[...nextauth]/route';
+
 
 // ✅ GET — публичный (не требует авторизации)
 export async function GET() {

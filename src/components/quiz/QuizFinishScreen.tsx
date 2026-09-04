@@ -3,6 +3,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { Button } from '@/components/ui/core/Button';
 import { StarButton } from '@/components/ui/core/StarButton';
 import { useNavigationTransition } from '../layout/NavigationProvider';
@@ -33,9 +34,23 @@ export function QuizFinishScreen({
   const router = useRouter();
   const { setAttemptReturnTo } = useNavigationTransition();
 
+  // Принудительно закрываем попытку при монтировании
+  useEffect(() => {
+    if (attemptId) {
+      fetch(`/api/attempts/${attemptId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ forceComplete: true }),
+      }).catch((err) => console.error('❌ Ошибка завершения попытки:', err));
+    }
+  }, [attemptId]);
+
   return (
     <div className="min-h-screen bg-(--loom-black) flex flex-col items-center justify-center p-6 text-center space-y-6 -mt-18">
-      <h2 className="text-4xl font-bold text-(--loom-yellow) glitch-text" data-text="Квиз завершён! mt-">
+      <h2
+        className="text-4xl font-bold text-(--loom-yellow) glitch-text"
+        data-text="Квиз завершён! mt-"
+      >
         Квиз завершён!
       </h2>
 

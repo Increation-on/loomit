@@ -1,24 +1,41 @@
 // src/app/api/attempts/route.ts
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../auth/[...nextauth]/route';
 import { prisma } from '@/lib/prisma';
-import { shuffle } from '@/lib/utils';
+import { authOptions } from '../auth/[...nextauth]/route';
 
 export const runtime = 'nodejs';
 
-// 🔹 НОВЫЙ ЭНДПОЙНТ: создание попытки + первый ответ
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
     const body = await request.json();
-    const { quizId, questionId, selectedOptionId, isCorrect, questionText, correctOptionId } = body;
+    const {
+      quizId,
+      questionId,
+      selectedOptionId,
+      isCorrect,
+      questionText,
+      correctOptionId,
+      questionOrder, // ← принимаем порядок от клиента
+    } = body;
 
     if (!quizId || !questionId || !selectedOptionId) {
       return NextResponse.json(
         { error: 'Не хватает данных для создания попытки' },
         { status: 400 }
       );
+    }
+
+    // Закрываем все старые IN_PROGRESS попытки
+    if (session?.user?.id) {
+      await prisma.attempt.updateMany({
+        where: {
+          user_id: session.user.id,
+          status: 'IN_PROGRESS',
+        },
+        data: { status: 'COMPLETED' },
+      });
     }
 
     // 1. Получаем все вопросы квиза
@@ -30,26 +47,36 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Вопросы для квиза не найдены' }, { status: 404 });
     }
 
-    // 2. Шафлим вопросы
-    const shuffledQuestions = shuffle([...questions]);
-    const shuffledIds = shuffledQuestions.map((q) => q.id);
+    // 2. Строим карту вопросов по ID
+    const questionsMap = Object.fromEntries(questions.map((q) => [q.id, q]));
 
-    // 3. Шафлим варианты для каждого вопроса
-    const questionsWithShuffledOptions = shuffledQuestions.map((q) => {
+    // 3. Определяем порядок вопросов
+    //    - Если передан questionOrder — используем его
+    //    - Иначе — используем порядок из БД (как есть)
+    const orderIds = questionOrder && Array.isArray(questionOrder) && questionOrder.length > 0
+      ? questionOrder
+      : questions.map((q) => q.id);
+
+    // 4. Получаем вопросы в нужном порядке
+    const orderedQuestions = orderIds
+      .map((id: string) => questionsMap[id])
+      .filter(Boolean);
+
+    // 5. Формируем вопросы с опциями (без шафла, только нормализация)
+    const questionsWithOptions = orderedQuestions.map((q) => {
       const parsedOptions = typeof q.options === 'string' ? JSON.parse(q.options) : q.options;
       const optionsArray = Array.isArray(parsedOptions) ? parsedOptions : [];
       const normalizedOptions = optionsArray.map((opt: unknown, idx: number) =>
         typeof opt === 'string' ? { id: String(idx + 1), text: opt } : opt
       );
-      const shuffledOptions = shuffle([...normalizedOptions]);
       return {
         ...q,
-        options: shuffledOptions,
+        options: normalizedOptions,
         correctOptionId: q.correct_option_id || '',
       };
     });
 
-    // 4. Создаём попытку
+    // 6. Создаём попытку
     const attempt = await prisma.attempt.create({
       data: {
         user_id: session?.user?.id || null,
@@ -66,13 +93,13 @@ export async function POST(request: Request) {
             correctOptionId,
           },
         ],
-        question_order: shuffledIds,
+        question_order: orderIds, // ← сохраняем переданный порядок
         status: 'IN_PROGRESS',
         sync_status: 'synced',
       },
     });
 
-    // 5. Возвращаем созданную попытку и зашафленные вопросы
+    // 7. Возвращаем созданную попытку и вопросы
     return NextResponse.json(
       {
         success: true,
@@ -84,7 +111,7 @@ export async function POST(request: Request) {
           currentIndex: 1,
           startedAt: attempt.created_at.toISOString(),
         },
-        questions: questionsWithShuffledOptions,
+        questions: questionsWithOptions,
       },
       {
         headers: {

@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../store';
+import { shuffle } from '@/lib/utils'; // ← добавить импорт
 
 export interface UserAnswer {
   questionId: string;
@@ -27,6 +28,7 @@ interface QuizState {
   isFinished: boolean;
   startedAt: string | null;
   attemptId: string | null;
+  questionOrder: string[];
 }
 
 const initialState: QuizState = {
@@ -38,6 +40,7 @@ const initialState: QuizState = {
   isFinished: false,
   startedAt: null,
   attemptId: null,
+  questionOrder: [],
 };
 
 const quizSlice = createSlice({
@@ -55,13 +58,13 @@ const quizSlice = createSlice({
       state.currentQuiz = action.payload.quiz;
       state.attemptId = action.payload.attemptId || null;
 
-      state.questions = (action.payload.questions || []).map((q: any) => {
-        // ✅ Нормализуем options (если строка — парсим, если массив — оставляем)
+      // Нормализуем вопросы
+      const normalizedQuestions = (action.payload.questions || []).map((q: any) => {
         let options = q.options;
         if (typeof options === 'string') {
           try {
             options = JSON.parse(options);
-          } catch (e) {
+          } catch {
             options = [];
           }
         }
@@ -80,6 +83,11 @@ const quizSlice = createSlice({
         };
       });
 
+      // ✅ Шафлим вопросы на клиенте и сохраняем порядок
+      const shuffled = shuffle([...normalizedQuestions]);
+      state.questions = shuffled;
+      state.questionOrder = shuffled.map(q => q.id);
+
       state.answers = [];
       state.currentIndex = 0;
       state.selectedOption = null;
@@ -96,13 +104,14 @@ const quizSlice = createSlice({
         currentIndex: number;
         attemptId: string;
         startedAt: string;
+        questionOrder?: string[]; // ← добавить
       }>
     ) {
       state.currentQuiz = action.payload.quiz;
       state.attemptId = action.payload.attemptId;
       state.answers = action.payload.answers || [];
+      state.questionOrder = action.payload.questionOrder || [];
 
-      // Вопросы восстанавливаются строго в сохраненном порядке
       state.questions = (action.payload.questions || []).map((q: any) => ({
         id: q.id,
         text: q.text,
@@ -205,6 +214,7 @@ export const selectIsConfirmed = (state: RootState) => {
 };
 
 export const selectSelectedOption = (state: RootState) => state.quiz.selectedOption;
+export const selectQuestionOrder = (state: RootState) => state.quiz.questionOrder; // ← добавить
 
 export const {
   startQuiz,

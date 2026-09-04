@@ -2,9 +2,11 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/prisma';
-import { authOptions } from '../../auth/[...nextauth]/route'; // ← заменил на абсолютный путь
+import { authOptions } from '../../auth/[...nextauth]/route';
+
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function GET(
   request: Request,
@@ -54,6 +56,7 @@ export async function GET(
         } else {
           otherAttempt = {
             id: globalActiveAttempt.id,
+            quizId: globalActiveAttempt.quiz_id,
             quizTitle: globalActiveAttempt.quiz.title,
           };
         }
@@ -67,7 +70,7 @@ export async function GET(
         description: quiz.description,
         category: quiz.category,
         level: quiz.level,
-        questions: quiz.questions, // ← добавляем вопросы
+        questions: quiz.questions,
         activeAttemptId,
         otherAttempt,
       },

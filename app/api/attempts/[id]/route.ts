@@ -130,7 +130,7 @@ export async function GET(
           quizId: attempt.quiz_id,
           title: attempt.quiz.title,
           answers: answersArray,
-          currentIndex: answersArray.length,
+          currentIndex: answersArray.length > 0 ? answersArray.length : 0,
           startedAt: attempt.created_at.toISOString(),
         },
         questions: transformedQuestions,

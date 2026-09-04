@@ -3,6 +3,8 @@
 import { useParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useMemo, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { quizApi } from '@/store/api/quizApi';
 
 import { useGetQuizByIdQuery } from '@/store/api/quizApi';
 import {
@@ -17,29 +19,29 @@ import { StarButton } from '@/components/ui/core/StarButton';
 import { BackLink } from '@/components/navigation/BackLink';
 import { useQuizFontSize } from '@/hooks/useQuizFontSize';
 import { Modal } from '@/components/ui/feedback/Modal';
+import { resetQuiz } from '@/store/slices/quizSlice';
 
 export default function QuizPreviewPage() {
   const params = useParams();
   const router = useRouter();
+  const dispatch = useDispatch();
   const id = params.id as string;
 
   const { data: session } = useSession();
-  
-  // RTK Query изолирует кэш по id, предотвращая наложение данных разных квизов
-  const { data: quiz, isLoading, isFetching, refetch } = useGetQuizByIdQuery(id);
+
+  const { data: quiz, isLoading, isFetching, refetch } = useGetQuizByIdQuery(id, {
+    refetchOnMountOrArgChange: true,
+  });
   const { data: favorites = [] } = useGetFavoritesQuery(undefined, { skip: !session });
   const [toggleFavorite] = useToggleFavoriteMutation();
-  
-  // Локальные состояния для управления модалками
+
   const [isCurrentModalOpen, setIsCurrentModalOpen] = useState(false);
   const [isOtherModalOpen, setIsOtherModalOpen] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
 
-  // Вычисляемые свойства
-  const hasCurrentAttempt = !!quiz?.activeAttemptId; 
+  const hasCurrentAttempt = !!quiz?.activeAttemptId;
   const favoriteIds = useMemo(() => new Set(favorites.map((fav) => fav.quiz.id)), [favorites]);
 
-  // Динамический расчет размера шрифта
   const { fontSize: descriptionFontSize, isReady, ref: descriptionCallbackRef } = useQuizFontSize({
     text: quiz?.description || '',
     minFontSize: 12,
@@ -49,40 +51,21 @@ export default function QuizPreviewPage() {
     dependencies: [quiz?.id, quiz?.description],
   });
 
-  // Логирование текущего состояния компонента при каждом рендере
-  console.log(`[FE-RENDER] Квиз ID: "${id}". isLoading: ${isLoading}, isFetching: ${isFetching}`);
-  if (quiz) {
-    console.log(`[FE-RENDER] Данные из кэша:`, {
-      title: quiz.title,
-      activeAttemptId: quiz.activeAttemptId,
-      otherAttempt: quiz.otherAttempt,
-    });
+ const handleStartClick = () => {
+  if (!quiz) return;
+
+  if (quiz.activeAttemptId) {
+    setIsCurrentModalOpen(true);
+  } else if (quiz.otherAttempt) {
+    setIsOtherModalOpen(true);
+  } else {
+    // ✅ Сброс Redux перед переходом
+    dispatch(resetQuiz());
+    router.push(`/quiz/${id}`);
   }
+};
 
-  // Обработчик главной кнопки ("Начать" / "Продолжить")
-  const handleStartClick = () => {
-    console.log(`[FE-CLICK] Клик по главной кнопке старта квиза "${id}"`);
-    
-    if (!quiz) {
-      console.warn('[FE-WARN] Данные квиза еще не загружены');
-      return;
-    }
-
-    if (quiz.activeAttemptId) {
-      console.log(`[FE-CLICK] Сценарий А: Открываем Модалку А (Есть черновик этого же квиза)`);
-      setIsCurrentModalOpen(true); 
-    } else if (quiz.otherAttempt) {
-      console.log(`[FE-CLICK] Сценарий Б: Открываем Модалку Б (Есть черновик другого квиза: "${quiz.otherAttempt.quizTitle}")`);
-      setIsOtherModalOpen(true);   
-    } else {
-      console.log(`[FE-CLICK] Сценарий В: Чистый старт. Переход на /quiz/${id}`);
-      router.push(`/quiz/${id}`);   
-    }
-  };
-
-  // Общая безопасная функция для сброса черновиков
   const handleForceReset = async (attemptIdToClose: string) => {
-    console.log(`[FE-RESET] Запуск принудительного завершения попытки ID: "${attemptIdToClose}"`);
     setIsResetting(true);
     try {
       const res = await fetch(`/api/attempts/${attemptIdToClose}`, {
@@ -90,43 +73,34 @@ export default function QuizPreviewPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ forceComplete: true }),
       });
-      
-      console.log(`[FE-RESET] Сервер ответил со статусом:`, res.status);
-      
-      setIsCurrentModalOpen(false);
-      setIsOtherModalOpen(false);
-      
-      console.log(`[FE-RESET] Вызов refetch() для актуализации состояния превью...`);
-      await refetch();
-      
-      console.log(`[FE-RESET] Успешно. Перенаправление на /quiz/${id}`);
-      router.push(`/quiz/${id}`); 
+
+      if (res.ok) {
+        setIsCurrentModalOpen(false);
+        setIsOtherModalOpen(false);
+
+        dispatch(quizApi.util.invalidateTags([{ type: 'Quiz', id }]));
+        await refetch();
+        router.push(`/quiz/${id}`);
+      }
     } catch (error) {
-      console.error('[FE-RESET] Ошибка в процессе сброса:', error);
+      console.error('[FE-RESET] Ошибка:', error);
     } finally {
       setIsResetting(false);
     }
   };
 
-  // Безопасный вызов сброса для Модалки А
   const handleResetCurrentQuiz = async () => {
     const attemptId = quiz?.activeAttemptId;
-    if (!attemptId) {
-      console.warn('[FE-WARN] Попытка для сброса текущего квиза не найдена в кэше');
-      return;
-    }
+    if (!attemptId) return;
     await handleForceReset(attemptId);
   };
 
-  // Безопасный вызов сброса для Модалки Б
   const handleResetOtherQuiz = async () => {
     const attemptId = quiz?.otherAttempt?.id;
-    if (!attemptId) {
-      console.warn('[FE-WARN] Попытка для сброса чужого квиза не найдена в кэше');
-      return;
-    }
+    if (!attemptId) return;
     await handleForceReset(attemptId);
   };
+
   if (isLoading) {
     return (
       <div className="min-h-[calc(100vh-140px)] flex items-center justify-center p-4">
@@ -159,7 +133,7 @@ export default function QuizPreviewPage() {
       <div className="max-w-md w-full mt-3">
         <BackLink fallback="/catalog" />
       </div>
-      
+
       <div className="flex-1 flex items-center justify-center">
         <div className="max-w-md w-full bg-(--loom-white)/5 rounded-2xl p-7 glitch-border relative overflow-hidden">
           <div className="absolute inset-0 pointer-events-none">
@@ -167,9 +141,9 @@ export default function QuizPreviewPage() {
           </div>
 
           <div className="relative z-10 space-y-4 text-center">
-            {/* Логотип / Заглушка категории */}
             <div className="flex justify-center">
               {quiz.category?.iconUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={quiz.category.iconUrl}
                   alt={quiz.category.name}
@@ -182,10 +156,8 @@ export default function QuizPreviewPage() {
               )}
             </div>
 
-            {/* Заголовок */}
             <h1 className="text-xl font-bold text-(--loom-white)">{quiz.title}</h1>
 
-            {/* Кнопка Избранного */}
             <div className="flex justify-center">
               <StarButton
                 active={favoriteIds.has(quiz.id)}
@@ -194,7 +166,6 @@ export default function QuizPreviewPage() {
               />
             </div>
 
-            {/* Описание квиза */}
             {quiz.description && (
               <div className="flex items-center justify-center max-h-25 overflow-hidden w-full relative">
                 <p
@@ -211,12 +182,21 @@ export default function QuizPreviewPage() {
               </div>
             )}
 
-            {/* Мета-информация */}
             <div className="flex flex-wrap justify-center gap-2 text-xs">
-              <span className="text-(--loom-magenta) font-medium">{quiz.category?.name || 'Без категории'}</span>
+              <span className="text-(--loom-magenta) font-medium">
+                {quiz.category?.name || 'Без категории'}
+              </span>
               <span className="text-(--loom-white)/30">•</span>
-              <span className={cn('font-semibold', levelColors[quiz.level as keyof typeof levelColors] || 'text-(--loom-white)/60')}>
-                {quiz.level ? quiz.level.charAt(0) + quiz.level.slice(1).toLowerCase() : 'Любой уровень'}
+              <span
+                className={cn(
+                  'font-semibold',
+                  levelColors[quiz.level as keyof typeof levelColors] ||
+                    'text-(--loom-white)/60'
+                )}
+              >
+                {quiz.level
+                  ? quiz.level.charAt(0) + quiz.level.slice(1).toLowerCase()
+                  : 'Любой уровень'}
               </span>
               <span className="text-(--loom-white)/30">•</span>
               <span className="text-(--loom-white)/60">
@@ -224,7 +204,6 @@ export default function QuizPreviewPage() {
               </span>
             </div>
 
-            {/* Основная управляющая кнопка */}
             <div className="pt-2">
               <Button
                 variant="glitch"
@@ -232,14 +211,17 @@ export default function QuizPreviewPage() {
                 disabled={isResetting}
                 className="w-full py-2.5 text-sm"
               >
-                {isFetching ? 'Обновление данных...' : (hasCurrentAttempt ? 'Продолжить квиз' : 'Начать квиз')}
+                {isFetching
+                  ? 'Обновление данных...'
+                  : hasCurrentAttempt
+                  ? 'Продолжить квиз'
+                  : 'Начать квиз'}
               </Button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* МОДАЛКА А: Управление черновиком ЭТОГО ЖЕ квиза */}
       <Modal
         isOpen={isCurrentModalOpen}
         onClose={() => !isResetting && setIsCurrentModalOpen(false)}
@@ -247,7 +229,8 @@ export default function QuizPreviewPage() {
       >
         <div className="space-y-4">
           <p className="text-(--loom-white)/80 text-sm leading-relaxed">
-            Вы уже начинали проходить этот квиз ранее. Хотите продолжить с того места, где остановились, или начать заново?
+            Вы уже начинали проходить этот квиз ранее. Хотите продолжить с того места, где
+            остановились, или начать заново?
           </p>
           <div className="flex flex-col gap-2 pt-2">
             <Button
@@ -273,7 +256,6 @@ export default function QuizPreviewPage() {
         </div>
       </Modal>
 
-      {/* МОДАЛКА Б: Управление черновиком ДРУГОГО квиза */}
       <Modal
         isOpen={isOtherModalOpen}
         onClose={() => !isResetting && setIsOtherModalOpen(false)}
@@ -281,8 +263,12 @@ export default function QuizPreviewPage() {
       >
         <div className="space-y-4">
           <p className="text-(--loom-white)/80 text-sm leading-relaxed">
-            У вас уже есть незавершенный квиз <span className="text-(--loom-cyan) font-semibold">«{quiz.otherAttempt?.quizTitle}»</span>. 
-            Чтобы начать этот, вам необходимо сбросить текущий прогресс другого квиза, либо вернуться и завершить его.
+            У вас уже есть незавершенный квиз{' '}
+            <span className="text-(--loom-cyan) font-semibold">
+              «{quiz.otherAttempt?.quizTitle}»
+            </span>
+            . Чтобы начать этот, вам необходимо сбросить текущий прогресс другого квиза, либо
+            вернуться и завершить его.
           </p>
           <div className="flex flex-col gap-2 pt-2">
             <Button
@@ -290,7 +276,7 @@ export default function QuizPreviewPage() {
               disabled={isResetting}
               onClick={() => {
                 setIsOtherModalOpen(false);
-                router.push(`/quiz/${quiz.otherAttempt?.id}`);
+                router.push(`/quiz/${quiz.otherAttempt?.quizId}`);
               }}
               className="w-full py-2 text-sm"
             >

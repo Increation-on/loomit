@@ -35,7 +35,8 @@ interface QuizQuestionProps {
   total: number;
 
   optionLetters: string[];
-  isPWA?: boolean; // 👈 добавляем
+  isPWA?: boolean;
+  isSubmitting?: boolean; // ← добавить
 }
 
 const formatQuestionText = (text: string) => {
@@ -65,7 +66,8 @@ export function QuizQuestion({
   onFinish,
   isLast,
   optionLetters,
-  isPWA = false, // 👈 дефолт
+  isPWA = false,
+  isSubmitting = false, // ← добавить
 }: QuizQuestionProps) {
 
   const isCurrentConfirmed = !!currentAnswer;
@@ -145,7 +147,7 @@ export function QuizQuestion({
                   isWrong={isWrong}
                   icon={icon}
                   onClick={() => {
-                    if (!isCurrentConfirmed) {
+                    if (!isCurrentConfirmed && !isSubmitting) {
                       onSelectOption(opt.id);
                     }
                   }}
@@ -158,21 +160,22 @@ export function QuizQuestion({
 
       <div className={cn(
         "bottom-1 left-0 right-0 bg-(--loom-black)/90 backdrop-blur-sm border-t border-(--loom-white)/10 flex justify-center z-50 py-4",
-        isPWA ? "fixed" : "sticky" // 👈 ключевое
+        isPWA ? "fixed" : "sticky"
       )}>
         {!isCurrentConfirmed ? (
           <Button
             variant="glitch"
             onClick={onConfirm}
-            disabled={!selectedOption}
+            disabled={!selectedOption || isSubmitting}
             className="px-12 py-2.5 text-base min-w-40"
           >
-            Ответить
+            {isSubmitting ? 'Ждем...' : 'Ответить'}
           </Button>
         ) : isLast ? (
           <Button
             variant="glitch"
             onClick={onFinish}
+            disabled={isSubmitting}
             className="px-12 py-2.5 text-base min-w-40"
           >
             Завершить
@@ -181,6 +184,7 @@ export function QuizQuestion({
           <Button
             variant="glitch"
             onClick={onNext}
+            disabled={isSubmitting}
             className="px-12 py-2.5 text-base min-w-40"
           >
             Далее

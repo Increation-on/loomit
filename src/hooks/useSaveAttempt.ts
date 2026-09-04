@@ -16,24 +16,23 @@ export function useSaveAttempt(quizId: string) {
         isCorrect: boolean;
         questionText: string;
         correctOptionId: string;
+        questionOrder?: string[]; // ← добавлено
       }
     ) => {
       setIsLoading(true);
 
       try {
-        // ✅ Определяем метод и URL
         const method = currentAttemptId ? 'PATCH' : 'POST';
         const url = currentAttemptId
           ? `/api/attempts/${currentAttemptId}`
           : '/api/attempts';
 
         const response = await fetch(url, {
-          method, // ← теперь POST для создания, PATCH для обновления
+          method,
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(answerData),
         });
 
-        // Если ответ пустой — возвращаем успех
         if (response.status === 204) {
           return { success: true };
         }

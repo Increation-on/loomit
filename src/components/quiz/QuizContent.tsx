@@ -1,4 +1,4 @@
-// src/components/quiz/QuizContent.tsx — ПОЛНАЯ ФИНАЛЬНАЯ ВЕРСИЯ
+// src/components/quiz/QuizContent.tsx — ФИНАЛЬНАЯ ВЕРСИЯ
 
 'use client';
 
@@ -15,6 +15,7 @@ import {
   confirmAnswer,
   nextQuestion,
   finishQuiz,
+  selectQuestionOrder,
 } from '@/store/slices/quizSlice';
 import { useEffect, useRef, useState } from 'react';
 import { persistor } from '@/store/store';
@@ -38,6 +39,7 @@ export function QuizContent({ id }: { id: string }) {
   const selectedOption = useSelector(selectSelectedOption);
   const { questions, answers, currentIndex, isFinished, currentQuiz, attemptId: reduxAttemptId } =
     useSelector(selectQuizState);
+  const questionOrder = useSelector(selectQuestionOrder);
 
   const {
     data: quizData,
@@ -56,6 +58,7 @@ export function QuizContent({ id }: { id: string }) {
   const [isSessionLoading, setIsSessionLoading] = useState(true);
   const [selectedExplanation, setSelectedExplanation] = useState<string | null>(null);
   const [resetCounter, setResetCounter] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false); // ← защита от двойного нажатия
 
   const isInitializingRef = useRef(false);
 
@@ -93,7 +96,6 @@ export function QuizContent({ id }: { id: string }) {
       setIsSessionLoading(true);
 
       try {
-        // 🔹 Принудительно обновляем кэш RTK Query
         const freshData = await refetchQuiz().unwrap();
 
         if (!freshData) {
@@ -111,6 +113,14 @@ export function QuizContent({ id }: { id: string }) {
             const data = await res.json();
 
             if (data.success && data.attempt) {
+              if (data.attempt.status === 'COMPLETED') {
+                setAttemptId(null);
+                dispatch(resetQuiz());
+                setIsSessionLoading(false);
+                isInitializingRef.current = false;
+                return;
+              }
+
               setAttemptId(data.attempt.id);
               dispatch(
                 resumeQuizFromServer({
@@ -120,14 +130,17 @@ export function QuizContent({ id }: { id: string }) {
                   currentIndex: data.attempt.currentIndex,
                   attemptId: data.attempt.id,
                   startedAt: data.attempt.startedAt,
+                  questionOrder: data.attempt.questionOrder || [],
                 })
               );
               setIsSessionLoading(false);
               isInitializingRef.current = false;
               return;
             }
-          } catch (e) {
-            console.error('Не удалось восстановить попытку:', e);
+          } catch (error) {
+            console.error('❌ Ошибка восстановления попытки:', error);
+            setIsSessionLoading(false);
+            isInitializingRef.current = false;
           }
         }
 
@@ -145,7 +158,6 @@ export function QuizContent({ id }: { id: string }) {
           return;
         }
 
-        // 🔹 Если ничего не сработало
         setIsSessionLoading(false);
         isInitializingRef.current = false;
       } catch (error) {
@@ -159,40 +171,40 @@ export function QuizContent({ id }: { id: string }) {
   }, [id, dispatch, setAttemptId, resetCounter, refetchQuiz]);
 
   // ============================================================
-  // ПОДТВЕРЖДЕНИЕ ОТВЕТА
-  // ============================================================
-  const handleConfirmAnswer = async () => {
-  if (!currentQuestion || !selectedOption) return;
-
-  console.log('🔍 handleConfirmAnswer START');
-  console.log('🔍 attemptId:', attemptId);
-  console.log('🔍 reduxAttemptId:', reduxAttemptId);
-
-  const isCorrect = currentQuestion.correctOptionId === selectedOption;
-  const answerData = {
-    quizId: id,
-    questionId: currentQuestion.id,
-    selectedOptionId: selectedOption,
-    isCorrect,
-    questionText: currentQuestion.text,
-    correctOptionId: currentQuestion.correctOptionId,
-  };
-
-  dispatch(confirmAnswer());
-
-  const currentActiveId = attemptId || reduxAttemptId;
-  console.log('🔍 currentActiveId:', currentActiveId);
+  // ПОДТВЕРЖДЕНИЕ ОТВЕТА 
+// ============================================================
+const handleConfirmAnswer = async () => {
+  if (isSubmitting || !currentQuestion || !selectedOption) return;
+  setIsSubmitting(true);
 
   try {
-    const result = await saveStep(currentActiveId, answerData);
-    console.log('🔍 saveStep result:', result);
+    const isCorrect = currentQuestion.correctOptionId === selectedOption;
+    const currentActiveId = attemptId || reduxAttemptId;
 
-    if (result?.created && result?.attempt?.id) {
-      console.log('🔍 Устанавливаем attemptId:', result.attempt.id);
+    const answerData: any = {
+      quizId: id,
+      questionId: currentQuestion.id,
+      selectedOptionId: selectedOption,
+      isCorrect,
+      questionText: currentQuestion.text,
+      correctOptionId: currentQuestion.correctOptionId,
+    };
+
+    if (!currentActiveId) {
+      answerData.questionOrder = questionOrder;
+    }
+
+    const result = await saveStep(currentActiveId, answerData);
+
+    if (result?.attempt?.id) {
       setAttemptId(result.attempt.id);
     }
+    // ✅ Обновляем Redux (confirmAnswer)
+    dispatch(confirmAnswer());
   } catch (error) {
     console.error('❌ Ошибка сохранения ответа:', error);
+  } finally {
+    setIsSubmitting(false);
   }
 };
 
@@ -200,6 +212,10 @@ export function QuizContent({ id }: { id: string }) {
   // ФИНИШ
   // ============================================================
   if (isFinished) {
+    const finalAttemptId = attemptId || reduxAttemptId;
+    if (!finalAttemptId) {
+      return <QuizSkeleton />;
+    }
     return (
       <QuizFinishScreen
         id={id}
@@ -211,6 +227,13 @@ export function QuizContent({ id }: { id: string }) {
           toggleFavorite({ quizId, quiz }).unwrap()
         }
         onReset={async () => {
+          if (attemptId) {
+            await fetch(`/api/attempts/${attemptId}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ forceComplete: true }),
+            });
+          }
           setIsSessionLoading(true);
           dispatch(resetQuiz());
           setAttemptId(null);
@@ -299,6 +322,7 @@ export function QuizContent({ id }: { id: string }) {
           total={questions.length}
           optionLetters={optionLetters}
           isPWA={hideNavigation}
+          isSubmitting={isSubmitting} // ← передаём состояние в кнопку
         />
       </div>
 

@@ -10,7 +10,8 @@ import { useRouter } from 'next/navigation';
 
 export default function ProfilePage() {
   const { data: session } = useSession();
-  const userName = session?.user?.name || 'пользователь';
+  const fullname = session?.user?.name || 'пользователь';
+  const userName = fullname.split(' ')[0];
   const isAdmin = session?.user?.role === 'admin';
   const date = new Date().toLocaleDateString('ru-RU');
   const router = useRouter();
@@ -28,9 +29,6 @@ export default function ProfilePage() {
       <div>
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-(--loom-white)">Профиль</h1>
-          <div className="w-12 h-12 rounded-full bg-(--loom-magenta) flex items-center justify-center font-bold text-lg text-(--loom-white)">
-            {userName[0]}
-          </div>
         </div>
         <p className="text-(--loom-white)/60 mt-2">
           Привет, <span className='text-(--loom-yellow)'>{userName}</span>! Сегодня {date}

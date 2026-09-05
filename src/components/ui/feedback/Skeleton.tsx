@@ -86,7 +86,7 @@ export function CatalogCardSkeleton() {
   return (
     <div className="overflow-hidden flex flex-row p-4 gap-3 min-h-39 bg-(--loom-white)/5 rounded-xl glitch-border">
       {/* Левая часть */}
-      <div className="flex-1 flex flex-col h-full min-w-0 gap-2">P
+      <div className="flex-1 flex flex-col h-full min-w-0 gap-2">
         
         {/* 1. Иконка + Заголовок + Описание */}
         <div className="flex items-start gap-3">

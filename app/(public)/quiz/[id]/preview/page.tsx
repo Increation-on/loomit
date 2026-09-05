@@ -103,7 +103,7 @@ export default function QuizPreviewPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-[calc(100vh-140px)] flex items-center justify-center p-4">
+      <div className="min-h-[80vh] flex items-center justify-center p-4">
         <div className="max-w-md w-full space-y-4">
           <Skeleton className="h-10 w-3/4 mx-auto" />
           <Skeleton className="h-5 w-full" />
@@ -116,7 +116,7 @@ export default function QuizPreviewPage() {
 
   if (!quiz) {
     return (
-      <div className="min-h-[calc(100vh-140px)] flex items-center justify-center p-4">
+      <div className="min-h-[80vh] flex items-center justify-center p-4">
         <p className="text-(--loom-white)/60">Квиз не найден</p>
       </div>
     );
@@ -129,7 +129,7 @@ export default function QuizPreviewPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-140px)] flex flex-col p-4">
+    <div className="min-h-[80vh] flex flex-col p-4">
       <div className="max-w-md w-full mt-3">
         <BackLink fallback="/catalog" />
       </div>

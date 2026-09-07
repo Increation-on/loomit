@@ -6,8 +6,6 @@ import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Providers } from "./providers";
-import { useEffect, useState } from "react";
-import { StatusBarWrapper } from "@/components/layout/StatusBarWrapper";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -23,7 +21,6 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  themeColor: "#000000",
 };
 
 export const metadata: Metadata = {
@@ -52,7 +49,6 @@ export default async function RootLayout({
       data-scroll-behavior="smooth"
     >
       <body className="min-h-full flex flex-col">
-        <StatusBarWrapper />
         <Providers session={session}>
             <Header />
             <main className="flex-1">

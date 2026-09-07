@@ -71,6 +71,7 @@ export function NavigationProvider({
   const clearAttemptReturnTo = () => setAttemptReturnTo(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(false);
   }, [pathname]);
 

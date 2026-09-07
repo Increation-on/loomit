@@ -14,11 +14,12 @@ import { usePWA } from '@/hooks/usePWA';
 import { NavigationProvider } from '@/components/layout/NavigationProvider';
 
 import { Session } from 'next-auth';
+import { QuizSkeleton } from '@/components/ui/feedback/Skeleton';
 
-export function Providers({ 
-  children, 
-  session 
-}: { 
+export function Providers({
+  children,
+  session
+}: {
   children: React.ReactNode;
   session: Session | null;
 }) {
@@ -60,7 +61,10 @@ export function Providers({
   return (
     <SessionProvider session={session}>
       <ReduxProvider store={store}>
-        <PersistGate loading={<div className="p-4 text-center text-loom-white">Загрузка...</div>} persistor={persistor}>
+         <PersistGate 
+          loading={<div className="min-h-screen bg-(--loom-black)" />}
+          persistor={persistor}
+        >
           <ToastContainer>
             <NavigationProvider>  {/* 👈 обёртка здесь */}
               {children}

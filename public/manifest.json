@@ -4,6 +4,7 @@
   "description": "Проходите квизы по IT-темам и готовьтесь к собеседованиям",
   "start_url": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
   "orientation": "portrait",
   "background_color": "#0f0f23",
   "theme_color": "#000000",

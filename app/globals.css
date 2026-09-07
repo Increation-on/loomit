@@ -15,6 +15,9 @@ h1, h2, h3, .font-display {
 
 @layer base {
   :root {
+    /* Сообщаем системе, что по умолчанию режим СВЕТЛЫЙ */
+    color-scheme: light; 
+    
     --loom-yellow: #D4A800;
     --loom-cyan: #00CCCC;
     --loom-magenta: #ff00ff;
@@ -22,11 +25,18 @@ h1, h2, h3, .font-display {
     --loom-white: #111111;
     
     --glitch-pink: #D41976;
-
     --nav-bg: rgba(255, 255, 255, 0.01);
   }
 
+  /* Добавляем селектор html:not(.dark), чтобы гарантировать сброс в светлый режим */
+  html:not(.dark) {
+    color-scheme: light;
+  }
+
   .dark {
+    /* Принудительно переключаем системную схему PWA в ТЁМНУЮ */
+    color-scheme: dark; 
+    
     --loom-yellow: #FFD700;
     --loom-cyan: #00FFFF;
     --loom-magenta: #ff00ff;
@@ -34,9 +44,7 @@ h1, h2, h3, .font-display {
     --loom-white: #FFFFFF;
     
     --glitch-pink: #FFC0CB;
-   
-
-     --nav-bg: rgba(0, 0, 0, 0.2);
+    --nav-bg: rgba(0, 0, 0, 0.2);
   }
 
   body {

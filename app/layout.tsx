@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { Space_Grotesk, Inter } from 'next/font/google'
-import { getServerSession } from 'next-auth'
-import { authOptions } from './api/auth/[...nextauth]/route'
+import { Space_Grotesk, Inter } from 'next/font/google';
+import { getServerSession } from 'next-auth';
+import { authOptions } from './api/auth/[...nextauth]/route';
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -10,17 +10,18 @@ import { Providers } from "./providers";
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
   variable: '--font-display'
-})
+});
 
 const inter = Inter({
   subsets: ['latin', 'cyrillic'],
   variable: '--font-body'
-})
+});
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
+  themeColor: "#000000",
 };
 
 export const metadata: Metadata = {
@@ -29,7 +30,7 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default",
+    statusBarStyle: "black-translucent", 
     title: "LoomIt",
   },
 };
@@ -39,7 +40,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
 
   return (
     <html

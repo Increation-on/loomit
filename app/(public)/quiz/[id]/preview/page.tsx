@@ -58,7 +58,7 @@ export default function QuizPreviewPage() {
     setIsCurrentModalOpen(true);
   } else if (quiz.otherAttempt) {
     setIsOtherModalOpen(true);
-  } else {
+  } else { 
     // ✅ Сброс Redux перед переходом
     dispatch(resetQuiz());
     router.push(`/quiz/${id}`);

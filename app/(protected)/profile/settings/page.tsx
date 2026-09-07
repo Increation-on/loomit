@@ -16,6 +16,7 @@ export default function SettingsPage() {
   const { success, error: showError } = useToast();
   const router = useRouter();
 
+
   const handleResetProgress = async () => {
     setIsLoading(true);
     try {
@@ -30,6 +31,9 @@ export default function SettingsPage() {
       setShowResetModal(false);
     }
   };
+
+  // Пока сервер рендерит страницу или идет гидратация, показываем дефолтное состояние (заглушку)
+  const isDark = theme === 'dark';
 
   return (
     <div className="p-6 max-w-2xl mx-auto space-y-6 pb-24">
@@ -47,7 +51,7 @@ export default function SettingsPage() {
 
         <div className="flex items-center justify-between relative z-10">
           <div className="flex items-center gap-3">
-            {theme === 'dark' ? (
+            {isDark ? (
               <Moon size={20} className="text-(--loom-cyan)" />
             ) : (
               <Sun size={20} className="text-(--loom-yellow)" />
@@ -55,7 +59,7 @@ export default function SettingsPage() {
             <div>
               <span className="text-(--loom-white) font-medium">Тема</span>
               <p className="text-sm text-(--loom-white)/60">
-                {theme === 'dark' ? 'Тёмная' : 'Светлая'}
+                {isDark ? 'Тёмная' : 'Светлая'}
               </p>
             </div>
           </div>
@@ -118,8 +122,6 @@ export default function SettingsPage() {
           </div>
         </div>
       </div>
-
-      
 
       {/* Модалка подтверждения */}
       <Modal

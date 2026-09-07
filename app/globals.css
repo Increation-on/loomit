@@ -287,8 +287,13 @@ h1, h2, h3, .font-display {
 
 /* Финальные настройки для прозрачного статус-бара PWA */
 html {
+  color-scheme: light; /* Сообщает браузеру, что по умолчанию режим светлый */
   background-color: var(--loom-black);
   transition: background-color 0.25s ease-in-out;
+}
+
+html.dark {
+  color-scheme: dark; /* Принудительно переключает системный режим PWA в тёмный */
 }
 
 /* Безопасный отступ сверху в PWA-режиме для body */
@@ -299,4 +304,3 @@ html.pwa-mode body {
 /* Безопасный отступ сверху в PWA-режиме для шапки */
 html.pwa-mode header {
   padding-top: env(safe-area-inset-top, 0px);
-}

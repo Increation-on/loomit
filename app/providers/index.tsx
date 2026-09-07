@@ -1,5 +1,3 @@
-// app/providers/index.tsx
-
 'use client';
 
 import { SessionProvider } from 'next-auth/react';
@@ -8,7 +6,6 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from '@/store/store';
 import { ToastContainer } from '@/components/ui/feedback/ToastContainer';
 import { useEffect } from 'react';
-import { usePathname } from 'next/navigation';
 import { useTheme } from '@/hooks/useTheme';
 import { usePWA } from '@/hooks/usePWA';
 import { NavigationProvider } from '@/components/layout/NavigationProvider';
@@ -22,8 +19,7 @@ export function Providers({
   children: React.ReactNode;
   session: Session | null;
 }) {
-  const pathname = usePathname();
-  const { mounted } = useTheme();
+  const { theme, mounted } = useTheme(); // ← добавили theme
   const isPWA = usePWA();
 
   useEffect(() => {
@@ -43,15 +39,17 @@ export function Providers({
         meta.setAttribute('name', 'theme-color');
         document.head.appendChild(meta);
       }
-      meta.setAttribute('content', isDark ? '#000000' : '#FFFFFF');
+
+      const bgColor = getComputedStyle(document.documentElement)
+        .getPropertyValue('--loom-black')
+        .trim();
+
+      const color = bgColor || (isDark ? '#000000' : '#FFFFFF');
+      meta.setAttribute('content', color);
     };
 
     updateMeta();
-    const observer = new MutationObserver(() => updateMeta());
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-
-    return () => observer.disconnect();
-  }, [pathname]);
+  }, [theme]); // ← теперь обновляется при смене темы
 
   if (!mounted) {
     return <div className="h-screen bg-(--loom-black)" />;
@@ -62,7 +60,7 @@ export function Providers({
       <ReduxProvider store={store}>
         <PersistGate loading={<div className="p-4 text-center text-loom-white">Загрузка...</div>} persistor={persistor}>
           <ToastContainer>
-            <NavigationProvider>  {/* 👈 обёртка здесь */}
+            <NavigationProvider>
               {children}
             </NavigationProvider>
           </ToastContainer>

@@ -16,7 +16,7 @@ function PWAStatusBarSync() {
   const { theme } = useTheme();
 
   useEffect(() => {
-    // Ваши точные HEX-цвета для статус-бара
+    // Вручную маппим цвета для перезаписи нативного контейнера Android
     const activeColor = theme === 'dark' ? '#000000' : '#FFFFFF'; 
     const metaTags = document.querySelectorAll('meta[name="theme-color"]');
     
@@ -26,12 +26,16 @@ function PWAStatusBarSync() {
       meta.setAttribute('content', activeColor);
       document.head.appendChild(meta);
     } else {
-      metaTags.forEach((meta) => meta.setAttribute('content', activeColor));
+      // Принудительно обновляем все мета-теги, включая сгенерированные Next.js
+      metaTags.forEach((meta) => {
+        meta.setAttribute('content', activeColor);
+      });
     }
   }, [theme]);
 
-  return null; // Компонент ничего не рендерит, работает как сервис
+  return null;
 }
+
 
 export function Providers({ 
   children, 

@@ -304,3 +304,4 @@ html.pwa-mode body {
 /* Безопасный отступ сверху в PWA-режиме для шапки */
 html.pwa-mode header {
   padding-top: env(safe-area-inset-top, 0px);
+}

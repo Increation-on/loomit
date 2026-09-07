@@ -9,8 +9,29 @@ import { useEffect } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { usePWA } from '@/hooks/usePWA';
 import { NavigationProvider } from '@/components/layout/NavigationProvider';
-
 import { Session } from 'next-auth';
+
+// Отдельный изолированный компонент для управления статус-баром PWA
+function PWAStatusBarSync() {
+  const { theme } = useTheme();
+
+  useEffect(() => {
+    // Ваши точные HEX-цвета для статус-бара
+    const activeColor = theme === 'dark' ? '#000000' : '#FFFFFF'; 
+    const metaTags = document.querySelectorAll('meta[name="theme-color"]');
+    
+    if (metaTags.length === 0) {
+      const meta = document.createElement('meta');
+      meta.setAttribute('name', 'theme-color');
+      meta.setAttribute('content', activeColor);
+      document.head.appendChild(meta);
+    } else {
+      metaTags.forEach((meta) => meta.setAttribute('content', activeColor));
+    }
+  }, [theme]);
+
+  return null; // Компонент ничего не рендерит, работает как сервис
+}
 
 export function Providers({ 
   children, 
@@ -19,7 +40,6 @@ export function Providers({
   children: React.ReactNode;
   session: Session | null;
 }) {
-  const { theme, mounted } = useTheme(); // ← добавили theme
   const isPWA = usePWA();
 
   useEffect(() => {
@@ -30,37 +50,14 @@ export function Providers({
     }
   }, [isPWA]);
 
-  useEffect(() => {
-    const updateMeta = () => {
-      const isDark = document.documentElement.classList.contains('dark');
-      let meta = document.querySelector('meta[name="theme-color"]');
-      if (!meta) {
-        meta = document.createElement('meta');
-        meta.setAttribute('name', 'theme-color');
-        document.head.appendChild(meta);
-      }
-
-      const bgColor = getComputedStyle(document.documentElement)
-        .getPropertyValue('--loom-black')
-        .trim();
-
-      const color = bgColor || (isDark ? '#000000' : '#FFFFFF');
-      meta.setAttribute('content', color);
-    };
-
-    updateMeta();
-  }, [theme]); // ← теперь обновляется при смене темы
-
-  if (!mounted) {
-    return <div className="h-screen bg-(--loom-black)" />;
-  }
-
   return (
     <SessionProvider session={session}>
       <ReduxProvider store={store}>
         <PersistGate loading={<div className="p-4 text-center text-loom-white">Загрузка...</div>} persistor={persistor}>
           <ToastContainer>
             <NavigationProvider>
+              {/* Подключаем наш синхронизатор цвета */}
+              <PWAStatusBarSync />
               {children}
             </NavigationProvider>
           </ToastContainer>

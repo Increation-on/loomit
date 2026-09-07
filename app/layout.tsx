@@ -7,6 +7,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Providers } from "./providers";
 import { useEffect, useState } from "react";
+import { StatusBarWrapper } from "@/components/layout/StatusBarWrapper";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -51,7 +52,6 @@ export default async function RootLayout({
       data-scroll-behavior="smooth"
     >
       <body className="min-h-full flex flex-col">
-        {/* 👇 СВОЙ СТАТУС-БАР (имитация) */}
         <StatusBarWrapper />
         <Providers session={session}>
             <Header />
@@ -65,32 +65,3 @@ export default async function RootLayout({
   );
 }
 
-// 👇 Компонент-имитация статус-бара
-function StatusBarWrapper() {
-  'use client';
-  
-  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setMounted(true);
-    const saved = localStorage.getItem('theme') as 'light' | 'dark' | null;
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const initial = saved || (prefersDark ? 'dark' : 'light');
-    setTheme(initial);
-  }, []);
-
-  if (!mounted) return null;
-
-  return (
-    <div
-      className="fixed top-0 left-0 right-0 z-50"
-      style={{
-        backgroundColor: theme === 'dark' ? '#000000' : '#FFFFFF',
-        height: 'env(safe-area-inset-top, 0px)',
-        paddingTop: 'env(safe-area-inset-top, 0px)',
-      }}
-    />
-  );
-}

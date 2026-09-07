@@ -14,7 +14,6 @@ import { usePWA } from '@/hooks/usePWA';
 import { NavigationProvider } from '@/components/layout/NavigationProvider';
 
 import { Session } from 'next-auth';
-import { QuizSkeleton } from '@/components/ui/feedback/Skeleton';
 
 export function Providers({
   children,

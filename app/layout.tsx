@@ -17,15 +17,11 @@ const inter = Inter({
   variable: '--font-body'
 });
 
-// Нативный themeColor для PWA (отслеживает системную тему устройства)
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#FFFFFF' },
-    { media: '(prefers-color-scheme: dark)', color: '#000000' },
-  ],
+  themeColor: "#000000",
 };
 
 export const metadata: Metadata = {

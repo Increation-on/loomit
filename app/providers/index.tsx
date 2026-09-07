@@ -34,7 +34,6 @@ export function Providers({
         <PersistGate loading={<div className="p-4 text-center text-loom-white">Загрузка...</div>} persistor={persistor}>
           <ToastContainer>
             <NavigationProvider>
-              {/* Подключаем наш синхронизатор цвета */}
               {children}
             </NavigationProvider>
           </ToastContainer>

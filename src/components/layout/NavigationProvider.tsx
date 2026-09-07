@@ -1,5 +1,3 @@
-// src/components/features/NavigationProvider.tsx
-
 'use client';
 
 import {
@@ -71,7 +69,12 @@ export function NavigationProvider({
   const clearAttemptReturnTo = () => setAttemptReturnTo(null);
 
   useEffect(() => {
-    setLoading(false);
+    // Выносим смену стейта из синхронного цикла эффекта в микротаску.
+    // Это гарантирует, что загрузка выключится СРАЗУ ЖЕ после того,
+    // как завершится рендер новой страницы, убирая ошибку cascading renders.
+    queueMicrotask(() => {
+      setLoading(false);
+    });
   }, [pathname]);
 
   const startGlitchTransition = () => {

@@ -22,9 +22,11 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
+  // Вместо жестких HEX-кодов заставляем браузер привязать 
+  // статус-бар к вашей живой CSS-переменной из globals.css
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#FFFFFF' },
-    { media: '(prefers-color-scheme: dark)', color: '#000000' },
+    { media: '(prefers-color-scheme: light)', color: 'var(--loom-black)' },
+    { media: '(prefers-color-scheme: dark)', color: 'var(--loom-black)' },
   ],
 };
 

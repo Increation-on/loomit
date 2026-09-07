@@ -119,8 +119,6 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      
-
       {/* Модалка подтверждения */}
       <Modal
         isOpen={showResetModal}

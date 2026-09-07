@@ -23,8 +23,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#FFFFFF' }, // Укажите ваш цвет для светлой темы (например, #f5f5f5)
-    { media: '(prefers-color-scheme: dark)', color: '#000000' },  // Укажите ваш цвет для тёмной темы (например, #0f0f23)
+    { media: '(prefers-color-scheme: light)', color: '#FFFFFF' },
+    { media: '(prefers-color-scheme: dark)', color: '#000000' },
   ],
 };
 
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default", // Для кастомного цвета оставляем default. Если хотите прозрачный — 'black-translucent'
+    statusBarStyle: "black-translucent", 
     title: "LoomIt",
   },
 };

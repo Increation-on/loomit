@@ -284,3 +284,19 @@ h1, h2, h3, .font-display {
 .quiz-pwa-mode footer {
   display: none !important;
 }
+
+/* Финальные настройки для прозрачного статус-бара PWA */
+html {
+  background-color: var(--loom-black);
+  transition: background-color 0.25s ease-in-out;
+}
+
+/* Безопасный отступ сверху в PWA-режиме для body */
+html.pwa-mode body {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Безопасный отступ сверху в PWA-режиме для шапки */
+html.pwa-mode header {
+  padding-top: env(safe-area-inset-top, 0px);
+}

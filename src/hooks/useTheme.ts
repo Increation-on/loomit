@@ -8,10 +8,14 @@ const getServerSnapshot = () => 'dark' as const;
 // Функция для чтения темы на клиенте
 const getClientSnapshot = () => {
   if (typeof window === 'undefined') return 'dark';
+  
+  // 1. Ищем явно сохраненную тему пользователя
   const saved = localStorage.getItem('theme') as 'light' | 'dark' | null;
   if (saved) return saved;
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  return prefersDark ? 'dark' : 'light';
+  
+  // 2. Если в localStorage ничего нет (первый заход), 
+  // МЫ ПРИНУДИТЕЛЬНО возвращаем 'dark', игнорируя светлую систему телефона!
+  return 'dark'; 
 };
 
 // Подписка на изменения (нужна для React, чтобы он знал, когда перерендерить компонент)

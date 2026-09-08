@@ -13,7 +13,9 @@ export function StatusBarSync() {
       const dataThemeAttr = document.documentElement.getAttribute('data-theme');
 
       const isDark = hasDarkClassHtml || hasDarkClassBody || dataThemeAttr === 'dark';
-      const targetColor = isDark ? '#121212' : '#FFFFFF';
+      // Вместо #121212 ставим чистый черный, при котором Android ОБЯЗАН сделать текст белым
+      const targetColor = isDark ? '#000000' : '#FFFFFF';
+
 
       console.log('🔍 [StatusBarSync] Проверка темы:', { isDark, targetColor });
 

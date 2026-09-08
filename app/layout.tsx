@@ -17,11 +17,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  // Задаем базовые нативные цвета для системных тем на старте (до загрузки JS)
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#FFFFFF" },
-    { media: "(prefers-color-scheme: dark)", color: "#121212" }
-  ]
+  themeColor: "#121212" 
 };
 
 export const metadata: Metadata = {
@@ -30,10 +26,11 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "black-translucent", // На iOS статус-бар станет прозрачным и примет цвет body
+    statusBarStyle: "default",
     title: "LoomIt",
   },
 };
+
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const session = await getServerSession(authOptions);

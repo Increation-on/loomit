@@ -4,54 +4,48 @@ import { useEffect } from 'react';
 
 export function StatusBarSync() {
   useEffect(() => {
-    console.log('🚀 [StatusBarSync] Компонент успешно смонтирован и начал слежку!');
+    const html = document.documentElement;
+    const body = document.body;
 
     const updateStatus = () => {
-      // 1. Проверяем состояние темной темы
-      const hasDarkClassHtml = document.documentElement.classList.contains('dark');
-      const hasDarkClassBody = document.body.classList.contains('dark');
-      const dataThemeAttr = document.documentElement.getAttribute('data-theme');
+      // Проверяем, активна ли светлая тема. Если нет — по умолчанию считаем её тёмной
+      const isLight = html.classList.contains('light') || html.getAttribute('data-theme') === 'light';
+      
+      // Идеальное совпадение: #FFFFFF для светлой и строго #121212 (--loom-black) для тёмной
+      const targetColor = isLight ? '#FFFFFF' : '#121212';
 
-      const isDark = hasDarkClassHtml || hasDarkClassBody || dataThemeAttr === 'dark';
-      // Вместо #121212 ставим чистый черный, при котором Android ОБЯЗАН сделать текст белым
-      const targetColor = isDark ? '#000000' : '#FFFFFF';
-
-
-      console.log('🔍 [StatusBarSync] Проверка темы:', { isDark, targetColor });
-
-      // НАШ ТИПИЗИРОВАННЫЙ ФИКС: явно приводим тип к HTMLMetaElement
       const meta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
 
       if (meta) {
-        // Теперь TypeScript знает, что у meta есть атрибут content
         meta.setAttribute('content', targetColor);
-        console.log(`🎨 [StatusBarSync] Обновлен существующий тег на цвет: ${targetColor}`);
       } else {
-        // При создании нового элемента тоже явно задаем его тип
         const newMeta = document.createElement('meta');
         newMeta.name = 'theme-color';
         newMeta.content = targetColor;
         document.head.appendChild(newMeta);
-        console.log(`🆕 [StatusBarSync] Создан новый мета-тег с цветом: ${targetColor}`);
       }
+
+      // Наш force-reflow хак для Android, но теперь строго с цветом #121212
+      const originalBg = body.style.backgroundColor;
+      body.style.backgroundColor = targetColor;
+      
+      setTimeout(() => {
+        body.style.backgroundColor = originalBg;
+      }, 30);
     };
 
-    // Запускаем один раз при первой загрузке
+    // Первая отработка при гидратации
     updateStatus();
 
-    // Настраиваем MutationObserver для слежки за изменением темы кнопкой
+    // Наблюдатель за кликами по кнопке смены темы
     const observer = new MutationObserver(() => {
-      console.log('⚡ [StatusBarSync] Сработал триггер клика темы!');
       updateStatus();
     });
 
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'style', 'data-theme'] });
-    observer.observe(document.body, { attributes: true, attributeFilter: ['class', 'style'] });
+    observer.observe(html, { attributes: true, attributeFilter: ['class', 'data-theme'] });
+    observer.observe(body, { attributes: true, attributeFilter: ['class'] });
 
-    return () => {
-      console.log('🛑 [StatusBarSync] Размонтирование компонента.');
-      observer.disconnect();
-    };
+    return () => observer.disconnect();
   }, []);
 
   return null;

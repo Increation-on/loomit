@@ -14,44 +14,47 @@ h1, h2, h3, .font-display {
 }
 
 @layer base {
-  /* Базовый :root ТЕПЕРЬ ТЕМНЫЙ ПО УМОЛЧАНИЮ */
+  /* Базовый :root задает только системную схему по умолчанию (ТЁМНАЯ) */
   :root {
-    /* Сообщаем системе, что по умолчанию режим ТЕМНЫЙ */
     color-scheme: dark; 
     
+    /* Инициализируем переменные сразу темными, чтобы при SSR не было вспышек */
     --loom-yellow: #FFD700;
     --loom-cyan: #00FFFF;
     --loom-magenta: #ff00ff;
-    --loom-black: #121212;   /* Твой темный HEX из layout.tsx */
+    --loom-black: #121212;   
     --loom-white: #FFFFFF;
     
     --glitch-pink: #FFC0CB;
     --nav-bg: rgba(0, 0, 0, 0.2);
   }
 
-  /* Если на html ПРИНУДИТЕЛЬНО навесили класс .light (смена темы кнопкой) */
-  .light, html:not(.dark) {
-    /* Системная схема становится светлой */
-    color-scheme: light; 
+  /* Строгий селектор для СВЕТЛОЙ темы. Никаких :not(.dark)! */
+  /* Работает, только если на html явно висит класс .light */
+  html.light, .light {
+    color-scheme: light !important; 
     
     --loom-yellow: #D4A800;
     --loom-cyan: #00CCCC;
     --loom-magenta: #ff00ff;
-    --loom-black: #FFFFFF;   /* Белый фон для светлой темы */
+    --loom-black: #FFFFFF;   /* Чистый белый фон для светлой темы */
     --loom-white: #111111;
     
     --glitch-pink: #D41976;
     --nav-bg: rgba(255, 255, 255, 0.01);
   }
 
-  /* Оставляем явный класс .dark на всякий случай, дублируя дефолтные значения */
-  .dark {
-    color-scheme: dark;
+  /* Строгий селектор для ТЁМНОЙ темы. */
+  /* Гарантирует железный приоритет, если провайдер тем явно добавил класс .dark */
+  html.dark, .dark {
+    color-scheme: dark !important;
+    
     --loom-yellow: #FFD700;
     --loom-cyan: #00FFFF;
     --loom-magenta: #ff00ff;
-    --loom-black: #121212;
+    --loom-black: #121212;   /* Наш loom-black фон */
     --loom-white: #FFFFFF;
+    
     --glitch-pink: #FFC0CB;
     --nav-bg: rgba(0, 0, 0, 0.2);
   }
@@ -61,12 +64,12 @@ h1, h2, h3, .font-display {
     color: var(--loom-white);
     font-family: 'Inter', sans-serif;
     
-    /* Добавляем отступы безопасности из-за viewport-fit=cover, */
-    /* чтобы контент в standalone PWA не залезал под камеру-каплю Galaxy S25 */
+    /* Безопасные отступы, чтобы контент standalone PWA не резался камерой S25 */
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 }
+
 
 .gradient-text {
   background: linear-gradient(135deg, #FFD700, #00FFFF, #D41976);

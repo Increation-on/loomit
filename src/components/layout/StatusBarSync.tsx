@@ -8,44 +8,52 @@ export function StatusBarSync() {
     const body = document.body;
 
     const updateStatus = () => {
-      // Проверяем, активна ли светлая тема. Если нет — по умолчанию считаем её тёмной
-      const isLight = html.classList.contains('light') || html.getAttribute('data-theme') === 'light';
-      
-      // Идеальное совпадение: #FFFFFF для светлой и строго #121212 (--loom-black) для тёмной
+      // Проверяем строго наличие класса light. Если его нет — мы в дефолтном темном режиме
+      const isLight = document.documentElement.classList.contains('light') || document.documentElement.getAttribute('data-theme') === 'light';
       const targetColor = isLight ? '#FFFFFF' : '#121212';
 
-      const meta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
-
+      let meta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
       if (meta) {
         meta.setAttribute('content', targetColor);
       } else {
-        const newMeta = document.createElement('meta');
-        newMeta.name = 'theme-color';
-        newMeta.content = targetColor;
-        document.head.appendChild(newMeta);
+        meta = document.createElement('meta');
+        meta.name = 'theme-color';
+        meta.content = targetColor;
+        document.head.appendChild(meta);
       }
 
-      // Наш force-reflow хак для Android, но теперь строго с цветом #121212
-      const originalBg = body.style.backgroundColor;
-      body.style.backgroundColor = targetColor;
-      
+      // Принудительно прописываем инлайном системный color-scheme для Android Chromium,
+      // чтобы системный текст (часы/батарея) не залипал при гидратации
+      document.documentElement.style.colorScheme = isLight ? 'light' : 'dark';
+
+      // Трюк с reflow
+      const originalBg = document.body.style.backgroundColor;
+      document.body.style.backgroundColor = targetColor;
       setTimeout(() => {
-        body.style.backgroundColor = originalBg;
-      }, 30);
+        document.body.style.backgroundColor = originalBg;
+      }, 40);
     };
 
-    // Первая отработка при гидратации
+
+    // Запускаем проверку немедленно
     updateStatus();
 
-    // Наблюдатель за кликами по кнопке смены темы
+    // На светлой теме при первой загрузке класс 'light' может прилететь чуть позже 
+    // из провайдера тем, поэтому делаем повторный микро-вызов через 100мс для подстраховки
+    const backupTimeout = setTimeout(updateStatus, 100);
+
+    // Слежка за кнопкой переключения темы и сменой страниц
     const observer = new MutationObserver(() => {
       updateStatus();
     });
 
-    observer.observe(html, { attributes: true, attributeFilter: ['class', 'data-theme'] });
-    observer.observe(body, { attributes: true, attributeFilter: ['class'] });
+    observer.observe(html, { attributes: true, attributeFilter: ['class', 'data-theme', 'style'] });
+    observer.observe(body, { attributes: true, attributeFilter: ['class', 'style'] });
 
-    return () => observer.disconnect();
+    return () => {
+      clearTimeout(backupTimeout);
+      observer.disconnect();
+    };
   }, []);
 
   return null;

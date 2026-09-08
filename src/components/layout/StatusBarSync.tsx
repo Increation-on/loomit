@@ -1,3 +1,5 @@
+// src\components\layout\StatusBarSync.tsx
+
 'use client';
 
 import { useEffect } from 'react';

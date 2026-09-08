@@ -14,9 +14,9 @@ h1, h2, h3, .font-display {
 }
 
 @layer base {
+  /* По умолчанию (SSR) — темная схема */
   :root {
-    /* Системная схема ВСЕГДА тёмная. Это гарантирует белый текст статус-бара */
-    color-scheme: dark !important; 
+    color-scheme: dark; 
     
     --loom-yellow: #FFD700;
     --loom-cyan: #00FFFF;
@@ -28,20 +28,22 @@ h1, h2, h3, .font-display {
   }
 
   /* Для светлой темы приложения */
-  html.light, .light {
-    /* МЫ УБРАЛИ ОТСЮДА color-scheme: light! System остаётся dark! */
+  html.light {
+    color-scheme: light; 
     
     --loom-yellow: #D4A800;
     --loom-cyan: #00CCCC;
     --loom-magenta: #ff00ff;
-    --loom-black: #FFFFFF;   /* Фон контента становится белым */
+    --loom-black: #FFFFFF;   
     --loom-white: #111111;
     --glitch-pink: #D41976;
     --nav-bg: rgba(255, 255, 255, 0.01);
   }
 
   /* Для темной темы приложения */
-  html.dark, .dark {
+  html.dark {
+    color-scheme: dark;
+    
     --loom-yellow: #FFD700;
     --loom-cyan: #00FFFF;
     --loom-magenta: #ff00ff;
@@ -56,18 +58,16 @@ h1, h2, h3, .font-display {
     color: var(--loom-white);
     font-family: 'Inter', sans-serif;
     
-    /* ФИКС СВЕТЛОЙ ПОЛОСЫ: */
-    /* Вместо padding используем pt с фоном хедера, либо safe-area-отступы */
+    /* Отступы для standalone, чтобы контент не резался вырезом камеры S25 */
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
-  /* Если твой Header имеет фиксированное позиционирование (fixed/sticky), */
-  /* добавь ему внутренний отступ сверху, чтобы он не заезжал под статус-бар криво: */
-  header, .header-pwa-fix {
+  header {
     padding-top: env(safe-area-inset-top, 0px);
   }
 }
+
 
 .gradient-text {
   background: linear-gradient(135deg, #FFD700, #00FFFF, #D41976);

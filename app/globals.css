@@ -15,7 +15,9 @@ h1, h2, h3, .font-display {
 
 @layer base {
   :root {
-    color-scheme: dark; 
+    /* Системная схема ВСЕГДА тёмная. Это гарантирует белый текст статус-бара */
+    color-scheme: dark !important; 
+    
     --loom-yellow: #FFD700;
     --loom-cyan: #00FFFF;
     --loom-magenta: #ff00ff;
@@ -27,10 +29,12 @@ h1, h2, h3, .font-display {
 
   /* Для светлой темы приложения */
   html.light, .light {
+    /* МЫ УБРАЛИ ОТСЮДА color-scheme: light! System остаётся dark! */
+    
     --loom-yellow: #D4A800;
     --loom-cyan: #00CCCC;
     --loom-magenta: #ff00ff;
-    --loom-black: #FFFFFF;   
+    --loom-black: #FFFFFF;   /* Фон контента становится белым */
     --loom-white: #111111;
     --glitch-pink: #D41976;
     --nav-bg: rgba(255, 255, 255, 0.01);
@@ -51,12 +55,19 @@ h1, h2, h3, .font-display {
     background-color: var(--loom-black);
     color: var(--loom-white);
     font-family: 'Inter', sans-serif;
+    
+    /* ФИКС СВЕТЛОЙ ПОЛОСЫ: */
+    /* Вместо padding используем pt с фоном хедера, либо safe-area-отступы */
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
+
+  /* Если твой Header имеет фиксированное позиционирование (fixed/sticky), */
+  /* добавь ему внутренний отступ сверху, чтобы он не заезжал под статус-бар криво: */
+  header, .header-pwa-fix {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
 }
-
-
 
 .gradient-text {
   background: linear-gradient(135deg, #FFD700, #00FFFF, #D41976);

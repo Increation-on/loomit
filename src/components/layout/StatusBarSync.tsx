@@ -4,9 +4,8 @@ import { useEffect } from 'react';
 
 export function StatusBarSync() {
   useEffect(() => {
+    // Намертво держим мета-тег, предотвращая его сброс
     const targetColor = '#121212';
-
-    // 1. Контролируем мета-тег для Android / Samsung One UI
     let meta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
     if (meta) {
       meta.setAttribute('content', targetColor);
@@ -16,10 +15,22 @@ export function StatusBarSync() {
       meta.content = targetColor;
       document.head.appendChild(meta);
     }
+  },);
 
-    // 2. УДАЛЯЕМ инлайновый стиль, чтобы дать Tailwind v4 нормально дышать и менять цвета интерфейса
-    document.documentElement.style.removeProperty('color-scheme');
-  }, []);
-
-  return null;
+  return (
+    <div 
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        // Высота строго равна системному отступу статус-бара
+        height: 'env(safe-area-inset-top, 0px)', 
+        // Жесткий, не зависящий от тем и переменных цвет Плана Б
+        backgroundColor: '#121212', 
+        zIndex: 9999,
+        pointerEvents: 'none',
+      }}
+    />
+  );
 }

@@ -19,8 +19,6 @@ html {
 
 @layer base {
   :root {
-    /* Базовые переменные по умолчанию теперь работают как СВЕТЛАЯ ТЕМА приложения, 
-       но на уровне системы color-scheme принудительно dark */
     --loom-yellow: #D4A800;
     --loom-cyan: #00CCCC;
     --loom-magenta: #ff00ff;
@@ -30,7 +28,6 @@ html {
     --nav-bg: rgba(255, 255, 255, 0.01);
   }
 
-  /* ТЕМНАЯ ТЕМА приложения активируется ТОЛЬКО по классу .dark */
   html.dark, .dark {
     --loom-yellow: #FFD700;
     --loom-cyan: #00FFFF;
@@ -44,11 +41,15 @@ html {
   body {
     background-color: var(--loom-black);
     color: var(--loom-white);
+    /* Защита снизу */
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
   header {
-    padding-top: env(safe-area-inset-top, 0px);
+    /* Хедер больше не должен заезжать ПОД статус-бар, 
+       так как там теперь лежит наша фиксированная темная заглушка. 
+       Сдвигаем его вниз ровно на высоту статус-бара с помощью margin! */
+    margin-top: env(safe-area-inset-top, 0px);
     position: relative;
     z-index: 50;
   }

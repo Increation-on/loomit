@@ -14,36 +14,33 @@ h1, h2, h3, .font-display {
 }
 
 @layer base {
-  /* По умолчанию (SSR) — темная схема */
   :root {
-    color-scheme: dark; 
+    /* Системный слой намертво темный для белых часов на S25 */
+    color-scheme: dark !important; 
     
     --loom-yellow: #FFD700;
     --loom-cyan: #00FFFF;
     --loom-magenta: #ff00ff;
-    --loom-black: #121212;   
+    --loom-black: #121212;   /* Наш темный дефолт */
     --loom-white: #FFFFFF;
     --glitch-pink: #FFC0CB;
     --nav-bg: rgba(0, 0, 0, 0.2);
   }
 
   /* Для светлой темы приложения */
-  html.light {
-    color-scheme: light; 
-    
+  html.light, .light {
+    /* Системную color-scheme отсюда НЕ ТРОГАЕМ, пусть остается dark глобально */
     --loom-yellow: #D4A800;
     --loom-cyan: #00CCCC;
     --loom-magenta: #ff00ff;
-    --loom-black: #FFFFFF;   
+    --loom-black: #FFFFFF;   /* Фон сайта станет белым */
     --loom-white: #111111;
     --glitch-pink: #D41976;
     --nav-bg: rgba(255, 255, 255, 0.01);
   }
 
   /* Для темной темы приложения */
-  html.dark {
-    color-scheme: dark;
-    
+  html.dark, .dark {
     --loom-yellow: #FFD700;
     --loom-cyan: #00FFFF;
     --loom-magenta: #ff00ff;
@@ -57,8 +54,6 @@ h1, h2, h3, .font-display {
     background-color: var(--loom-black);
     color: var(--loom-white);
     font-family: 'Inter', sans-serif;
-    
-    /* Отступы для standalone, чтобы контент не резался вырезом камеры S25 */
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
@@ -67,6 +62,7 @@ h1, h2, h3, .font-display {
     padding-top: env(safe-area-inset-top, 0px);
   }
 }
+
 
 
 .gradient-text {

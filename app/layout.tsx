@@ -34,14 +34,11 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const session = await getServerSession(authOptions);
 
   return (
-    <html lang="ru" className={`${spaceGrotesk.variable} ${inter.variable} h-full antialiased dark`} suppressHydrationWarning>
-      {/* <head> пустой, Next.js сам вставит сюда viewport и метаданные */}
+    <html lang="ru" className={`${spaceGrotesk.variable} ${inter.variable} h-full antialiased`} suppressHydrationWarning>
       <head />
       <body className="min-h-full flex flex-col transition-colors duration-200">
         <Providers session={session}>
-            {/* Наш "запечатывающий" статус-бар компонент */}
             <StatusBarSync />
-            
             <Header />
             <main className="flex-1">{children}</main>
             <Footer />
@@ -50,3 +47,4 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     </html>
   );
 }
+

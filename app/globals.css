@@ -18,28 +18,41 @@ h1, h2, h3, .font-display {
     /* Системный слой намертво темный для белых часов на S25 */
     color-scheme: dark !important; 
     
+    /* Дефолтные переменные по умолчанию привязаны к системной ТЕМНОЙ теме */
     --loom-yellow: #FFD700;
     --loom-cyan: #00FFFF;
     --loom-magenta: #ff00ff;
-    --loom-black: #121212;   /* Наш темный дефолт */
+    --loom-black: #121212;   
     --loom-white: #FFFFFF;
     --glitch-pink: #FFC0CB;
     --nav-bg: rgba(0, 0, 0, 0.2);
   }
 
-  /* Для светлой темы приложения */
+  /* Автоматическая СВЕТЛАЯ тема по системным настройкам (до загрузки JS) */
+  @media (prefers-color-scheme: light) {
+    :root:not(.dark) {
+      --loom-yellow: #D4A800;
+      --loom-cyan: #00CCCC;
+      --loom-magenta: #ff00ff;
+      --loom-black: #FFFFFF;   
+      --loom-white: #111111;
+      --glitch-pink: #D41976;
+      --nav-bg: rgba(255, 255, 255, 0.01);
+    }
+  }
+
+  /* Ручное переключение: принудительная СВЕТЛАЯ тема (хук добавил .light) */
   html.light, .light {
-    /* Системную color-scheme отсюда НЕ ТРОГАЕМ, пусть остается dark глобально */
     --loom-yellow: #D4A800;
     --loom-cyan: #00CCCC;
     --loom-magenta: #ff00ff;
-    --loom-black: #FFFFFF;   /* Фон сайта станет белым */
+    --loom-black: #FFFFFF;   
     --loom-white: #111111;
     --glitch-pink: #D41976;
     --nav-bg: rgba(255, 255, 255, 0.01);
   }
 
-  /* Для темной темы приложения */
+  /* Ручное переключение: принудительная ТЕМНАЯ тема (хук добавил .dark) */
   html.dark, .dark {
     --loom-yellow: #FFD700;
     --loom-cyan: #00FFFF;
@@ -53,17 +66,15 @@ h1, h2, h3, .font-display {
   body {
     background-color: var(--loom-black);
     color: var(--loom-white);
-    font-family: 'Inter', sans-serif;
-    padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
   header {
     padding-top: env(safe-area-inset-top, 0px);
+    position: relative;
+    z-index: 50;
   }
 }
-
-
 
 .gradient-text {
   background: linear-gradient(135deg, #FFD700, #00FFFF, #D41976);

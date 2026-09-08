@@ -34,9 +34,11 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const session = await getServerSession(authOptions);
 
   return (
-    // Добавляем класс dark сюда. Теперь Next.js сразу отдаст темный сайт
     <html lang="ru" className={`${spaceGrotesk.variable} ${inter.variable} h-full antialiased dark`} suppressHydrationWarning>
-      <head />
+      <head>
+        {/* Жесткий нативный фикс: перебивает дефолтный сброс браузера при перезагрузке */}
+        <meta name="theme-color" content="#121212" />
+      </head>
       <body className="min-h-full flex flex-col transition-colors duration-200">
         <Providers session={session}>
             <StatusBarSync />
@@ -48,5 +50,6 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     </html>
   );
 }
+
 
 

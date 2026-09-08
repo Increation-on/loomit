@@ -13,52 +13,30 @@ h1, h2, h3, .font-display {
   font-family: var(--font-display), sans-serif;
 }
 
+html {
+  color-scheme: dark !important;
+}
+
 @layer base {
   :root {
-    /* Системный слой намертво темный для белых часов на S25 */
-    color-scheme: dark !important; 
-    
-    /* Дефолтные переменные по умолчанию привязаны к системной ТЕМНОЙ теме */
-    --loom-yellow: #FFD700;
-    --loom-cyan: #00FFFF;
-    --loom-magenta: #ff00ff;
-    --loom-black: #121212;   
-    --loom-white: #FFFFFF;
-    --glitch-pink: #FFC0CB;
-    --nav-bg: rgba(0, 0, 0, 0.2);
-  }
-
-  /* Автоматическая СВЕТЛАЯ тема по системным настройкам (до загрузки JS) */
-  @media (prefers-color-scheme: light) {
-    :root:not(.dark) {
-      --loom-yellow: #D4A800;
-      --loom-cyan: #00CCCC;
-      --loom-magenta: #ff00ff;
-      --loom-black: #FFFFFF;   
-      --loom-white: #111111;
-      --glitch-pink: #D41976;
-      --nav-bg: rgba(255, 255, 255, 0.01);
-    }
-  }
-
-  /* Ручное переключение: принудительная СВЕТЛАЯ тема (хук добавил .light) */
-  html.light, .light {
+    /* Базовые переменные по умолчанию теперь работают как СВЕТЛАЯ ТЕМА приложения, 
+       но на уровне системы color-scheme принудительно dark */
     --loom-yellow: #D4A800;
     --loom-cyan: #00CCCC;
     --loom-magenta: #ff00ff;
-    --loom-black: #FFFFFF;   
-    --loom-white: #111111;
+    --loom-black: #FFFFFF;   /* Светлый фон */
+    --loom-white: #111111;   /* Темный текст */
     --glitch-pink: #D41976;
     --nav-bg: rgba(255, 255, 255, 0.01);
   }
 
-  /* Ручное переключение: принудительная ТЕМНАЯ тема (хук добавил .dark) */
+  /* ТЕМНАЯ ТЕМА приложения активируется ТОЛЬКО по классу .dark */
   html.dark, .dark {
     --loom-yellow: #FFD700;
     --loom-cyan: #00FFFF;
     --loom-magenta: #ff00ff;
-    --loom-black: #121212;   
-    --loom-white: #FFFFFF;
+    --loom-black: #121212;   /* Темный фон */
+    --loom-white: #FFFFFF;   /* Белый текст */
     --glitch-pink: #FFC0CB;
     --nav-bg: rgba(0, 0, 0, 0.2);
   }

@@ -14,47 +14,35 @@ h1, h2, h3, .font-display {
 }
 
 @layer base {
-  /* Базовый :root задает только системную схему по умолчанию (ТЁМНАЯ) */
   :root {
     color-scheme: dark; 
-    
-    /* Инициализируем переменные сразу темными, чтобы при SSR не было вспышек */
     --loom-yellow: #FFD700;
     --loom-cyan: #00FFFF;
     --loom-magenta: #ff00ff;
     --loom-black: #121212;   
     --loom-white: #FFFFFF;
-    
     --glitch-pink: #FFC0CB;
     --nav-bg: rgba(0, 0, 0, 0.2);
   }
 
-  /* Строгий селектор для СВЕТЛОЙ темы. Никаких :not(.dark)! */
-  /* Работает, только если на html явно висит класс .light */
+  /* Для светлой темы приложения */
   html.light, .light {
-    color-scheme: light !important; 
-    
     --loom-yellow: #D4A800;
     --loom-cyan: #00CCCC;
     --loom-magenta: #ff00ff;
-    --loom-black: #FFFFFF;   /* Чистый белый фон для светлой темы */
+    --loom-black: #FFFFFF;   
     --loom-white: #111111;
-    
     --glitch-pink: #D41976;
     --nav-bg: rgba(255, 255, 255, 0.01);
   }
 
-  /* Строгий селектор для ТЁМНОЙ темы. */
-  /* Гарантирует железный приоритет, если провайдер тем явно добавил класс .dark */
+  /* Для темной темы приложения */
   html.dark, .dark {
-    color-scheme: dark !important;
-    
     --loom-yellow: #FFD700;
     --loom-cyan: #00FFFF;
     --loom-magenta: #ff00ff;
-    --loom-black: #121212;   /* Наш loom-black фон */
+    --loom-black: #121212;   
     --loom-white: #FFFFFF;
-    
     --glitch-pink: #FFC0CB;
     --nav-bg: rgba(0, 0, 0, 0.2);
   }
@@ -63,12 +51,11 @@ h1, h2, h3, .font-display {
     background-color: var(--loom-black);
     color: var(--loom-white);
     font-family: 'Inter', sans-serif;
-    
-    /* Безопасные отступы, чтобы контент standalone PWA не резался камерой S25 */
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 }
+
 
 
 .gradient-text {

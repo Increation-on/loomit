@@ -11,17 +11,12 @@ import { StatusBarSync } from "@/components/layout/StatusBarSync";
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-display' });
 const inter = Inter({ subsets: ['latin', 'cyrillic'], variable: '--font-body' });
 
-// Настраиваем вьюпорт для SSR. 
-// viewportFit: "cover" заставит PWA на Samsung заходить под статус-бар, убирая серые разделительные плашки
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  viewportFit: "cover",
-  themeColor: [
-    { media: '(prefers-color-scheme: dark)', color: '#121212' },
-    { media: '(prefers-color-scheme: light)', color: '#FFFFFF' },
-  ],
+  viewportFit: "cover", 
+  themeColor: "#121212"
 };
 
 export const metadata: Metadata = {
@@ -30,7 +25,7 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "black-translucent", // Для iOS тоже делаем бесшовное слияние с темным фоном
+    statusBarStyle: "black-translucent",
     title: "LoomIt",
   },
 };
@@ -39,16 +34,12 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const session = await getServerSession(authOptions);
 
   return (
-    // Принудительно ставим класс "dark" на html для темной темы по умолчанию при SSR,
-    // чтобы избежать белой вспышки при первой загрузке приложения
-    <html 
-      lang="ru" 
-      className={`${spaceGrotesk.variable} ${inter.variable} h-full antialiased dark`} 
-      suppressHydrationWarning
-    >
-      <body className="min-h-full flex flex-col bg-[#121212] text-white">
+    <html lang="ru" className={`${spaceGrotesk.variable} ${inter.variable} h-full antialiased dark`} suppressHydrationWarning>
+      {/* <head> пустой, Next.js сам вставит сюда viewport и метаданные */}
+      <head />
+      <body className="min-h-full flex flex-col transition-colors duration-200">
         <Providers session={session}>
-            {/* Клиентский синхронизатор статус-бара (логи уберем внутри него) */}
+            {/* Наш "запечатывающий" статус-бар компонент */}
             <StatusBarSync />
             
             <Header />

@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default", // ← меняем на default, чтобы текст был чёрным
+    statusBarStyle: "default",
     title: "LoomIt",
   },
 };

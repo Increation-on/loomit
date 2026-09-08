@@ -14,7 +14,16 @@ const withSerwist = withSerwistInit({
 })
 
 const nextConfig: NextConfig = {
-
+  async rewrites() {
+    return [
+      {
+        source: '/json/:path*',
+        destination: 'http://localhost:3000/json/:path*', // позволяет Chrome читать системные логи
+      },
+    ];
+  },
+  turbopack: {},
+  allowedDevOrigins: ['192.168.0.102'],
   experimental: {
     viewTransition: true,
   },

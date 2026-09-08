@@ -13,36 +13,45 @@ h1, h2, h3, .font-display {
   font-family: var(--font-display), sans-serif;
 }
 
+html {
+  color-scheme: dark !important;
+}
+
 @layer base {
   :root {
     --loom-yellow: #D4A800;
     --loom-cyan: #00CCCC;
     --loom-magenta: #ff00ff;
-    --loom-black: #FFFFFF;
-    --loom-white: #111111;
-    
+    --loom-black: #FFFFFF;   /* Светлый фон */
+    --loom-white: #111111;   /* Темный текст */
     --glitch-pink: #D41976;
-
     --nav-bg: rgba(255, 255, 255, 0.01);
   }
 
-  .dark {
+  html.dark, .dark {
     --loom-yellow: #FFD700;
     --loom-cyan: #00FFFF;
     --loom-magenta: #ff00ff;
-    --loom-black: #000000;
-    --loom-white: #FFFFFF;
-    
+    --loom-black: #121212;   /* Темный фон */
+    --loom-white: #FFFFFF;   /* Белый текст */
     --glitch-pink: #FFC0CB;
-   
-
-     --nav-bg: rgba(0, 0, 0, 0.2);
+    --nav-bg: rgba(0, 0, 0, 0.2);
   }
 
   body {
     background-color: var(--loom-black);
     color: var(--loom-white);
-    font-family: 'Inter', sans-serif;
+    /* Защита снизу */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  header {
+    /* Хедер больше не должен заезжать ПОД статус-бар, 
+       так как там теперь лежит наша фиксированная темная заглушка. 
+       Сдвигаем его вниз ровно на высоту статус-бара с помощью margin! */
+    margin-top: env(safe-area-inset-top, 0px);
+    position: relative;
+    z-index: 50;
   }
 }
 
@@ -131,8 +140,6 @@ h1, h2, h3, .font-display {
   transition: border-color 0.3s ease;
 }
 
-
-
 /* Глитч-полоска с двумя цветами */
 .glitch-scanline-gradient {
   background: linear-gradient(
@@ -168,25 +175,20 @@ h1, h2, h3, .font-display {
   animation: scanline 3s linear infinite;
 }
 
-
 @keyframes divider-flow {
   0% {
     transform: translateY(-150%);
     opacity: 0;
   }
-
   20% {
     opacity: 1;
   }
-
   50% {
     opacity: 0.8;
   }
-
   80% {
     opacity: 1;
   }
-
   100% {
     transform: translateY(300%);
     opacity: 0;
@@ -197,52 +199,39 @@ h1, h2, h3, .font-display {
   animation: divider-flow 3s ease-in-out infinite;
 }
 
-
-
 /* Анимация глитч-линий при навигации */
-
 .noise-line {
   position: absolute;
   height: 1px;
   border-radius: 999px;
-
   opacity: 0;
-
   animation: glitch-noise .32s steps(1) forwards;
 }
 
 @keyframes glitch-noise {
-
   0% {
     opacity: 0;
     transform: scaleX(.6);
   }
-
   15% {
     opacity: 1;
   }
-
   35% {
     opacity: .2;
     transform: translateX(-2px);
   }
-
   55% {
     opacity: .9;
     transform: translateX(1px);
   }
-
   80% {
     opacity: .35;
   }
-
   100% {
     opacity: 0;
     transform: scaleX(.7);
   }
-
 }
-
 
 /* ===== Браузерные артефакты — только для PWA ===== */
 .pwa-mode * {

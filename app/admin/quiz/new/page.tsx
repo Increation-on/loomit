@@ -25,6 +25,14 @@ interface Question {
   explanation?: string;
 }
 
+interface EditModalState {
+  isOpen: boolean;
+  type: 'question' | 'explanation' | 'option';
+  questionIndex: number;
+  optionIndex?: number;
+  value: string;
+}
+
 export default function NewQuizPage() {
   const router = useRouter();
   const [title, setTitle] = useState('');
@@ -36,13 +44,12 @@ export default function NewQuizPage() {
   const { success, error: showError } = useToast();
   const { data: categories } = useGetCategoriesQuery({});
 
-  // Модалка для редактирования варианта
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editingOption, setEditingOption] = useState<{
-    questionIndex: number;
-    optionIndex: number;
-    text: string;
-  } | null>(null);
+  const [editModal, setEditModal] = useState<EditModalState>({
+    isOpen: false,
+    type: 'question',
+    questionIndex: -1,
+    value: '',
+  });
 
   const addQuestion = () => {
     setQuestions([
@@ -113,6 +120,22 @@ export default function NewQuizPage() {
     }
   };
 
+  const handleEditSave = () => {
+    const { type, questionIndex, optionIndex, value } = editModal;
+    const updated = [...questions];
+
+    if (type === 'question') {
+      updated[questionIndex].text = value;
+    } else if (type === 'explanation') {
+      updated[questionIndex].explanation = value;
+    } else if (type === 'option' && optionIndex !== undefined) {
+      updated[questionIndex].options[optionIndex].text = value;
+    }
+
+    setQuestions(updated);
+    setEditModal(prev => ({ ...prev, isOpen: false }));
+  };
+
   return (
     <div className="p-4 max-w-2xl mx-auto pb-24">
       <h1 className="text-2xl font-bold text-(--loom-white) mb-6">Новый квиз</h1>
@@ -162,13 +185,20 @@ export default function NewQuizPage() {
             </CardHeader>
 
             <CardContent className="p-0 space-y-3">
-              <textarea
-                placeholder={`Вопрос ${qi + 1}`}
-                value={q.text}
-                onChange={(e) => updateQuestionText(qi, e.target.value)}
-                className="w-full bg-(--loom-black) border border-(--loom-white)/10 rounded-xl px-3 py-2 text-(--loom-white) focus:outline-none focus:border-(--loom-cyan) resize-none min-h-12"
-                rows={Math.max(2, q.text.split('\n').length)}
-              />
+              {/* Вопрос — клик открывает модалку */}
+              <div
+                onClick={() => {
+                  setEditModal({
+                    isOpen: true,
+                    type: 'question',
+                    questionIndex: qi,
+                    value: q.text,
+                  });
+                }}
+                className="w-full bg-(--loom-black) border border-(--loom-white)/10 rounded-xl px-3 py-2 text-(--loom-white) cursor-pointer min-h-12 hover:border-(--loom-cyan)/50 transition-colors"
+              >
+                {q.text || <span className="text-(--loom-white)/30">Нажмите чтобы ввести вопрос</span>}
+              </div>
 
               {q.options.map((opt, oi) => (
                 <div key={opt.id} className="flex gap-3 items-center">
@@ -189,23 +219,35 @@ export default function NewQuizPage() {
                     placeholder={`Вариант ${oi + 1}`}
                     value={opt.text}
                     onClick={() => {
-                      setEditingOption({ questionIndex: qi, optionIndex: oi, text: opt.text });
-                      setModalOpen(true);
+                      setEditModal({
+                        isOpen: true,
+                        type: 'option',
+                        questionIndex: qi,
+                        optionIndex: oi,
+                        value: opt.text,
+                      });
                     }}
                     readOnly
                   />
                 </div>
               ))}
 
+              {/* Объяснение — клик открывает модалку */}
               <div className="mt-2">
                 <label className="block text-sm text-(--loom-white)/60 mb-1">Объяснение (необязательно)</label>
-                <textarea
-                  value={q.explanation || ''}
-                  onChange={(e) => updateExplanation(qi, e.target.value)}
-                  placeholder="Почему этот ответ правильный?"
-                  className="w-full bg-(--loom-black) border border-(--loom-white)/10 rounded-xl px-3 py-2 text-(--loom-white) focus:outline-none focus:border-(--loom-cyan) resize-y"
-                  rows={3}
-                />
+                <div
+                  onClick={() => {
+                    setEditModal({
+                      isOpen: true,
+                      type: 'explanation',
+                      questionIndex: qi,
+                      value: q.explanation || '',
+                    });
+                  }}
+                  className="w-full bg-(--loom-black) border border-(--loom-white)/10 rounded-xl px-3 py-2 text-(--loom-white) cursor-pointer min-h-12 hover:border-(--loom-cyan)/50 transition-colors"
+                >
+                  {q.explanation || <span className="text-(--loom-white)/30">Нажмите чтобы добавить объяснение</span>}
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -225,28 +267,36 @@ export default function NewQuizPage() {
         </Button>
       </div>
 
-      {/* Модалка для редактирования варианта */}
+      {/* Единая модалка для всего */}
       <Modal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        title="Редактировать вариант"
+        isOpen={editModal.isOpen}
+        onClose={() => setEditModal(prev => ({ ...prev, isOpen: false }))}
+        title={
+          editModal.type === 'question'
+            ? 'Редактировать вопрос'
+            : editModal.type === 'explanation'
+            ? 'Редактировать объяснение'
+            : 'Редактировать вариант'
+        }
       >
         <textarea
-          value={editingOption?.text || ''}
-          onChange={(e) => setEditingOption(prev => prev ? { ...prev, text: e.target.value } : null)}
-          className="w-full bg-(--loom-black) border border-(--loom-white)/10 rounded-xl px-3 py-2 text-(--loom-white) focus:outline-none focus:border-(--loom-cyan) resize-y min-h-20"
-          placeholder="Введите текст варианта"
+          value={editModal.value}
+          onChange={(e) => setEditModal(prev => ({ ...prev, value: e.target.value }))}
+          className="w-full bg-(--loom-black) border border-(--loom-white)/10 rounded-xl px-3 py-2 text-(--loom-white) focus:outline-none focus:border-(--loom-cyan) resize-y min-h-24"
+          placeholder={
+            editModal.type === 'question'
+              ? 'Введите текст вопроса'
+              : editModal.type === 'explanation'
+              ? 'Введите объяснение'
+              : 'Введите текст варианта'
+          }
+          rows={4}
         />
         <div className="flex justify-end gap-2 mt-4">
-          <Button variant="ghost" onClick={() => setModalOpen(false)}>Отмена</Button>
-          <Button variant="glitch" onClick={() => {
-            if (editingOption) {
-              const updated = [...questions];
-              updated[editingOption.questionIndex].options[editingOption.optionIndex].text = editingOption.text;
-              setQuestions(updated);
-              setModalOpen(false);
-            }
-          }}>
+          <Button variant="ghost" onClick={() => setEditModal(prev => ({ ...prev, isOpen: false }))}>
+            Отмена
+          </Button>
+          <Button variant="glitch" onClick={handleEditSave}>
             Сохранить
           </Button>
         </div>

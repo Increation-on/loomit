@@ -74,13 +74,32 @@ export async function DELETE(req: Request) {
             return new NextResponse('Missing category id', { status: 400 });
         }
 
+        // Проверяем, есть ли квизы у категории
+        const quizCount = await prisma.quiz.count({
+            where: { category_id: id },
+        });
+
+        if (quizCount > 0) {
+            return NextResponse.json(
+                { 
+                    error: `Невозможно удалить категорию: ${quizCount} квиз(ов) используют её. Сначала удалите или переназначьте квизы.`,
+                    code: 'QUIZZES_EXIST'
+                },
+                { status: 409 }
+            );
+        }
+
         await prisma.category.delete({
             where: { id },
         });
 
-        return new NextResponse('Category deleted', { status: 200 });
+        return NextResponse.json({ success: true });
     } catch (error) {
-        return new NextResponse('Failed to delete category', { status: 500 });
+        console.error('❌ Delete category error:', error);
+        return NextResponse.json(
+            { error: 'Ошибка при удалении категории' },
+            { status: 500 }
+        );
     }
 }
 

@@ -21,25 +21,31 @@ export function CategoryList({ categories, onRefresh }: CategoryListProps) {
   const [deleteCategoryId, setDeleteCategoryId] = useState<string | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const handleDelete = async () => {
-    if (!deleteCategoryId) return;
-    try {
-      const res = await fetch(`/api/admin/categories?id=${deleteCategoryId}`, {
-        method: 'DELETE',
-      });
-      if (res.ok) {
-        success('Категория удалена');
-        onRefresh();
-      } else {
-        showError('Ошибка при удалении');
-      }
-    } catch (err) {
-      showError('Ошибка сети');
-    } finally {
-      setIsDeleteModalOpen(false);
-      setDeleteCategoryId(null);
+ const handleDelete = async () => {
+  if (!deleteCategoryId) return;
+  
+  try {
+    const res = await fetch(`/api/admin/categories?id=${deleteCategoryId}`, {
+      method: 'DELETE',
+    });
+    
+    const data = await res.json();
+    
+    if (!res.ok) {
+      // Показываем понятное сообщение
+      showError(data.error || 'Ошибка при удалении');
+      return;
     }
-  };
+    
+    success('Категория удалена');
+    onRefresh();
+  } catch (err) {
+    showError('Ошибка сети');
+  } finally {
+    setIsDeleteModalOpen(false);
+    setDeleteCategoryId(null);
+  }
+};
 
   const handleEditSave = async (id: string, name: string, iconUrl: string | null, iconFile: File | null) => {
     setIsUpdating(true);

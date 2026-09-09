@@ -63,6 +63,15 @@ export function TryItSkeleton() {
   );
 }
 
+// ContinueQuizSkeleton — для отмены
+export function ContinueQuizSkeleton() {
+  return (
+    <div className="w-full h-46 rounded-xl overflow-hidden">
+      <Skeleton className="w-full h-full" variant="glitch" />
+    </div>
+  );
+}
+
 // CategorySkeleton
 export function CategorySkeleton() {
   return (

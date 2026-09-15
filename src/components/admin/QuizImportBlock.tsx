@@ -4,7 +4,7 @@ import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/core/Button';
 import { Modal } from '@/components/ui/feedback/Modal';
 import { useToast } from '@/components/ui/feedback/ToastContainer';
-import { Upload, ClipboardPaste } from 'lucide-react';
+import { Upload, ClipboardPaste, Lightbulb } from 'lucide-react';
 import { CategoryConflictModal } from './CategoryConflictModal';
 import { quizImportSchema } from '@/lib/validators/quizImport';
 import { levenshtein, normalizeCategoryName, commonPrefixLength } from '@/lib/utils';
@@ -34,6 +34,7 @@ export function QuizImportBlock({ onImport }: QuizImportBlockProps) {
   const [createCategory] = useCreateCategoryMutation();
 
   const [isPasteModalOpen, setIsPasteModalOpen] = useState(false);
+  const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
   const [jsonText, setJsonText] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -51,7 +52,6 @@ export function QuizImportBlock({ onImport }: QuizImportBlockProps) {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Вызывается, когда категория определена — передаём данные родителю
   const finalizeImport = (data: any, categoryId: string) => {
     const questions = data.questions.map((q: any) => ({
       id: crypto.randomUUID(),
@@ -76,7 +76,6 @@ export function QuizImportBlock({ onImport }: QuizImportBlockProps) {
     setIsProcessing(false);
   };
 
-  // Парсинг и валидация JSON
   const processImport = (jsonString: string) => {
     setIsProcessing(true);
 
@@ -99,7 +98,6 @@ export function QuizImportBlock({ onImport }: QuizImportBlockProps) {
     const { categoryName, ...rest } = validated.data;
     const normalizedInput = normalizeCategoryName(categoryName);
 
-    // 1. Точное совпадение
     const exact = categories.find(
       (c: any) => normalizeCategoryName(c.name) === normalizedInput
     );
@@ -109,7 +107,6 @@ export function QuizImportBlock({ onImport }: QuizImportBlockProps) {
       return;
     }
 
-    // 2. Похожие (Levenshtein + относительный порог + общий префикс)
     const similar = categories
       .map((cat: any) => {
         const normalizedCat = normalizeCategoryName(cat.name);
@@ -123,20 +120,13 @@ export function QuizImportBlock({ onImport }: QuizImportBlockProps) {
           (distance > 0 && distance <= relativeThreshold) ||
           (prefixLen >= 5 && distance > 0);
 
-        return {
-          id: cat.id,
-          name: cat.name,
-          distance,
-          prefixLen,
-          passes,
-        };
+        return { id: cat.id, name: cat.name, distance, prefixLen, passes };
       })
       .filter((cat: any) => cat.passes)
       .sort((a: any, b: any) => a.distance - b.distance)
       .slice(0, 5)
       .map((c: any) => ({ id: c.id, name: c.name }));
 
-    // 3. Модалка
     setConflict({
       isOpen: true,
       categoryName,
@@ -197,6 +187,14 @@ export function QuizImportBlock({ onImport }: QuizImportBlockProps) {
             Вставить JSON
           </Button>
         </div>
+
+        <button
+          onClick={() => setIsHelpModalOpen(true)}
+          className="flex items-center gap-1.5 mt-3 text-(--loom-yellow) hover:text-(--loom-cyan) transition-colors"
+        >
+          <Lightbulb size={16} />
+          <span className='text-(--loom-cyan)/60 text-sm'>Подсказка по формату JSON</span>
+        </button>
       </div>
 
       <input
@@ -207,6 +205,7 @@ export function QuizImportBlock({ onImport }: QuizImportBlockProps) {
         className="hidden"
       />
 
+      {/* Модалка вставки JSON */}
       <Modal
         isOpen={isPasteModalOpen}
         onClose={() => !isProcessing && setIsPasteModalOpen(false)}
@@ -226,6 +225,61 @@ export function QuizImportBlock({ onImport }: QuizImportBlockProps) {
           className="w-full bg-(--loom-black) border border-(--loom-white)/10 rounded-xl px-3 py-2 text-(--loom-white) focus:outline-none focus:border-(--loom-cyan) resize-y min-h-48 font-mono text-xs"
           disabled={isProcessing}
         />
+      </Modal>
+
+      {/* Модалка-подсказка по формату */}
+      <Modal
+        isOpen={isHelpModalOpen}
+        onClose={() => setIsHelpModalOpen(false)}
+        title="Формат JSON"
+      >
+        <div className="space-y-3 text-sm text-(--loom-white)/70">
+          <p className="text-sm">
+            Импортируйте квиз, вставив JSON или загрузив файл:
+          </p>
+
+          <pre className="p-3 bg-(--loom-black) rounded-lg border border-(--loom-white)/10 overflow-x-auto font-mono text-[10px] text-(--loom-white)/70 leading-relaxed">
+{`{
+  "title": "Название квиза",
+  "description": "Описание (опционально)",
+  "categoryName": "JavaScript",
+  "level": "JUNIOR",
+  "questions": [
+    {
+      "text": "Что вернёт \`typeof null\`?",
+      "options": [
+        { "id": "1", "text": "\\"object\\"" },
+        { "id": "2", "text": "\\"null\\"" },
+        { "id": "3", "text": "\\"undefined\\"" },
+        { "id": "4", "text": "\\"boolean\\"" }
+      ],
+      "correctOptionId": "1",
+      "explanation": "Опционально, можно с \`кодом\`"
+    }
+  ]
+}`}
+          </pre>
+
+          <ul className="space-y-1 text-xs text-(--loom-white)/50 list-disc list-inside">
+            <li>
+              <strong className="text-(--loom-white)/70">level</strong>: JUNIOR, MIDDLE или SENIOR
+            </li>
+            <li>
+              <strong className="text-(--loom-white)/70">options</strong>: ровно 4 варианта
+            </li>
+            <li>
+              <strong className="text-(--loom-white)/70">correctOptionId</strong>: должен совпадать с id одного из вариантов
+            </li>
+            <li>
+              Код в бэктиках <code className="text-(--loom-cyan)">`...`</code> — только в{' '}
+              <strong className="text-(--loom-white)/70">text</strong> и{' '}
+              <strong className="text-(--loom-white)/70">explanation</strong>
+            </li>
+            <li>
+              <strong className="text-(--loom-white)/70">categoryName</strong>: если категории нет — предложим создать
+            </li>
+          </ul>
+        </div>
       </Modal>
 
       <CategoryConflictModal

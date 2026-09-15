@@ -65,7 +65,7 @@ export function Providers({
           persistor={persistor}
         >
           <ToastContainer>
-            <NavigationProvider>  {/* 👈 обёртка здесь */}
+            <NavigationProvider>
               {children}
             </NavigationProvider>
           </ToastContainer>

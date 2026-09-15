@@ -1,0 +1,19 @@
+{
+  "title": "Тестовый квиз по JS",
+  "description": "Проверка импорта",
+  "categoryName": "JavaScript",
+  "level": "JUNIOR",
+  "questions": [
+    {
+      "text": "Что вернёт `typeof null`?",
+      "options": [
+        { "id": "1", "text": "\"object\"" },
+        { "id": "2", "text": "\"null\"" },
+        { "id": "3", "text": "\"undefined\"" },
+        { "id": "4", "text": "\"boolean\"" }
+      ],
+      "correctOptionId": "1",
+      "explanation": "`typeof null` возвращает `\"object\"` — историческая особенность"
+    }
+  ]
+}

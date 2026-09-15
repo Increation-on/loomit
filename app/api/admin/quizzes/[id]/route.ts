@@ -79,32 +79,60 @@ export async function PUT(
     return NextResponse.json({ error: 'Category is required' }, { status: 400 });
   }
 
+  // 🔑 Проверка на дубль по названию, исключая сам квиз
+  const existing = await prisma.quiz.findFirst({
+    where: {
+      title: {
+        equals: title.trim(),
+        mode: 'insensitive',
+      },
+      NOT: { id },
+    },
+  });
+
+  if (existing) {
+    return NextResponse.json(
+      { error: `Квиз с названием «${title}» уже существует` },
+      { status: 409 }
+    );
+  }
+
   // Delete old questions (they will be recreated from the new state)
   await prisma.question.deleteMany({ where: { quiz_id: id } });
 
-  const quiz = await prisma.quiz.update({
-    where: { id },
-    data: {
-      title,
-      description: description || '',
-      category_id: categoryId,
-      level,
-      updated_at: new Date(),
-      questions: {
-        create: questions.map((q, index) => ({
-          id: crypto.randomUUID(),
-          text: q.text,
-          options: q.options,
-          correct_option_id: q.correctOptionId,
-          explanation: q.explanation,
-          order: index,
-        })),
+  try {
+    const quiz = await prisma.quiz.update({
+      where: { id },
+      data: {
+        title: title.trim(),
+        description: description || '',
+        category_id: categoryId,
+        level,
+        updated_at: new Date(),
+        questions: {
+          create: questions.map((q, index) => ({
+            id: crypto.randomUUID(),
+            text: q.text,
+            options: q.options,
+            correct_option_id: q.correctOptionId,
+            explanation: q.explanation,
+            order: index,
+          })),
+        },
       },
-    },
-    include: { questions: true, category: true },
-  });
+      include: { questions: true, category: true },
+    });
 
-  return NextResponse.json(quiz);
+    return NextResponse.json(quiz);
+  } catch (error: any) {
+    if (error.code === 'P2002') {
+      return NextResponse.json(
+        { error: `Квиз с названием «${title}» уже существует` },
+        { status: 409 }
+      );
+    }
+    throw error;
+  }
 }
 
 /**

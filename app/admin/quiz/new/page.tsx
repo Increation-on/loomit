@@ -43,7 +43,7 @@ export default function NewQuizPage() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [saving, setSaving] = useState(false);
   const { success, error: showError } = useToast();
-  const { data: categories } = useGetCategoriesQuery({});
+  const { data: categories } = useGetCategoriesQuery();
 
   const [editModal, setEditModal] = useState<EditModalState>({
     isOpen: false,
@@ -137,10 +137,24 @@ export default function NewQuizPage() {
     setEditModal(prev => ({ ...prev, isOpen: false }));
   };
 
+  const handleImport = (data: {
+  title: string;
+  description?: string;
+  categoryId: string;
+  level: 'JUNIOR' | 'MIDDLE' | 'SENIOR';
+  questions: any[];
+}) => {
+  setTitle(data.title);
+  setDescription(data.description || '');
+  setCategoryId(data.categoryId);
+  setLevel(data.level);
+  setQuestions(data.questions);
+};
+
   return (
     <div className="p-4 max-w-2xl mx-auto pb-24">
       <h1 className="text-2xl font-bold text-(--loom-white) mb-6">Новый квиз</h1>
-      <QuizImportBlock />
+      <QuizImportBlock onImport={handleImport} />
 <div className="flex items-center gap-3 my-6">
   <div className="flex-1 h-px bg-linear-to-r from-transparent via-(--loom-cyan)/30 to-transparent" />
   <span className="text-xs text-(--loom-white)/40 uppercase tracking-widest font-mono">

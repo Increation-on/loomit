@@ -5,52 +5,50 @@ import { CategoryItem } from './CategoryItem';
 import { CategoryEditModal } from './CategoryEditModal';
 import { Modal } from '@/components/ui/feedback/Modal';
 import { useToast } from '@/components/ui/feedback/ToastContainer';
+import {
+  useDeleteCategoryMutation,
+  useUpdateCategoryMutation,
+} from '@/store/api/categoryApi';
 
 interface CategoryListProps {
   categories: any[];
-  onRefresh: () => void;
 }
 
-export function CategoryList({ categories, onRefresh }: CategoryListProps) {
+export function CategoryList({ categories }: CategoryListProps) {
   const { success, error: showError } = useToast();
+
+  const [deleteCategory, { isLoading: isDeleting }] = useDeleteCategoryMutation();
+  const [updateCategory, { isLoading: isUpdating }] = useUpdateCategoryMutation();
 
   const [editingCategory, setEditingCategory] = useState<any | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
 
   const [deleteCategoryId, setDeleteCategoryId] = useState<string | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
- const handleDelete = async () => {
-  if (!deleteCategoryId) return;
-  
-  try {
-    const res = await fetch(`/api/admin/categories?id=${deleteCategoryId}`, {
-      method: 'DELETE',
-    });
-    
-    const data = await res.json();
-    
-    if (!res.ok) {
-      // Показываем понятное сообщение
-      showError(data.error || 'Ошибка при удалении');
-      return;
-    }
-    
-    success('Категория удалена');
-    onRefresh();
-  } catch (err) {
-    showError('Ошибка сети');
-  } finally {
-    setIsDeleteModalOpen(false);
-    setDeleteCategoryId(null);
-  }
-};
+  const handleDelete = async () => {
+    if (!deleteCategoryId) return;
 
-  const handleEditSave = async (id: string, name: string, iconUrl: string | null, iconFile: File | null) => {
-    setIsUpdating(true);
+    try {
+      await deleteCategory(deleteCategoryId).unwrap();
+      success('Категория удалена');
+    } catch (err: any) {
+      showError(err.data?.error || 'Ошибка при удалении');
+    } finally {
+      setIsDeleteModalOpen(false);
+      setDeleteCategoryId(null);
+    }
+  };
+
+  const handleEditSave = async (
+    id: string,
+    name: string,
+    iconUrl: string | null,
+    iconFile: File | null
+  ) => {
     try {
       let finalIconUrl = iconUrl;
+
       if (iconFile) {
         const formData = new FormData();
         formData.append('file', iconFile);
@@ -63,27 +61,12 @@ export function CategoryList({ categories, onRefresh }: CategoryListProps) {
         finalIconUrl = data.url;
       }
 
-      const res = await fetch('/api/admin/categories', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id,
-          name,
-          iconUrl: finalIconUrl,
-        }),
-      });
-      if (res.ok) {
-        success('Категория обновлена');
-        setIsEditModalOpen(false);
-        setEditingCategory(null);
-        onRefresh();
-      } else {
-        showError('Ошибка при обновлении');
-      }
-    } catch (err) {
-      showError('Ошибка сети');
-    } finally {
-      setIsUpdating(false);
+      await updateCategory({ id, name, iconUrl: finalIconUrl }).unwrap();
+      success('Категория обновлена');
+      setIsEditModalOpen(false);
+      setEditingCategory(null);
+    } catch (err: any) {
+      showError(err.data?.error || err.message || 'Ошибка обновления');
     }
   };
 
@@ -132,7 +115,7 @@ export function CategoryList({ categories, onRefresh }: CategoryListProps) {
           setDeleteCategoryId(null);
         }}
         title="Удалить категорию?"
-        confirmText="Удалить"
+        confirmText={isDeleting ? 'Удаление...' : 'Удалить'}
         cancelText="Отмена"
         onConfirm={handleDelete}
         onCancel={() => {

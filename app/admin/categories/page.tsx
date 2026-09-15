@@ -1,42 +1,25 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable react-hooks/set-state-in-effect */
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useToast } from '@/components/ui/feedback/ToastContainer';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
 import { BackLink } from '@/components/navigation/BackLink';
 import { CategoryForm } from '@/components/admin/categories/CategoryForm';
 import { CategoryList } from '@/components/admin/categories/CategoryList';
+import {
+  useGetCategoriesQuery,
+  useCreateCategoryMutation,
+} from '@/store/api/categoryApi';
 
 export default function CategoriesPage() {
-  const [categories, setCategories] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [isCreating, setIsCreating] = useState(false);
+  const { data: categories = [], isLoading } = useGetCategoriesQuery();
+  const [createCategory, { isLoading: isCreating }] = useCreateCategoryMutation();
   const { success, error: showError } = useToast();
 
-  const loadCategories = async () => {
-    try {
-      const res = await fetch('/api/admin/categories');
-      if (res.ok) {
-        const data = await res.json();
-        setCategories(data);
-      }
-    } catch (err) {
-      console.error('Failed to load categories', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadCategories();
-  }, []);
-
   const handleAddCategory = async (name: string, iconFile: File | null) => {
-    setIsCreating(true);
     try {
-      let iconUrl = null;
+      let iconUrl: string | null = null;
+
       if (iconFile) {
         const formData = new FormData();
         formData.append('file', iconFile);
@@ -49,30 +32,18 @@ export default function CategoriesPage() {
         iconUrl = data.url;
       }
 
-      const res = await fetch('/api/admin/categories', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, iconUrl }),
-      });
-
-      if (res.ok) {
-        success('Категория добавлена');
-        loadCategories();
+      await createCategory({ name, iconUrl }).unwrap();
+      success('Категория добавлена');
+    } catch (err: any) {
+      if (err.status === 409) {
+        showError('Категория с таким названием уже существует');
       } else {
-        if (res.status === 409) {
-          showError('Категория с таким названием уже существует');
-        } else {
-          showError('Ошибка при добавлении');
-        }
+        showError(err.data?.error || err.message || 'Ошибка при добавлении');
       }
-    } catch (err) {
-      showError('Ошибка сети');
-    } finally {
-      setIsCreating(false);
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="p-4 max-w-2xl mx-auto pb-24">
         <Skeleton className="h-10 w-64 mb-6" />
@@ -99,10 +70,12 @@ export default function CategoriesPage() {
         <BackLink fallback="/admin" className="mb-4" />
       </div>
 
-      <h1 className="text-2xl font-bold text-(--loom-white) mb-6">Управление категориями</h1>
+      <h1 className="text-2xl font-bold text-(--loom-white) mb-6">
+        Управление категориями
+      </h1>
 
       <CategoryForm onAdd={handleAddCategory} isLoading={isCreating} />
-      <CategoryList categories={categories} onRefresh={loadCategories} />
+      <CategoryList categories={categories} />
     </div>
   );
 }

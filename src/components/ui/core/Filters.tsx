@@ -36,7 +36,7 @@ export function Filters({
   showSort = true,
   className,
 }: FiltersProps) {
-  const { data: categories, isLoading } = useGetCategoriesQuery({});
+  const { data: categories, isLoading } = useGetCategoriesQuery();
 
   const sortOptions = [
     { value: 'popular', label: 'Популярные' },

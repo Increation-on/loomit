@@ -220,10 +220,10 @@ export type quizOrderByWithRelationInput = {
 
 export type quizWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  title?: string
   AND?: Prisma.quizWhereInput | Prisma.quizWhereInput[]
   OR?: Prisma.quizWhereInput[]
   NOT?: Prisma.quizWhereInput | Prisma.quizWhereInput[]
-  title?: Prisma.StringFilter<"quiz"> | string
   description?: Prisma.StringNullableFilter<"quiz"> | string | null
   category_id?: Prisma.StringFilter<"quiz"> | string
   level?: Prisma.EnumLevelNullableFilter<"quiz"> | $Enums.Level | null
@@ -233,7 +233,7 @@ export type quizWhereUniqueInput = Prisma.AtLeast<{
   attempts?: Prisma.AttemptListRelationFilter
   questions?: Prisma.QuestionListRelationFilter
   favorites?: Prisma.FavoriteListRelationFilter
-}, "id">
+}, "id" | "title">
 
 export type quizOrderByWithAggregationInput = {
   id?: Prisma.SortOrder

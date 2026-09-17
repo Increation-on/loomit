@@ -16,9 +16,11 @@ async function createAttemptWithFirstAnswer({
   quizId,
   questionId,
   selectedOptionId,
+  selectedOptionText,
   isCorrect,
   questionText,
   correctOptionId,
+  correctOptionText,
 }: any) {
   // 1. Получаем все вопросы квиза
   const questions = await prisma.question.findMany({
@@ -60,9 +62,11 @@ async function createAttemptWithFirstAnswer({
         {
           questionId,
           selectedOptionId,
+          selectedOptionText,
           isCorrect,
           questionText,
           correctOptionId,
+          correctOptionText,
         },
       ],
       question_order: shuffledIds,
@@ -158,14 +162,20 @@ export async function PATCH(
     const { id: attemptId } = await params;
     const body = await request.json();
 
+    console.log('[PATCH] body:', JSON.stringify(body, null, 2));
+    console.log('[PATCH] attemptId:', attemptId);
+    console.log('[PATCH] selectedOptionText:', body.selectedOptionText);
+
     const {
       questionId,
       selectedOptionId,
+      selectedOptionText,
       isCorrect,
       questionText,
       correctOptionId,
+      correctOptionText,
       forceComplete,
-      quizId, // ← добавляем quizId для создания
+      quizId,
     } = body;
 
     // ============================================================
@@ -206,9 +216,11 @@ export async function PATCH(
         quizId,
         questionId,
         selectedOptionId,
+        selectedOptionText,
         isCorrect,
         questionText,
         correctOptionId,
+        correctOptionText,
       });
 
       attempt = result.attempt;
@@ -238,9 +250,11 @@ export async function PATCH(
     const newAnswer = {
       questionId,
       selectedOptionId,
+      selectedOptionText,
       isCorrect,
       questionText,
       correctOptionId,
+      correctOptionText,
     };
 
     if (existingAnswerIndex !== -1) {

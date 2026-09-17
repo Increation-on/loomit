@@ -17,7 +17,7 @@ export default function AttemptDetailPage() {
   const quizId = searchParams.get('quizId');
 
   const { data: attempt, isLoading: attemptLoading } = useGetAttemptByIdQuery(id);
-  
+
   const effectiveQuizId = quizId || attempt?.quiz_id;
 
   const { data: quiz, isLoading: quizLoading } = useGetQuizByIdQuery(effectiveQuizId ?? '', {
@@ -71,46 +71,29 @@ export default function AttemptDetailPage() {
       <div className="space-y-4">
         {attempt.answers?.map((a: any, i: number) => {
           const isCorrect = a.isCorrect ?? false;
-          const question = a;
 
-          const getSelectedText = (a: any, question: any) => {
-            const selectedId = a.selectedOptionId || a.selected_option_id;
-            const options = question?.options || [];
+          // 🔑 Ищем вопрос по тексту (questionId в attempt.answers нет)
+          const realQuestion = quiz?.questions?.find(
+            (q: any) => q.text === a.questionText
+          );
 
-            const found = options.find((o: any) => o.id === selectedId);
-            if (found) return found.text;
-
-            if (typeof options[0] === 'string') {
-              const index = parseInt(selectedId) - 1;
-              if (index >= 0 && index < options.length) {
-                return options[index];
-              }
-            }
-
-            return selectedId;
+          const getSelectedText = () => {
+            return a.selectedOptionText || a.selectedOptionId; // ← просто текст
           };
 
-          const getCorrectText = (a: any, question: any) => {
-            const correctId = a.correctOptionId;
-            if (!correctId) return '—';
-
-            const options = question?.options || [];
-
-            const found = options.find((o: any) => String(o.id) === String(correctId));
-            if (found) return found.text;
-
-            if (typeof options[0] === 'string') {
-              const index = parseInt(correctId as string) - 1;
-              if (index >= 0 && index < options.length) {
-                return options[index];
-              }
-            }
-
-            return correctId;
+          const getCorrectText = () => {
+            return a.correctOptionText || a.correctOptionId; // ← просто текст
           };
 
-          const explanation = quiz?.questions?.[i]?.explanation;
-
+          const explanation = realQuestion?.explanation;
+          
+            console.log('[ANSWER]', {
+  questionText: a.questionText?.slice(0, 30),
+  selectedOptionId: a.selectedOptionId,
+  selectedOptionText: a.selectedOptionText,
+  correctOptionId: a.correctOptionId,
+  correctOptionText: a.correctOptionText,
+});
           return (
             <div
               key={i}
@@ -128,18 +111,19 @@ export default function AttemptDetailPage() {
 
               <div className="flex-1 space-y-1">
                 <p className="text-(--loom-white) font-medium text-sm">
-                  {i + 1}. {a.questionText || 'Вопрос'}
+                  {i + 1}. {a.questionText || realQuestion?.text || 'Вопрос'}
                 </p>
                 <div className="flex flex-wrap gap-4 text-sm">
                   <span className="text-(--loom-white)/60">
                     Ваш ответ:{' '}
                     <span className={isCorrect ? 'text-(--loom-cyan)' : 'text-(--glitch-pink)'}>
-                      {getSelectedText(a, question)}
+                      {getSelectedText()}
                     </span>
                   </span>
                   {!isCorrect && (
                     <span className="text-(--loom-cyan)">
-                      <span className='text-(--loom-yellow)'> Правильный: </span>{getCorrectText(a, question)}
+                      <span className="text-(--loom-yellow)"> Правильный: </span>
+                      {getCorrectText()}
                     </span>
                   )}
                 </div>

@@ -172,41 +172,61 @@ export function QuizContent({ id }: { id: string }) {
 
   // ============================================================
   // ПОДТВЕРЖДЕНИЕ ОТВЕТА 
-// ============================================================
-const handleConfirmAnswer = async () => {
-  if (isSubmitting || !currentQuestion || !selectedOption) return;
-  setIsSubmitting(true);
+  // ============================================================
+  const handleConfirmAnswer = async () => {
+    if (isSubmitting || !currentQuestion || !selectedOption) return;
+    setIsSubmitting(true);
 
-  try {
-    const isCorrect = currentQuestion.correctOptionId === selectedOption;
-    const currentActiveId = attemptId || reduxAttemptId;
+    try {
+      const isCorrect = currentQuestion.correctOptionId === selectedOption;
+      const currentActiveId = attemptId || reduxAttemptId;
 
-    const answerData: any = {
-      quizId: id,
-      questionId: currentQuestion.id,
-      selectedOptionId: selectedOption,
-      isCorrect,
-      questionText: currentQuestion.text,
-      correctOptionId: currentQuestion.correctOptionId,
-    };
+      // 🔑 Находим текст выбранной и правильной опции
+      const selectedOptionData = currentQuestion.options.find(
+        (o) => String(o.id) === String(selectedOption)
+      );
 
-    if (!currentActiveId) {
-      answerData.questionOrder = questionOrder;
+      const correctOptionData = currentQuestion.options.find(
+        (o) => String(o.id) === String(currentQuestion.correctOptionId)
+      );
+
+      console.log('[CONFIRM]', {
+        selectedOption,
+        optionIds: currentQuestion.options.map((o: any) => o.id),
+        selectedOptionData,
+        correctOptionId: currentQuestion.correctOptionId,
+        correctOptionData,
+      });
+
+
+      const answerData: any = {
+        quizId: id,
+        questionId: currentQuestion.id,
+        selectedOptionId: selectedOption,
+        selectedOptionText: selectedOptionData?.text || '',
+        isCorrect,
+        questionText: currentQuestion.text,
+        correctOptionId: currentQuestion.correctOptionId,
+        correctOptionText: correctOptionData?.text || '',
+      };
+
+      if (!currentActiveId) {
+        answerData.questionOrder = questionOrder;
+      }
+
+      const result = await saveStep(currentActiveId, answerData);
+
+      if (result?.attempt?.id) {
+        setAttemptId(result.attempt.id);
+      }
+      // ✅ Обновляем Redux (confirmAnswer)
+      dispatch(confirmAnswer());
+    } catch (error) {
+      console.error('❌ Ошибка сохранения ответа:', error);
+    } finally {
+      setIsSubmitting(false);
     }
-
-    const result = await saveStep(currentActiveId, answerData);
-
-    if (result?.attempt?.id) {
-      setAttemptId(result.attempt.id);
-    }
-    // ✅ Обновляем Redux (confirmAnswer)
-    dispatch(confirmAnswer());
-  } catch (error) {
-    console.error('❌ Ошибка сохранения ответа:', error);
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+  };
 
   // ============================================================
   // ФИНИШ
@@ -272,9 +292,8 @@ const handleConfirmAnswer = async () => {
   // ============================================================
   return (
     <div
-      className={`min-h-screen bg-(--loom-black) pb-24 flex flex-col items-center mx-auto overflow-hidden ${
-        hideNavigation ? 'pt-10' : 'pt-16'
-      }`}
+      className={`min-h-screen bg-(--loom-black) pb-24 flex flex-col items-center mx-auto overflow-hidden ${hideNavigation ? 'pt-10' : 'pt-16'
+        }`}
     >
       <div className="w-full max-w-2xl px-4 mb-6">
         {currentQuiz && (

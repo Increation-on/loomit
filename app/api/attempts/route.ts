@@ -14,10 +14,12 @@ export async function POST(request: Request) {
       quizId,
       questionId,
       selectedOptionId,
+      selectedOptionText,   // ← новое
       isCorrect,
       questionText,
       correctOptionId,
-      questionOrder, // ← принимаем порядок от клиента
+      correctOptionText,    // ← новое
+      questionOrder,
     } = body;
 
     if (!quizId || !questionId || !selectedOptionId) {
@@ -51,8 +53,6 @@ export async function POST(request: Request) {
     const questionsMap = Object.fromEntries(questions.map((q) => [q.id, q]));
 
     // 3. Определяем порядок вопросов
-    //    - Если передан questionOrder — используем его
-    //    - Иначе — используем порядок из БД (как есть)
     const orderIds = questionOrder && Array.isArray(questionOrder) && questionOrder.length > 0
       ? questionOrder
       : questions.map((q) => q.id);
@@ -88,12 +88,14 @@ export async function POST(request: Request) {
           {
             questionId,
             selectedOptionId,
+            selectedOptionText,   // ← сохраняем
             isCorrect,
             questionText,
             correctOptionId,
+            correctOptionText,    // ← сохраняем
           },
         ],
-        question_order: orderIds, // ← сохраняем переданный порядок
+        question_order: orderIds,
         status: 'IN_PROGRESS',
         sync_status: 'synced',
       },

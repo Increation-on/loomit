@@ -18,7 +18,7 @@ export async function GET(
     select: {
       id: true,
       user_id: true,
-      quiz_id: true, // ✅ добавляем
+      quiz_id: true,
       score: true,
       total_questions: true,
       answers: true,
@@ -34,7 +34,7 @@ export async function GET(
               text: true,
               options: true,
               correct_option_id: true,
-              explanation: true, // ✅ тоже добавляем
+              explanation: true,
             },
           },
         },
@@ -54,7 +54,13 @@ export async function GET(
   }
 
   const formattedAnswers = rawAnswers.map((a: any, index: number) => {
-    const question = attempt.quiz.questions[index] || null;
+    const questionText = a.questionText;
+
+    // 🔑 Ищем вопрос по тексту, а не по индексу
+    // (потому что ответы идут в порядке прохождения, а вопросы — в порядке order)
+    const question = attempt.quiz.questions.find(
+      (q: any) => q.text === questionText
+    ) || null;
 
     let optionsArray: any[] = [];
     if (question?.options) {
@@ -71,17 +77,20 @@ export async function GET(
 
     return {
       id: a.id || index,
-      questionText: question?.text || 'Вопрос',
+      questionText: question?.text || a.questionText || 'Вопрос',
       selectedOptionId: a.selectedOptionId || a.selected_option_id,
-      isCorrect: a.isCorrect || a.is_correct,
-      correctOptionId: question?.correct_option_id,
+      selectedOptionText: a.selectedOptionText || a.selected_option_text,
+      isCorrect: a.isCorrect ?? a.is_correct,
+      correctOptionId: a.correctOptionId || question?.correct_option_id,
+      correctOptionText: a.correctOptionText || a.correct_option_text,
+      explanation: question?.explanation || null, // ← объяснение сразу в ответе
       options: optionsArray,
     };
   });
 
   return NextResponse.json({
     id: attempt.id,
-    quiz_id: attempt.quiz_id, // ✅ теперь передаём в ответ
+    quiz_id: attempt.quiz_id,
     quizTitle: attempt.quiz.title,
     score: attempt.score,
     totalQuestions: attempt.total_questions,

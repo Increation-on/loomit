@@ -7,8 +7,8 @@ interface UseQuizFontSizeProps {
   minFontSize?: number;
   maxFontSize?: number;
   step?: number;
-  mode?: 'canvas' | 'dom'; // Новое: переключатель режима расчета
-  dependencies?: any[];    // Зависимости для перезапуска
+  mode?: 'canvas' | 'dom';
+  dependencies?: any[];
 }
 
 export const useQuizFontSize = ({
@@ -16,12 +16,13 @@ export const useQuizFontSize = ({
   minFontSize = 12,
   maxFontSize = 24,
   step = 1,
-  mode = 'canvas',         // По умолчанию используем быстрый Canvas
+  mode = 'canvas',
   dependencies = [],
 }: UseQuizFontSizeProps) => {
   const [fontSize, setFontSize] = useState<number>(maxFontSize);
-  const [isReady, setIsReady] = useState<boolean>(false); // Защита от прыжков
+  const [isReady, setIsReady] = useState<boolean>(false);
   const elementRef = useRef<HTMLElement | null>(null);
+  const lastSizeRef = useRef<number | null>(null);
 
   const adjustFontSize = useCallback(
     (node: HTMLElement) => {
@@ -37,16 +38,16 @@ export const useQuizFontSize = ({
         parseFloat(computedStyle.paddingTop) +
         parseFloat(computedStyle.paddingBottom);
 
-      // Рассчитываем доступные границы
       let availableWidth = node.clientWidth - paddingX;
       let availableHeight = node.clientHeight - paddingY;
 
-      // Если мы в DOM-режиме, надежнее мерить по родителю (как для вопроса)
       if (mode === 'dom' && node.parentElement) {
         const parentStyle = window.getComputedStyle(node.parentElement);
-        const parentPaddingX = parseFloat(parentStyle.paddingLeft) + parseFloat(parentStyle.paddingRight);
-        const parentPaddingY = parseFloat(parentStyle.paddingTop) + parseFloat(parentStyle.paddingBottom);
-        
+        const parentPaddingX =
+          parseFloat(parentStyle.paddingLeft) + parseFloat(parentStyle.paddingRight);
+        const parentPaddingY =
+          parseFloat(parentStyle.paddingTop) + parseFloat(parentStyle.paddingBottom);
+
         availableWidth = node.parentElement.clientWidth - parentPaddingX;
         availableHeight = node.parentElement.clientHeight - parentPaddingY;
       }
@@ -55,7 +56,6 @@ export const useQuizFontSize = ({
 
       let currentSize = maxFontSize;
 
-      // --- РЕЖИМ 1: ДЛЯ ВОПРОСА (DOM Клонирование с учетом <code>) ---
       if (mode === 'dom') {
         const clone = node.cloneNode(true) as HTMLElement;
         clone.style.position = 'absolute';
@@ -73,9 +73,7 @@ export const useQuizFontSize = ({
           currentSize -= step;
         }
         document.body.removeChild(clone);
-      } 
-      // --- РЕЖИМ 2: ДЛЯ ОПЦИЙ (Быстрый Canvas для чистых строк) ---
-      else {
+      } else {
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
         if (!context) return;
@@ -95,7 +93,12 @@ export const useQuizFontSize = ({
           currentSize -= step;
         }
       }
-
+      // 🔑 Защита от повторов — не обновляем, если размер не изменился
+      if (lastSizeRef.current === currentSize) {
+        setIsReady(true);
+        return;
+      }
+      lastSizeRef.current = currentSize;
       setFontSize(currentSize);
 
       requestAnimationFrame(() => {
@@ -106,27 +109,21 @@ export const useQuizFontSize = ({
   );
 
   const refCallback = useCallback(
-    (node: HTMLElement | null) => {
-      if (node) {
-        elementRef.current = node;
-        adjustFontSize(node);
+  (node: HTMLElement | null) => {
+    if (node) {
+      elementRef.current = node;
+      adjustFontSize(node);
+    } else if (elementRef.current) {
+      elementRef.current = null;
+    }
+  },
+  [adjustFontSize]
+);
 
-        const resizeObserver = new ResizeObserver(() => {
-          adjustFontSize(node);
-        });
-        resizeObserver.observe(node);
-
-        (node as any)._ro = resizeObserver;
-      } else if (elementRef.current) {
-        const oldNode = elementRef.current as any;
-        if (oldNode._ro) {
-          oldNode._ro.disconnect();
-        }
-        elementRef.current = null;
-      }
-    },
-    [adjustFontSize]
-  );
+  // Сброс кэша при смене текста
+  useEffect(() => {
+    lastSizeRef.current = null;
+  }, [text]);
 
   useEffect(() => {
     if (elementRef.current) {

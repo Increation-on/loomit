@@ -86,14 +86,7 @@ export default function AttemptDetailPage() {
           };
 
           const explanation = realQuestion?.explanation;
-          
-            console.log('[ANSWER]', {
-  questionText: a.questionText?.slice(0, 30),
-  selectedOptionId: a.selectedOptionId,
-  selectedOptionText: a.selectedOptionText,
-  correctOptionId: a.correctOptionId,
-  correctOptionText: a.correctOptionText,
-});
+         
           return (
             <div
               key={i}

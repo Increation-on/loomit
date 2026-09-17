@@ -190,15 +190,6 @@ export function QuizContent({ id }: { id: string }) {
         (o) => String(o.id) === String(currentQuestion.correctOptionId)
       );
 
-      console.log('[CONFIRM]', {
-        selectedOption,
-        optionIds: currentQuestion.options.map((o: any) => o.id),
-        selectedOptionData,
-        correctOptionId: currentQuestion.correctOptionId,
-        correctOptionData,
-      });
-
-
       const answerData: any = {
         quizId: id,
         questionId: currentQuestion.id,

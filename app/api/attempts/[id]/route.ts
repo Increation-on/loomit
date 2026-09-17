@@ -161,11 +161,7 @@ export async function PATCH(
   try {
     const { id: attemptId } = await params;
     const body = await request.json();
-
-    console.log('[PATCH] body:', JSON.stringify(body, null, 2));
-    console.log('[PATCH] attemptId:', attemptId);
-    console.log('[PATCH] selectedOptionText:', body.selectedOptionText);
-
+    
     const {
       questionId,
       selectedOptionId,

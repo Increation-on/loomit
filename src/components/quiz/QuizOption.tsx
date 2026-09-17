@@ -27,7 +27,7 @@ export function QuizOption({
   icon,
   onClick,
   className,
-  containerHeight = 62,
+  containerHeight = 65,
 }: QuizOptionProps) {
   // Хук считает размер один раз, ориентируясь на стабильную ширину контейнера
   const { fontSize, isReady, ref } = useQuizFontSize({

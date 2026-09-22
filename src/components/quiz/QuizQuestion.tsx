@@ -57,7 +57,7 @@ const formatCode = (code: string) => {
     const closeBraceIndex = code.lastIndexOf('}');
     if (openBraceIndex !== -1 && closeBraceIndex !== -1) {
       const header = code.slice(0, openBraceIndex + 1).trim();
-      const body = code.slice(openBraceIndex + 1, closeBraceIndex).trim(); 
+      const body = code.slice(openBraceIndex + 1, closeBraceIndex).trim();
       if (body === '') return `${header}}`; // Если внутри пусто, схлопываем
       return `${header}\n  ${body}\n}`;
     }
@@ -95,8 +95,7 @@ const formatQuestionText = (text: string, fontSize: number) => {
         return (
           <pre
             key={i}
-           style={{ fontSize: `${Math.max(fontSize * 0.95, 14)}px` }}
-            className="font-mono bg-(--loom-white)/10 px-4 py-3 rounded-lg text-(--loom-yellow) my-3 w-full text-left whitespace-pre leading-relaxed box-border border border-(--loom-white)/5"
+            className="font-mono bg-(--loom-white)/10 px-4 py-3 rounded-lg text-(--loom-yellow) my-3 w-full text-left whitespace-pre-wrap break-words text-[14px] leading-relaxed box-border border border-(--loom-white)/5"
           >
             <code>{code}</code>
           </pre>
@@ -106,18 +105,18 @@ const formatQuestionText = (text: string, fontSize: number) => {
       return (
         <code
           key={i}
-          style={{ fontSize: `${Math.max(fontSize * 0.9, 14)}px` }}
-          // 🔑 Заменили whitespace-normal на whitespace-nowrap.
-          // inline-block и max-w-full заставят блок аккуратно ужиматься вместе с уменьшением шрифта от хука
-          className="font-mono bg-(--loom-white)/10 px-1.5 py-0.5 rounded text-(--loom-yellow) inline-block max-w-full whitespace-nowrap align-middle mx-0.5"
+          // 🔑 Полностью изолируем код от хука: жесткий размер text-[14px] или text-sm.
+          // И возвращаем break-words + inline-block вместо nowrap, чтобы он физически не мог вызвать скролл!
+          className="font-mono bg-(--loom-white)/10 px-1.5 py-0.5 rounded text-(--loom-yellow) inline-block max-w-full whitespace-normal break-words text-[14px] align-middle mx-0.5"
         >
           {code}
         </code>
       );
     }
-    return part;
+    return <span key={i} className="align-middle">{part}</span>;
   });
 };
+
 
 
 
@@ -137,11 +136,11 @@ export function QuizQuestion({
 }: QuizQuestionProps) {
   const isCurrentConfirmed = !!currentAnswer;
 
-const textForSizing = useMemo(
-  // 🔑 Меняем 7 пробелов на 1 пробел, чтобы хук не занижал шрифт почём зря
-  () => question.text.replace(/`/g, ' '),
-  [question.text]
-);
+  const textForSizing = useMemo(
+    // 🔑 Меняем 7 пробелов на 1 пробел, чтобы хук не занижал шрифт почём зря
+    () => question.text.replace(/`/g, ' '),
+    [question.text]
+  );
 
 
 
@@ -151,7 +150,7 @@ const textForSizing = useMemo(
 
   const { fontSize, ref: questionRef } = useQuizFontSize({
     text: textForSizing,
-    minFontSize: 12,
+    minFontSize: 16,
     maxFontSize: 24,
     step: 0.5,
     mode: 'dom',
@@ -174,22 +173,22 @@ const textForSizing = useMemo(
           transition={{ duration: 0.25 }}
           className="space-y-4"
         >
-          <div className="h-36 flex items-center justify-center overflow-y-auto scrollbar-thin -mt-4 mb-4 pr-1">
+          <div className="min-h-36 flex items-center justify-center -mt-4 mb-4">
             <h2
               ref={questionRef}
               className={cn(
-                'w-full font-bold text-(--loom-white)',
+                'w-full font-bold text-(--loom-white) break-words',
                 alignClass
               )}
               style={{
                 fontSize: `${fontSize}px`,
                 lineHeight: '1.3',
-                maxHeight: '420px',
               }}
             >
               {formatQuestionText(question.text, fontSize)}
             </h2>
           </div>
+
 
           <div className="flex flex-col gap-3 w-full mx-auto">
             {question.options.map((opt: any, idx: number) => {

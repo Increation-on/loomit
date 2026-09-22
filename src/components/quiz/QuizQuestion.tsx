@@ -45,24 +45,38 @@ const formatCode = (code: string) => {
   if (!code) return '';
   if (code.includes('\n')) return code.trim();
 
-  // Если код короткий (например, просто `typeof null` или `a === b`), не трогаем его
-  if (code.length < 30 && !code.includes(';')) return code.trim();
+  // 🔑 КРИТИЧЕСКИЙ ФИКС: Если в коде нет скобок {} и он короткий (как console.log(typeof null))
+  // принудительно возвращаем его в одну строку без изменений
+  if (code.length < 45 && !code.includes('{')) {
+    return code.trim();
+  }
 
-  // Универсальный разбор строки на логические переносы
-  let formatted = code
-    // Расставляем переносы строк вокруг фигурных скобок
-    .replace(/\{\s*/g, '{\n  ')
-    .replace(/\s*\}/g, '\n}')
-    // Переносим строки после точек с запятой, но ИГНОРИРУЕМ их внутри круглых скобок (для циклов for)
+  // Универсальный разбор циклов for (let/var)
+  if (code.includes('for') && code.includes('{') && code.includes('}')) {
+    const openBraceIndex = code.indexOf('{');
+    const closeBraceIndex = code.lastIndexOf('}');
+    if (openBraceIndex !== -1 && closeBraceIndex !== -1) {
+      const header = code.slice(0, openBraceIndex + 1).trim();
+      const body = code.slice(openBraceIndex + 1, closeBraceIndex).trim(); 
+      if (body === '') return `${header}}`; // Если внутри пусто, схлопываем
+      return `${header}\n  ${body}\n}`;
+    }
+  }
+
+  // Схлопываем пустые фигурные скобки, если они попадутся в других местах
+  const cleanCode = code.replace(/\{\s*\}/g, '{}');
+
+  let formatted = cleanCode
+    .replace(/\{(?!\s*\})/g, '{\n  ')
+    .replace(/(?<!\{\s*)\}/g, '\n}')
     .replace(/;(?![^(]*\))/g, ';\n  ')
-    // Чистим случайные дубликаты пустых строк
     .replace(/\n\s*\n/g, '\n');
 
-  // Выравниваем закрывающую скобку, если перед ней остались лишние пробелы отступов
   formatted = formatted.replace(/\n\s*\}/g, '\n}');
 
   return formatted.trim();
 };
+
 
 
 
@@ -75,40 +89,36 @@ const formatQuestionText = (text: string, fontSize: number) => {
     if (part.startsWith('`') && part.endsWith('`')) {
       const rawCode = part.slice(1, -1);
       const code = formatCode(rawCode);
-      
-      // Если в коде есть переносы ИЛИ он сам по себе слишком длинный для инлайна
-      const isBlock = code.includes('\n') || code.length > 35;
+      const isMultiline = code.includes('\n');
 
-      if (isBlock) {
+      if (isMultiline) {
         return (
           <pre
             key={i}
-            // Динамический размер с безопасным коэффициентом
-            style={{ fontSize: `${Math.max(fontSize * 0.7, 13)}px` }}
-            // whitespace-pre-wrap + break-words: если строка кода шире экрана, 
-            // она перенесется по пробелу (например после =>), а не вылетит за экран
-            className="font-mono bg-(--loom-white)/10 px-4 py-3 rounded-lg text-(--loom-yellow) my-3 w-full text-left whitespace-pre-wrap break-words leading-relaxed box-border border border-(--loom-white)/5"
+           style={{ fontSize: `${Math.max(fontSize * 0.95, 14)}px` }}
+            className="font-mono bg-(--loom-white)/10 px-4 py-3 rounded-lg text-(--loom-yellow) my-3 w-full text-left whitespace-pre leading-relaxed box-border border border-(--loom-white)/5"
           >
             <code>{code}</code>
           </pre>
         );
       }
 
-      // Настоящий короткий инлайн-код (например, `typeof null`)
       return (
         <code
           key={i}
           style={{ fontSize: `${Math.max(fontSize * 0.9, 14)}px` }}
-          // inline-block и break-words застрахуют от вылетов на мизерных экранах
-          className="font-mono bg-(--loom-white)/10 px-1.5 py-0.5 rounded text-(--loom-yellow) inline-block max-w-full whitespace-normal break-words align-middle mx-0.5"
+          // 🔑 Заменили whitespace-normal на whitespace-nowrap.
+          // inline-block и max-w-full заставят блок аккуратно ужиматься вместе с уменьшением шрифта от хука
+          className="font-mono bg-(--loom-white)/10 px-1.5 py-0.5 rounded text-(--loom-yellow) inline-block max-w-full whitespace-nowrap align-middle mx-0.5"
         >
           {code}
         </code>
       );
     }
-    return <span key={i} className="align-middle">{part}</span>;
+    return part;
   });
 };
+
 
 
 
@@ -128,8 +138,8 @@ export function QuizQuestion({
   const isCurrentConfirmed = !!currentAnswer;
 
 const textForSizing = useMemo(
-  // Каждая кавычка имитирует дополнительное визуальное пространство кода
-  () => question.text.replace(/`/g, '      '),
+  // 🔑 Меняем 7 пробелов на 1 пробел, чтобы хук не занижал шрифт почём зря
+  () => question.text.replace(/`/g, ' '),
   [question.text]
 );
 
@@ -138,9 +148,10 @@ const textForSizing = useMemo(
 
 
 
+
   const { fontSize, ref: questionRef } = useQuizFontSize({
     text: textForSizing,
-    minFontSize: 16,
+    minFontSize: 12,
     maxFontSize: 24,
     step: 0.5,
     mode: 'dom',

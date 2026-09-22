@@ -44,6 +44,20 @@ interface QuizQuestionProps {
 const formatCode = (code: string) => {
   if (code.includes('\n')) return code;
 
+  // 🔑 Универсальный фикс для любых циклов for (var/let, i++, и т.д.)
+  if (code.includes('for') && code.includes('{') && code.includes('}')) {
+    const openBraceIndex = code.indexOf('{');
+    const closeBraceIndex = code.lastIndexOf('}');
+    
+    if (openBraceIndex !== -1 && closeBraceIndex !== -1) {
+      const header = code.slice(0, openBraceIndex + 1).trim();
+      // Вытаскиваем тело и полностью убираем случайные крайние пробелы
+      const body = code.slice(openBraceIndex + 1, closeBraceIndex).trim(); 
+      
+      return `${header}\n  ${body}\n}`;
+    }
+  }
+
   if (code.includes(';')) {
     const parts = code.split(';').map((s) => s.trim()).filter(Boolean);
     return parts
@@ -51,8 +65,11 @@ const formatCode = (code: string) => {
       .join('\n');
   }
 
-  return code;
+  return code.trim();
 };
+
+
+
 
 const formatQuestionText = (text: string, fontSize: number) => {
   const parts = text.split(/(`[^`]+`)/g);
@@ -62,22 +79,30 @@ const formatQuestionText = (text: string, fontSize: number) => {
       const code = formatCode(rawCode);
       const isMultiline = code.includes('\n');
 
-      if (isMultiline) {
-        return (
-          <pre
-            key={i}
-            style={{ fontSize: `${Math.max(fontSize * 0.65, 13)}px` }}
-            className="font-mono bg-(--loom-white)/10 px-3 py-2 rounded-lg text-(--loom-yellow) my-2 w-full text-left whitespace-pre-wrap break-all leading-snug"
-          >
-            <code>{code}</code>
-          </pre>
-        );
-      }
+     // Внутри QuizQuestion.tsx обнови блок для isMultiline внутри formatQuestionText:
+if (isMultiline) {
+  return (
+    <pre
+      key={i}
+      // 🔑 Чуть снижаем множитель до 0.68, чтобы на мобилках длинная строка гарантированно умещалась целиком
+      style={{ fontSize: `${Math.max(fontSize * 0.68, 12)}px` }}
+      // Возвращаем чистый px-4, убираем overflow-x-hidden, чтобы верстка дышала нормально
+      className="font-mono bg-(--loom-white)/10 px-4 py-3 rounded-lg text-(--loom-yellow) my-3 w-full text-left whitespace-pre leading-relaxed box-border border border-(--loom-white)/5"
+    >
+      <code>{code}</code>
+    </pre>
+  );
+}
+
+
 
       return (
         <code
           key={i}
-          className="font-mono bg-(--loom-white)/10 px-1.5 py-0.5 rounded text-(--loom-yellow) whitespace-nowrap"
+          style={{ fontSize: `${Math.max(fontSize * 0.9, 14)}px` }}
+          // 🔑 МЕНЯЕМ whitespace-nowrap НА ЭТИ СТИЛИ:
+          // inline-block и max-w-full заставят его сжиматься, а break-words перенесет по пробелам
+          className="font-mono bg-(--loom-white)/10 px-1.5 py-0.5 rounded text-(--loom-yellow) inline-block max-w-full whitespace-normal break-words align-middle"
         >
           {code}
         </code>
@@ -86,6 +111,7 @@ const formatQuestionText = (text: string, fontSize: number) => {
     return part;
   });
 };
+
 
 export function QuizQuestion({
   question,
@@ -102,11 +128,15 @@ export function QuizQuestion({
 }: QuizQuestionProps) {
   const isCurrentConfirmed = !!currentAnswer;
 
-  // 🔑 Мемоизируем текст без кода для подсчёта размера шрифта
   const textForSizing = useMemo(
-    () => question.text.replace(/`[^`]+`/g, ''),
-    [question.text]
-  );
+  // 🔑 Добавляем дополнительные пробелы в конец, чтобы заставить хук считать размер с запасом на правый padding
+  () => question.text.replace(/`/g, '       ') + '    ',
+  [question.text]
+);
+
+
+
+
 
   const { fontSize, ref: questionRef } = useQuizFontSize({
     text: textForSizing,

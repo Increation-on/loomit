@@ -65,13 +65,20 @@ export const useQuizFontSize = ({
         clone.style.maxHeight = 'none';
         document.body.appendChild(clone);
 
+        // Находим этот блок внутри режима 'dom' в useQuizFontSize.tsx и заменяем:
         while (currentSize > minFontSize) {
           clone.style.fontSize = `${currentSize}px`;
-          if (clone.offsetHeight <= availableHeight) {
+
+          // 🔑 КРИТИЧЕСКИЙ ФИКС: Проверяем, что контент не вылезает по ширине И по высоте
+          const isWidthFits = clone.scrollWidth <= availableWidth;
+          const isHeightFits = clone.offsetHeight <= availableHeight;
+
+          if (isWidthFits && isHeightFits) {
             break;
           }
           currentSize -= step;
         }
+
         document.body.removeChild(clone);
       } else {
         const canvas = document.createElement('canvas');
@@ -109,16 +116,16 @@ export const useQuizFontSize = ({
   );
 
   const refCallback = useCallback(
-  (node: HTMLElement | null) => {
-    if (node) {
-      elementRef.current = node;
-      adjustFontSize(node);
-    } else if (elementRef.current) {
-      elementRef.current = null;
-    }
-  },
-  [adjustFontSize]
-);
+    (node: HTMLElement | null) => {
+      if (node) {
+        elementRef.current = node;
+        adjustFontSize(node);
+      } else if (elementRef.current) {
+        elementRef.current = null;
+      }
+    },
+    [adjustFontSize]
+  );
 
   // Сброс кэша при смене текста
   useEffect(() => {

@@ -1,5 +1,3 @@
-// src/components/quiz/QuizQuestion.tsx
-
 'use client';
 
 import { useMemo } from 'react';
@@ -40,86 +38,112 @@ interface QuizQuestionProps {
   isSubmitting?: boolean;
 }
 
-// Разбивает однострочный код на строки по ;
-const formatCode = (code: string) => {
+// 🛠 Функция форматирования блочного кода: чистит пробелы в массивах, скобках и выравнивает строки
+const formatCode = (code: string): string => {
   if (!code) return '';
   if (code.includes('\n')) return code.trim();
 
-  // 🔑 КРИТИЧЕСКИЙ ФИКС: Если в коде нет скобок {} и он короткий (как console.log(typeof null))
-  // принудительно возвращаем его в одну строку без изменений
-  if (code.length < 45 && !code.includes('{')) {
-    return code.trim();
-  }
+  // 1. Сжатие пробелов внутри однострочных массивов ДО форматирования строк
+  let cleanCode = code.trim().replace(/\[\s*([\s\S]*?)\s*\]/g, (_, p1) => {
+    const compacted = p1.replace(/\s*,\s*/g, ', ');
+    return '[' + compacted.trim() + ']';
+  });
 
-  // Универсальный разбор циклов for (let/var)
-  if (code.includes('for') && code.includes('{') && code.includes('}')) {
-    const openBraceIndex = code.indexOf('{');
-    const closeBraceIndex = code.lastIndexOf('}');
-    if (openBraceIndex !== -1 && closeBraceIndex !== -1) {
-      const header = code.slice(0, openBraceIndex + 1).trim();
-      const body = code.slice(openBraceIndex + 1, closeBraceIndex).trim();
-      if (body === '') return `${header}}`; // Если внутри пусто, схлопываем
-      return `${header}\n  ${body}\n}`;
-    }
-  }
+  // Очистка зазоров между скобками и точкой с запятой
+  cleanCode = cleanCode.replace(/\]\s*;/g, '];').replace(/\}\s*;/g, '};');
 
-  // Схлопываем пустые фигурные скобки, если они попадутся в других местах
-  const cleanCode = code.replace(/\{\s*\}/g, '{}');
+  // Намертво схлопываем пустые фигурные скобки, чтобы внутри них не появлялся перенос
+  cleanCode = cleanCode.replace(/\{\s*\}/g, '{}');
 
-  let formatted = cleanCode
-    .replace(/\{(?!\s*\})/g, '{\n  ')
-    .replace(/(?<!\{\s*)\}/g, '\n}')
-    .replace(/;(?![^(]*\))/g, ';\n  ')
+  // Если код короткий и плоский, возвращаем как есть
+  if (cleanCode.length < 30 && !cleanCode.includes(';')) return cleanCode;
+
+  // 2. Чистая расстановка переносов строк (lookahead (?!\}) защищает пустые скобки)
+  const formatted = cleanCode
+    .replace(/\{(?!\})/g, '{\n')
+    .replace(/(?<!\{)\}/g, '\n}')
+    .replace(/;(?![^(]*\))/g, ';\n')
     .replace(/\n\s*\n/g, '\n');
 
-  formatted = formatted.replace(/\n\s*\}/g, '\n}');
+  // 3. Расчет контекстных табуляций (2 пробела на уровень отступа)
+  const lines = formatted.split('\n');
+  let currentIndent = 0;
 
-  return formatted.trim();
+  const processedLines = lines.map(line => {
+    const trimmed = line.trim();
+    if (!trimmed) return '';
+
+    if (trimmed.startsWith('}') || trimmed.startsWith(']') || trimmed.startsWith('})')) {
+      currentIndent = Math.max(0, currentIndent - 1);
+    }
+
+    const indentSpace = '  '.repeat(currentIndent);
+    const result = indentSpace + trimmed;
+
+    if (trimmed.endsWith('{') || trimmed.endsWith('[')) {
+      currentIndent++;
+    }
+
+    return result;
+  });
+
+  return processedLines.filter(line => line !== '').join('\n');
 };
 
+// ✂️ Интеллектуальный парсер: изолирует исполняемый/длинный код в blockCode и сохраняет пробелы текста
+const parseQuestionContent = (fullText: string): { inlineText: string; blockCode: string | null } => {
+  const parts = fullText.split(/(`[^`]+`)/g);
+  let blockCode: string | null = null;
+  const inlineTextParts: string[] = [];
 
+  parts.forEach((part) => {
+    if (part.startsWith('`') && part.endsWith('`')) {
+      const rawCode = part.slice(1, -1);
+      const formatted = formatCode(rawCode);
+      
+      const isExecutableOrLong = 
+        formatted.includes('\n') || 
+        formatted.length > 25 || 
+        formatted.includes('.') || 
+        formatted.includes(';');
 
+      if (isExecutableOrLong) {
+        blockCode = formatted;
+      } else {
+        // Оставляем короткую переменную или тип данных (`null`, `undefined`, `a`)
+        inlineTextParts.push('`' + formatted + '`');
+      }
+    } else {
+      // Сохраняем текст и пробелы предложения в исходном состоянии
+      inlineTextParts.push(part);
+    }
+  });
 
+  return {
+    inlineText: inlineTextParts.join('').trim(),
+    blockCode,
+  };
+};
 
-
-
-const formatQuestionText = (text: string, fontSize: number) => {
+// 🎨 Рендеринг ультра-короткого инлайна без разрывов внутри команд
+const formatQuestionInlineText = (text: string, fontSize: number) => {
   const parts = text.split(/(`[^`]+`)/g);
   return parts.map((part, i) => {
     if (part.startsWith('`') && part.endsWith('`')) {
-      const rawCode = part.slice(1, -1);
-      const code = formatCode(rawCode);
-      const isMultiline = code.includes('\n');
-
-      if (isMultiline) {
-        return (
-          <pre
-            key={i}
-            className="font-mono bg-(--loom-white)/10 px-4 py-3 rounded-lg text-(--loom-yellow) my-3 w-full text-left whitespace-pre-wrap break-words text-[14px] leading-relaxed box-border border border-(--loom-white)/5"
-          >
-            <code>{code}</code>
-          </pre>
-        );
-      }
-
+      const code = part.slice(1, -1);
       return (
         <code
           key={i}
-          // 🔑 Полностью изолируем код от хука: жесткий размер text-[14px] или text-sm.
-          // И возвращаем break-words + inline-block вместо nowrap, чтобы он физически не мог вызвать скролл!
-          className="font-mono bg-(--loom-white)/10 px-1.5 py-0.5 rounded text-(--loom-yellow) inline-block max-w-full whitespace-normal break-words text-[14px] align-middle mx-0.5"
+          style={{ fontSize: Math.max(fontSize * 0.9, 13) + 'px' }}
+          className="font-mono bg-(--loom-white)/10 px-1.5 py-0.5 rounded text-(--loom-yellow) inline whitespace-nowrap font-semibold align-baseline mx-0.5"
         >
           {code}
         </code>
       );
     }
-    return <span key={i} className="align-middle">{part}</span>;
+    return <span key={i} className="whitespace-normal">{part}</span>;
   });
 };
-
-
-
-
 
 export function QuizQuestion({
   question,
@@ -136,31 +160,28 @@ export function QuizQuestion({
 }: QuizQuestionProps) {
   const isCurrentConfirmed = !!currentAnswer;
 
-  const textForSizing = useMemo(
-    // 🔑 Меняем 7 пробелов на 1 пробел, чтобы хук не занижал шрифт почём зря
-    () => question.text.replace(/`/g, ' '),
+  // 1. Изолируем блочный код от текстового заголовка h2
+  const { inlineText, blockCode } = useMemo(
+    () => parseQuestionContent(question.text),
     [question.text]
   );
 
+  const textForSizing = useMemo(
+    () => inlineText.replace(/`/g, ' '),
+    [inlineText]
+  );
 
-
-
-
-
-
+  // 2. Хук замеряет исключительно текстовую часть вопроса
   const { fontSize, ref: questionRef } = useQuizFontSize({
     text: textForSizing,
-    minFontSize: 16,
+    minFontSize: 18, 
     maxFontSize: 24,
     step: 0.5,
-    mode: 'dom',
-    dependencies: [question.id],
+    mode: 'canvas',
+    dependencies: [question.id, inlineText],
   });
 
-  const alignClass =
-    question.text.length > 70 || question.text.includes('`')
-      ? 'text-left'
-      : 'text-center';
+  const alignClass = inlineText.length > 50 ? 'text-left' : 'text-center';
 
   return (
     <div className="flex flex-col h-full">
@@ -173,28 +194,47 @@ export function QuizQuestion({
           transition={{ duration: 0.25 }}
           className="space-y-4"
         >
-          <div className="min-h-36 flex items-center justify-center -mt-4 mb-4">
-            <h2
-              ref={questionRef}
-              className={cn(
-                'w-full font-bold text-(--loom-white) break-words',
-                alignClass
-              )}
-              style={{
-                fontSize: `${fontSize}px`,
-                lineHeight: '1.3',
-              }}
-            >
-              {formatQuestionText(question.text, fontSize)}
-            </h2>
+          {/* 🔑 КОНТЕЙНЕР: Строго фиксированная h-36 */}
+          <div className="h-36 max-h-36 flex flex-col justify-center items-center -mt-4 mb-4 gap-2 overflow-hidden box-border py-1">
+            
+            {/* ТЕКСТ ВОПРОСА */}
+            <div className={cn("w-full", !blockCode ? "h-full flex flex-col justify-center" : "h-auto")}>
+              <h2
+                ref={questionRef}
+                className={cn(
+                  'w-full font-bold text-(--loom-white) break-words transition-all duration-150 block text-center',
+                  blockCode && alignClass
+                )}
+                style={{
+                  fontSize: fontSize + 'px',
+                  lineHeight: '1.4',
+                }}
+              >
+                {formatQuestionInlineText(inlineText, fontSize)}
+              </h2>
+            </div>
+
+            {/* МНОГОСТРОЧНЫЙ / ИСПОЛНЯЕМЫЙ БЛОК КОДА */}
+            {blockCode && (
+              <div 
+                className={cn(
+                  "w-full flex-1 min-h-0 bg-[#1e1e1e] rounded-xl p-3 border border-(--loom-white)/5 shadow-inner scrollbar-thin pr-1.5 flex flex-col",
+                  // 🔑 НАДЕЖНЫЙ ФИКС: Явно приводим blockCode к string, чтобы TypeScript не ругался на type never
+                  (blockCode as string).includes('\n') ? "justify-start" : "justify-center"
+                )}
+              >
+                <pre className="font-mono text-[13px] text-(--loom-yellow) text-left whitespace-pre-wrap break-words leading-relaxed selection:bg-white/20 w-full overflow-y-auto">
+                  <code className="block">{blockCode}</code>
+                </pre>
+              </div>
+            )}
           </div>
 
-
+          {/* ВАРИАНТЫ ОТВЕТОВ */}
           <div className="flex flex-col gap-3 w-full mx-auto">
             {question.options.map((opt: any, idx: number) => {
               const isSelected = selectedOption === opt.id;
               const isCorrectOption = question.correctOptionId === opt.id;
-
               const isWrong =
                 currentAnswer?.selectedOptionId === opt.id &&
                 !currentAnswer?.isCorrect;
@@ -203,13 +243,9 @@ export function QuizQuestion({
 
               if (isCurrentConfirmed) {
                 if (isCorrectOption) {
-                  icon = (
-                    <Check size={18} className="text-(--loom-cyan) ml-auto" />
-                  );
+                  icon = <Check size={18} className="text-(--loom-cyan) ml-auto" />;
                 } else if (isWrong) {
-                  icon = (
-                    <X size={18} className="text-(--glitch-pink) ml-auto" />
-                  );
+                  icon = <X size={18} className="text-(--glitch-pink) ml-auto" />;
                 }
               }
 
@@ -235,6 +271,7 @@ export function QuizQuestion({
         </motion.div>
       </AnimatePresence>
 
+      {/* КНОПКИ ДЕЙСТВИЯ */}
       <div
         className={cn(
           'bottom-1 left-0 right-0 bg-(--loom-black)/90 backdrop-blur-sm border-t border-(--loom-white)/10 flex justify-center z-50 py-4',

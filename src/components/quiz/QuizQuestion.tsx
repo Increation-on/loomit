@@ -91,8 +91,8 @@ export function QuizQuestion({
   // 2. Хук замеряет исключительно текстовую часть вопроса
   const { fontSize, ref: questionRef } = useQuizFontSize({
     text: textForSizing,
-    minFontSize: 18,
-    maxFontSize: 24,
+    minFontSize: 16,
+    maxFontSize: 20,
     step: 0.5,
     mode: 'canvas',
     dependencies: [question.id, inlineText],
@@ -112,7 +112,12 @@ export function QuizQuestion({
           className="space-y-4"
         >
           {/* 🔑 КОНТЕЙНЕР: Строго фиксированная h-36 */}
-          <div className="h-36 max-h-36 flex flex-col justify-center items-center -mt-4 mb-4 gap-2 overflow-hidden box-border py-1">
+          <div className={cn(
+            "w-full flex flex-col justify-center items-center -mt-4 mb-4 gap-2 box-border py-1",
+            blockCode
+              ? "h-56 max-h-56 overflow-hidden"    // ← с кодом: 224px, код скроллится внутри
+              : "h-36 max-h-36 overflow-hidden"    // ← без кода: 144px, как было
+          )}>
 
             {/* ТЕКСТ ВОПРОСА */}
             <div className={cn("w-full", !blockCode ? "h-full flex flex-col justify-center" : "h-auto")}>
@@ -131,7 +136,7 @@ export function QuizQuestion({
               </h2>
             </div>
             {/* МНОГОСТРОЧНЫЙ / ИСПОЛНЯЕМЫЙ БЛОК КОДА */}
-            {blockCode && <QuestionCodeBlock code={blockCode}/>}
+            {blockCode && <QuestionCodeBlock code={blockCode} />}
           </div>
 
           {/* ВАРИАНТЫ ОТВЕТОВ */}

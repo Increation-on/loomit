@@ -1,3 +1,5 @@
+// src\components\quiz\QuizPlayer.tsx
+
 import { useParams } from 'next/navigation';
 import { QuizContent } from './QuizContent';
 

@@ -14,11 +14,11 @@ export async function POST(request: Request) {
       quizId,
       questionId,
       selectedOptionId,
-      selectedOptionText,   // ← новое
+      selectedOptionText,
       isCorrect,
       questionText,
       correctOptionId,
-      correctOptionText,    // ← новое
+      correctOptionText,
       questionOrder,
     } = body;
 
@@ -52,7 +52,7 @@ export async function POST(request: Request) {
     // 2. Строим карту вопросов по ID
     const questionsMap = Object.fromEntries(questions.map((q) => [q.id, q]));
 
-    // 3. Определяем порядок вопросов
+    // 3. Определяем порядок вопросов (приходит от клиента, где уже зашафлен)
     const orderIds = questionOrder && Array.isArray(questionOrder) && questionOrder.length > 0
       ? questionOrder
       : questions.map((q) => q.id);
@@ -62,7 +62,8 @@ export async function POST(request: Request) {
       .map((id: string) => questionsMap[id])
       .filter(Boolean);
 
-    // 5. Формируем вопросы с опциями (без шафла, только нормализация)
+    // 5. Формируем вопросы с опциями — ТОЛЬКО нормализация, БЕЗ шафла.
+    //    Порядок опций уже зашафлен на клиенте и приходит через Redux.
     const questionsWithOptions = orderedQuestions.map((q) => {
       const parsedOptions = typeof q.options === 'string' ? JSON.parse(q.options) : q.options;
       const optionsArray = Array.isArray(parsedOptions) ? parsedOptions : [];
@@ -88,11 +89,11 @@ export async function POST(request: Request) {
           {
             questionId,
             selectedOptionId,
-            selectedOptionText,   // ← сохраняем
+            selectedOptionText,
             isCorrect,
             questionText,
             correctOptionId,
-            correctOptionText,    // ← сохраняем
+            correctOptionText,
           },
         ],
         question_order: orderIds,

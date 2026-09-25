@@ -4,7 +4,6 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 
 import { prisma } from '@/lib/prisma';
-import { shuffle } from '@/lib/utils';
 import { authOptions } from '../../auth/[...nextauth]/route';
 
 export const runtime = 'nodejs';
@@ -31,21 +30,22 @@ async function createAttemptWithFirstAnswer({
     throw new Error('Вопросы для квиза не найдены');
   }
 
-  // 2. Шафлим вопросы
-  const shuffledQuestions = shuffle([...questions]);
-  const shuffledIds = shuffledQuestions.map((q) => q.id);
+  // 2. Берём порядок как есть (без шафла).
+  //    Это edge case — попытка создаётся через PATCH, когда её нет в БД.
+  //    Клиент уже зашафлил опции в Redux, а порядок вопросов не передан,
+  //    поэтому используем естественный порядок из БД.
+  const orderIds = questions.map((q) => q.id);
 
-  // 3. Шафлим варианты для каждого вопроса
-  const questionsWithShuffledOptions = shuffledQuestions.map((q) => {
+  // 3. Только нормализация, БЕЗ шафла
+  const questionsWithOptions = questions.map((q) => {
     const parsedOptions = typeof q.options === 'string' ? JSON.parse(q.options) : q.options;
     const optionsArray = Array.isArray(parsedOptions) ? parsedOptions : [];
     const normalizedOptions = optionsArray.map((opt: any, idx: number) =>
       typeof opt === 'string' ? { id: String(idx + 1), text: opt } : opt
     );
-    const shuffledOptions = shuffle([...normalizedOptions]);
     return {
       ...q,
-      options: shuffledOptions,
+      options: normalizedOptions,
       correctOptionId: q.correct_option_id || '',
     };
   });
@@ -69,13 +69,13 @@ async function createAttemptWithFirstAnswer({
           correctOptionText,
         },
       ],
-      question_order: shuffledIds,
+      question_order: orderIds,
       status: 'IN_PROGRESS',
       sync_status: 'synced',
     },
   });
 
-  return { attempt, questions: questionsWithShuffledOptions };
+  return { attempt, questions: questionsWithOptions };
 }
 
 // ============================================================
@@ -111,6 +111,9 @@ export async function GET(
 
     const finalQuestions = orderedQuestions.length > 0 ? orderedQuestions : questions;
 
+    // 🔹 Только нормализация, БЕЗ шафла.
+    //    Порядок вопросов — из question_order (сохранён при создании).
+    //    Порядок опций — исходный, клиент зашафлит при resumeQuizFromServer.
     const transformedQuestions = finalQuestions.map((q: any) => {
       const parsedOptions = typeof q.options === 'string' ? JSON.parse(q.options) : q.options;
       const optionsArray = Array.isArray(parsedOptions) ? parsedOptions : [];
@@ -161,7 +164,7 @@ export async function PATCH(
   try {
     const { id: attemptId } = await params;
     const body = await request.json();
-    
+
     const {
       questionId,
       selectedOptionId,
@@ -221,7 +224,6 @@ export async function PATCH(
 
       attempt = result.attempt;
 
-      // Возвращаем созданную попытку + зашафленные вопросы
       return NextResponse.json({
         success: true,
         attempt: {
@@ -233,7 +235,7 @@ export async function PATCH(
           startedAt: attempt.created_at.toISOString(),
         },
         questions: result.questions,
-        created: true, // флаг, что попытка создана
+        created: true,
       });
     }
 

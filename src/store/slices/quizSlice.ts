@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../store';
-import { shuffle } from '@/lib/utils'; // ← добавить импорт
+import { shuffle } from '@/lib/utils';
 
 export interface UserAnswer {
   questionId: string;
@@ -84,9 +84,16 @@ const quizSlice = createSlice({
       });
 
       // ✅ Шафлим вопросы на клиенте и сохраняем порядок
-      const shuffled = shuffle([...normalizedQuestions]);
-      state.questions = shuffled;
-      state.questionOrder = shuffled.map(q => q.id);
+      const shuffledQuestions = shuffle([...normalizedQuestions]);
+
+      // ✅ Шафлим опции внутри каждого вопроса
+      const questionsWithShuffledOptions = shuffledQuestions.map((q) => ({
+        ...q,
+        options: shuffle([...q.options]),
+      }));
+
+      state.questions = questionsWithShuffledOptions;
+      state.questionOrder = questionsWithShuffledOptions.map((q) => q.id);
 
       state.answers = [];
       state.currentIndex = 0;
@@ -104,7 +111,7 @@ const quizSlice = createSlice({
         currentIndex: number;
         attemptId: string;
         startedAt: string;
-        questionOrder?: string[]; // ← добавить
+        questionOrder?: string[];
       }>
     ) {
       state.currentQuiz = action.payload.quiz;
@@ -112,13 +119,33 @@ const quizSlice = createSlice({
       state.answers = action.payload.answers || [];
       state.questionOrder = action.payload.questionOrder || [];
 
-      state.questions = (action.payload.questions || []).map((q: any) => ({
-        id: q.id,
-        text: q.text,
-        options: q.options || [],
-        correctOptionId: q.correctOptionId || q.correct_option_id || '',
-        explanation: q.explanation || '',
-      }));
+      // 🔹 Вопросы НЕ шафлим — они приходят с сервера в правильном порядке (question_order).
+      // 🔹 Опции шафлим — порядок не важен, пользователь не заметит.
+      state.questions = (action.payload.questions || []).map((q: any) => {
+        let options = q.options;
+        if (typeof options === 'string') {
+          try {
+            options = JSON.parse(options);
+          } catch {
+            options = [];
+          }
+        }
+        if (!Array.isArray(options)) {
+          options = [];
+        }
+
+        const normalizedOptions = options.map((opt: any, idx: number) =>
+          typeof opt === 'string' ? { id: String(idx + 1), text: opt } : opt
+        );
+
+        return {
+          id: q.id,
+          text: q.text,
+          options: shuffle([...normalizedOptions]),
+          correctOptionId: q.correctOptionId || q.correct_option_id || '',
+          explanation: q.explanation || '',
+        };
+      });
 
       const targetIndex = action.payload.currentIndex;
       state.currentIndex =
@@ -214,7 +241,7 @@ export const selectIsConfirmed = (state: RootState) => {
 };
 
 export const selectSelectedOption = (state: RootState) => state.quiz.selectedOption;
-export const selectQuestionOrder = (state: RootState) => state.quiz.questionOrder; // ← добавить
+export const selectQuestionOrder = (state: RootState) => state.quiz.questionOrder;
 
 export const {
   startQuiz,

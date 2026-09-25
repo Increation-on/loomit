@@ -31,6 +31,7 @@ import { useSaveAttempt } from '@/hooks/useSaveAttempt';
 import { useQuizNavigation } from '@/hooks/useQuizNavigation';
 import { QuizQuestion } from './QuizQuestion';
 import { QuizSkeleton } from '@/components/ui/feedback/Skeleton';
+import { QuizTitle } from './QuizTitle';
 
 export function QuizContent({ id }: { id: string }) {
   const dispatch = useDispatch();
@@ -283,22 +284,13 @@ export function QuizContent({ id }: { id: string }) {
   // ============================================================
   return (
     <div
-      className={`min-h-screen bg-(--loom-black) pb-24 flex flex-col items-center mx-auto overflow-hidden ${hideNavigation ? 'pt-10' : 'pt-16'
+      className={`min-h-screen bg-(--loom-black) pb-24 flex flex-col items-center mx-auto overflow-hidden ${hideNavigation ? 'pt-10' : 'pt-12'
         }`}
     >
       <div className="w-full max-w-2xl px-4 mb-6">
         {currentQuiz && (
-          <div className="flex items-center justify-center gap-3 mb-2">
-            <h1
-              className="font-bold text-(--loom-cyan) text-center mb-2 text-xl"
-              style={{
-                maxHeight: '60px',
-                overflow: 'hidden',
-                wordBreak: 'break-word',
-              }}
-            >
-              {currentQuiz.title}
-            </h1>
+          <div className="mb-2">
+            <QuizTitle title={currentQuiz.title} />
           </div>
         )}
 

@@ -111,7 +111,7 @@ export function QuizQuestion({
           transition={{ duration: 0.25 }}
           className="space-y-4"
         >
-          {/* 🔑 КОНТЕЙНЕР: Строго фиксированная h-36 */}
+          {/* 🔑 КОНТЕЙНЕР:  */}
           <div className={cn(
             "w-full flex flex-col justify-center items-center -mt-4 mb-4 gap-2 box-border py-1",
             blockCode

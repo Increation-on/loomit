@@ -44,7 +44,7 @@ export default function QuizPage() {
         <button
           onClick={() => setShowExitModal(true)}
           className={cn(
-            'fixed top-6 left-1 z-50 flex items-center gap-2',
+            'fixed top-[calc(env(safe-area-inset-top)+0.5rem)] left-1 z-50 flex items-center gap-2',
             'text-(--loom-white)/60 hover:text-(--loom-white) transition-colors',
             'bg-(--loom-black)/60 backdrop-blur-sm px-3 py-2 rounded-full',
             'text-sm font-medium'

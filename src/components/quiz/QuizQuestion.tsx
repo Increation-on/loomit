@@ -2,12 +2,12 @@
 
 import { useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui/core/Button';
 import { QuizOption } from './QuizOption';
 import { Check, X } from 'lucide-react';
 import { useQuizFontSize } from '@/hooks/useQuizFontSize';
 import { cn } from '@/lib/utils';
-import { formatCode, parseQuestionContent } from '@/lib/utils/quiz';
+import { parseQuestionContent } from '@/lib/utils/quiz';
+import { QuestionActions } from './question/QuestionActions';
 
 interface QuizQuestionProps {
   question: {
@@ -73,6 +73,7 @@ export function QuizQuestion({
   isPWA = false,
   isSubmitting = false,
 }: QuizQuestionProps) {
+  
   const isCurrentConfirmed = !!currentAnswer;
 
   // 1. Изолируем блочный код от текстового заголовка h2
@@ -89,7 +90,7 @@ export function QuizQuestion({
   // 2. Хук замеряет исключительно текстовую часть вопроса
   const { fontSize, ref: questionRef } = useQuizFontSize({
     text: textForSizing,
-    minFontSize: 18, 
+    minFontSize: 18,
     maxFontSize: 24,
     step: 0.5,
     mode: 'canvas',
@@ -111,7 +112,7 @@ export function QuizQuestion({
         >
           {/* 🔑 КОНТЕЙНЕР: Строго фиксированная h-36 */}
           <div className="h-36 max-h-36 flex flex-col justify-center items-center -mt-4 mb-4 gap-2 overflow-hidden box-border py-1">
-            
+
             {/* ТЕКСТ ВОПРОСА */}
             <div className={cn("w-full", !blockCode ? "h-full flex flex-col justify-center" : "h-auto")}>
               <h2
@@ -131,7 +132,7 @@ export function QuizQuestion({
 
             {/* МНОГОСТРОЧНЫЙ / ИСПОЛНЯЕМЫЙ БЛОК КОДА */}
             {blockCode && (
-              <div 
+              <div
                 className={cn(
                   "w-full flex-1 min-h-0 bg-[#1e1e1e] rounded-xl p-3 border border-(--loom-white)/5 shadow-inner scrollbar-thin pr-1.5 flex flex-col",
                   // 🔑 НАДЕЖНЫЙ ФИКС: Явно приводим blockCode к string, чтобы TypeScript не ругался на type never
@@ -187,41 +188,16 @@ export function QuizQuestion({
       </AnimatePresence>
 
       {/* КНОПКИ ДЕЙСТВИЯ */}
-      <div
-        className={cn(
-          'bottom-1 left-0 right-0 bg-(--loom-black)/90 backdrop-blur-sm border-t border-(--loom-white)/10 flex justify-center z-50 py-4',
-          isPWA ? 'fixed' : 'sticky'
-        )}
-      >
-        {!isCurrentConfirmed ? (
-          <Button
-            variant="glitch"
-            onClick={onConfirm}
-            disabled={!selectedOption || isSubmitting}
-            className="px-12 py-2.5 text-base min-w-40"
-          >
-            {isSubmitting ? 'Ждем...' : 'Ответить'}
-          </Button>
-        ) : isLast ? (
-          <Button
-            variant="glitch"
-            onClick={onFinish}
-            disabled={isSubmitting}
-            className="px-12 py-2.5 text-base min-w-40"
-          >
-            Завершить
-          </Button>
-        ) : (
-          <Button
-            variant="glitch"
-            onClick={onNext}
-            disabled={isSubmitting}
-            className="px-12 py-2.5 text-base min-w-40"
-          >
-            Далее
-          </Button>
-        )}
-      </div>
+      <QuestionActions
+        isCurrentConfirmed={isCurrentConfirmed}
+        isLast={isLast}
+        selectedOption={selectedOption}
+        isSubmitting={isSubmitting}
+        isPWA={isPWA}
+        onConfirm={onConfirm}
+        onNext={onNext}
+        onFinish={onFinish}
+      />
     </div>
   );
 }

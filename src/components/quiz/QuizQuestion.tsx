@@ -7,7 +7,7 @@ import { QuizOption } from './QuizOption';
 import { Check, X } from 'lucide-react';
 import { useQuizFontSize } from '@/hooks/useQuizFontSize';
 import { cn } from '@/lib/utils';
-import { formatCode } from '@/lib/utils/quiz';
+import { formatCode, parseQuestionContent } from '@/lib/utils/quiz';
 
 interface QuizQuestionProps {
   question: {
@@ -39,40 +39,6 @@ interface QuizQuestionProps {
   isSubmitting?: boolean;
 }
 
-// ✂️ Интеллектуальный парсер: изолирует исполняемый/длинный код в blockCode и сохраняет пробелы текста
-const parseQuestionContent = (fullText: string): { inlineText: string; blockCode: string | null } => {
-  const parts = fullText.split(/(`[^`]+`)/g);
-  let blockCode: string | null = null;
-  const inlineTextParts: string[] = [];
-
-  parts.forEach((part) => {
-    if (part.startsWith('`') && part.endsWith('`')) {
-      const rawCode = part.slice(1, -1);
-      const formatted = formatCode(rawCode);
-      
-      const isExecutableOrLong = 
-        formatted.includes('\n') || 
-        formatted.length > 25 || 
-        formatted.includes('.') || 
-        formatted.includes(';');
-
-      if (isExecutableOrLong) {
-        blockCode = formatted;
-      } else {
-        // Оставляем короткую переменную или тип данных (`null`, `undefined`, `a`)
-        inlineTextParts.push('`' + formatted + '`');
-      }
-    } else {
-      // Сохраняем текст и пробелы предложения в исходном состоянии
-      inlineTextParts.push(part);
-    }
-  });
-
-  return {
-    inlineText: inlineTextParts.join('').trim(),
-    blockCode,
-  };
-};
 
 // 🎨 Рендеринг ультра-короткого инлайна без разрывов внутри команд
 const formatQuestionInlineText = (text: string, fontSize: number) => {

@@ -2,13 +2,12 @@
 
 import { useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { QuizOption } from './QuizOption';
-import { Check, X } from 'lucide-react';
 import { useQuizFontSize } from '@/hooks/useQuizFontSize';
 import { cn } from '@/lib/utils';
 import { parseQuestionContent } from '@/lib/utils/quiz';
 import { QuestionActions } from './question/QuestionActions';
 import { QuestionCodeBlock } from './question/QuestionCodeBlock';
+import { QuestionOptions } from './question/QuestionOptions';
 
 interface QuizQuestionProps {
   question: {
@@ -124,7 +123,7 @@ export function QuizQuestion({
               <h2
                 ref={questionRef}
                 className={cn(
-                  'w-full font-bold text-(--loom-white) break-words transition-all duration-150 block text-center',
+                  'w-full font-bold text-(--loom-white) wrap-break-word transition-all duration-150 block text-center',
                   blockCode && alignClass
                 )}
                 style={{
@@ -140,43 +139,17 @@ export function QuizQuestion({
           </div>
 
           {/* ВАРИАНТЫ ОТВЕТОВ */}
-          <div className="flex flex-col gap-3 w-full mx-auto">
-            {question.options.map((opt: any, idx: number) => {
-              const isSelected = selectedOption === opt.id;
-              const isCorrectOption = question.correctOptionId === opt.id;
-              const isWrong =
-                currentAnswer?.selectedOptionId === opt.id &&
-                !currentAnswer?.isCorrect;
+          <QuestionOptions
+            options={question.options}
+            correctOptionId={question.correctOptionId}
+            selectedOption={selectedOption}
+            currentAnswer={currentAnswer}
+            isCurrentConfirmed={isCurrentConfirmed}
+            isSubmitting={isSubmitting}
+            optionLetters={optionLetters}
+            onSelectOption={onSelectOption}
+          />
 
-              let icon = null;
-
-              if (isCurrentConfirmed) {
-                if (isCorrectOption) {
-                  icon = <Check size={18} className="text-(--loom-cyan) ml-auto" />;
-                } else if (isWrong) {
-                  icon = <X size={18} className="text-(--glitch-pink) ml-auto" />;
-                }
-              }
-
-              return (
-                <QuizOption
-                  key={idx}
-                  letter={optionLetters[idx]}
-                  text={opt.text}
-                  isSelected={isSelected}
-                  isCurrentConfirmed={isCurrentConfirmed}
-                  isCorrect={isCorrectOption}
-                  isWrong={isWrong}
-                  icon={icon}
-                  onClick={() => {
-                    if (!isCurrentConfirmed && !isSubmitting) {
-                      onSelectOption(opt.id);
-                    }
-                  }}
-                />
-              );
-            })}
-          </div>
         </motion.div>
       </AnimatePresence>
 

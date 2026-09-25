@@ -8,6 +8,7 @@ import { useQuizFontSize } from '@/hooks/useQuizFontSize';
 import { cn } from '@/lib/utils';
 import { parseQuestionContent } from '@/lib/utils/quiz';
 import { QuestionActions } from './question/QuestionActions';
+import { QuestionCodeBlock } from './question/QuestionCodeBlock';
 
 interface QuizQuestionProps {
   question: {
@@ -73,7 +74,7 @@ export function QuizQuestion({
   isPWA = false,
   isSubmitting = false,
 }: QuizQuestionProps) {
-  
+
   const isCurrentConfirmed = !!currentAnswer;
 
   // 1. Изолируем блочный код от текстового заголовка h2
@@ -129,21 +130,8 @@ export function QuizQuestion({
                 {formatQuestionInlineText(inlineText, fontSize)}
               </h2>
             </div>
-
             {/* МНОГОСТРОЧНЫЙ / ИСПОЛНЯЕМЫЙ БЛОК КОДА */}
-            {blockCode && (
-              <div
-                className={cn(
-                  "w-full flex-1 min-h-0 bg-[#1e1e1e] rounded-xl p-3 border border-(--loom-white)/5 shadow-inner scrollbar-thin pr-1.5 flex flex-col",
-                  // 🔑 НАДЕЖНЫЙ ФИКС: Явно приводим blockCode к string, чтобы TypeScript не ругался на type never
-                  (blockCode as string).includes('\n') ? "justify-start" : "justify-center"
-                )}
-              >
-                <pre className="font-mono text-[13px] text-(--loom-yellow) text-left whitespace-pre-wrap break-words leading-relaxed selection:bg-white/20 w-full overflow-y-auto">
-                  <code className="block">{blockCode}</code>
-                </pre>
-              </div>
-            )}
+            {blockCode && <QuestionCodeBlock code={blockCode}/>}
           </div>
 
           {/* ВАРИАНТЫ ОТВЕТОВ */}

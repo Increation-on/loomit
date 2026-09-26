@@ -2,9 +2,8 @@
 
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { useParams, usePathname } from 'next/navigation';
 import { usePWA } from '@/hooks/usePWA';
-import { QuizPlayer } from '@/components/quiz/QuizPlayer';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { resetQuiz } from '@/store/slices/quizSlice';
@@ -12,6 +11,7 @@ import { Modal } from '@/components/ui/feedback/Modal';
 import { cn } from '@/lib/utils';
 import { useQuizReturn } from '@/hooks/useQuizReturn';
 import { ChevronLeft } from 'lucide-react';
+import { QuizContent } from '@/components/quiz/QuizContent';
 
 export default function QuizPage() {
   const pathname = usePathname();
@@ -19,6 +19,12 @@ export default function QuizPage() {
   const dispatch = useDispatch();
   const { goBack } = useQuizReturn('/catalog');
   const [showExitModal, setShowExitModal] = useState(false);
+  const { id } = useParams();
+
+  const handleConfirmExit = () => {
+    goBack();
+    setShowExitModal(false);
+  };
 
   useEffect(() => {
     dispatch(resetQuiz());
@@ -33,11 +39,7 @@ export default function QuizPage() {
     return () => document.body.classList.remove('quiz-pwa-mode');
   }, [pathname, isPWA]);
 
-  const handleConfirmExit = () => {
-    goBack();
-    setShowExitModal(false);
-  };
-
+  
   return (
     <div className="min-h-screen flex flex-col px-4 pb-safe pt-safe">
       {isPWA && (
@@ -56,7 +58,7 @@ export default function QuizPage() {
       )}
 
       <div className="flex-1 flex flex-col justify-center w-full mx-auto mt-8">
-        <QuizPlayer />
+        <QuizContent id={id as string} />
       </div>
 
       <Modal

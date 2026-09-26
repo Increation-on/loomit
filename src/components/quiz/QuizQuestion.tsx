@@ -2,7 +2,6 @@
 
 import { useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useQuizFontSize } from '@/hooks/useQuizFontSize';
 import { cn } from '@/lib/utils';
 import { prepareQuestionContent } from '@/lib/utils/quiz';
 import { QuestionActions } from './question/QuestionActions';
@@ -87,7 +86,7 @@ export function QuizQuestion({
               questionId={question.id}
               inlineText={inlineText}
             />
-            {/* МНОГОСТРОЧНЫЙ / ИСПОЛНЯЕМЫЙ БЛОК КОДА */}
+            {/* МНОГОСТРОЧНЫЙ БЛОК КОДА */}
             {blockCode && <QuestionCodeBlock code={blockCode} />}
           </div>
 

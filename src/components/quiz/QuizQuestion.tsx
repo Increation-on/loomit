@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuizFontSize } from '@/hooks/useQuizFontSize';
 import { cn } from '@/lib/utils';
-import { parseQuestionContent } from '@/lib/utils/quiz';
+import { prepareQuestionContent } from '@/lib/utils/quiz';
 import { QuestionActions } from './question/QuestionActions';
 import { QuestionCodeBlock } from './question/QuestionCodeBlock';
 import { QuestionOptions } from './question/QuestionOptions';
@@ -76,16 +76,10 @@ export function QuizQuestion({
 
   const isCurrentConfirmed = !!currentAnswer;
 
-  // 1. Изолируем блочный код от текстового заголовка h2
-  const { inlineText, blockCode } = useMemo(
-    () => parseQuestionContent(question.text),
-    [question.text]
-  );
-
-  const textForSizing = useMemo(
-    () => inlineText.replace(/`/g, ' '),
-    [inlineText]
-  );
+ const { inlineText, blockCode, textForSizing } = useMemo(
+  () => prepareQuestionContent(question.text),
+  [question.text]
+);
 
   // 2. Хук замеряет исключительно текстовую часть вопроса
   const { fontSize, ref: questionRef } = useQuizFontSize({

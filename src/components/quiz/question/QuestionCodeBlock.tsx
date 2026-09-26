@@ -12,7 +12,7 @@ export function QuestionCodeBlock({ code }: QuestionCodeBlockProps) {
                 code.includes('\n') ? "justify-start" : "justify-center"
             )}
         >
-            <pre className="font-mono text-[13px] text-(--loom-yellow) text-left whitespace-pre-wrap break-words leading-relaxed selection:bg-white/20 w-full overflow-y-auto">
+            <pre className="font-mono text-[13px] text-(--loom-yellow) text-left whitespace-pre-wrap wrap-break-word leading-relaxed selection:bg-white/20 w-full overflow-y-auto">
                 <code className="block">{code}</code>
             </pre>
         </div>

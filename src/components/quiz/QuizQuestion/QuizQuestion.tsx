@@ -2,8 +2,8 @@
 
 import { useMemo } from 'react';
 import { prepareQuestionContent } from '@/lib/utils/quiz';
-import { QuestionCodeBlock } from './question/QuestionCodeBlock';
-import { QuestionText } from './question/QuestionText';
+import { QuestionCodeBlock } from './QuestionCodeBlock';
+import { QuestionText } from './QuestionText';
 
 interface QuizQuestionProps {
   question: {

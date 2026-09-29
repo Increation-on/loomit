@@ -6,7 +6,8 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { Button } from '@/components/ui/core/Button';
 import { StarButton } from '@/components/ui/core/StarButton';
-import { useNavigationTransition } from '../layout/NavigationProvider';
+import { useNavigationTransition } from '@/components/layout/NavigationProvider';
+
 
 interface QuizFinishScreenProps {
   id: string;

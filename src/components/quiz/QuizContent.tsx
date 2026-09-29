@@ -25,16 +25,16 @@ import { useGetFavoritesQuery, useToggleFavoriteMutation } from '@/store/api/fav
 import { useMemo } from 'react';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
 import { usePWA } from '@/hooks/usePWA';
-import { QuizFinishScreen } from './QuizFinishScreen';
+import { QuizFinishScreen } from './QuizFinishScreen/QuizFinishScreen';
 import { useSaveAttempt } from '@/hooks/useSaveAttempt';
 import { useQuizNavigation } from '@/hooks/useQuizNavigation';
-import { QuizQuestion } from './QuizQuestion';
+import { QuizQuestion } from './QuizQuestion/QuizQuestion';
 import { QuizSkeleton } from '@/components/ui/feedback/Skeleton';
-import { QuizTitle } from './QuizTitle';
-import { QuizProgress } from './QuizProgress';
+import { QuizTitle } from './QuizTitle/QuizTitle';
+import { QuizProgress } from './QuizProgress/QuizProgress';
 import { AnimatePresence, motion } from 'framer-motion';
-import { QuestionOptions } from './question/QuestionOptions';
-import { QuizFooter } from './QuizFooter';
+import { QuizFooter } from './QuizFooter/QuizFooter';
+import { QuestionOptions } from './QuizOptions/QuizOptions';
 
 export function QuizContent({ id }: { id: string }) {
   const dispatch = useDispatch();

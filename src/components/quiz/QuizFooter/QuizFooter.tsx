@@ -1,7 +1,7 @@
 'use client'
 
-import { QuestionActions } from "./question/QuestionActions";
-import { QuestionHint } from "./QuestionHint";
+import { QuestionHint } from "./QuizHint";
+import { QuestionActions } from "./QuizActions";
 
 
 interface QuizFooterProps {

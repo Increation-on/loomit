@@ -1,7 +1,7 @@
 'use client'
 
 import { Check, X } from "lucide-react";
-import { QuizOption } from "../QuizOption";
+import { QuizOption } from "./QuizOption";
 
 interface QuestionOptionsProps {
     options: { id: string; text: string }[];

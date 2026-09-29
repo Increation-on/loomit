@@ -26,12 +26,15 @@ import { useMemo } from 'react';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
 import { usePWA } from '@/hooks/usePWA';
 import { QuizFinishScreen } from './QuizFinishScreen';
-import { Modal } from '@/components/ui/feedback/Modal';
 import { useSaveAttempt } from '@/hooks/useSaveAttempt';
 import { useQuizNavigation } from '@/hooks/useQuizNavigation';
 import { QuizQuestion } from './QuizQuestion';
 import { QuizSkeleton } from '@/components/ui/feedback/Skeleton';
 import { QuizTitle } from './QuizTitle';
+import { QuizProgress } from './QuizProgress';
+import { AnimatePresence, motion } from 'framer-motion';
+import { QuestionOptions } from './question/QuestionOptions';
+import { QuizFooter } from './QuizFooter';
 
 export function QuizContent({ id }: { id: string }) {
   const dispatch = useDispatch();
@@ -57,11 +60,13 @@ export function QuizContent({ id }: { id: string }) {
   const hideNavigation = usePWA();
 
   const [isSessionLoading, setIsSessionLoading] = useState(true);
-  const [selectedExplanation, setSelectedExplanation] = useState<string | null>(null);
+
   const [resetCounter, setResetCounter] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false); // ← защита от двойного нажатия
 
   const isInitializingRef = useRef(false);
+
+  const handleSelectOption = (optionId: string) => dispatch(selectOption(optionId));
 
   // Блокировка скролла в PWA
   useEffect(() => {
@@ -269,7 +274,6 @@ export function QuizContent({ id }: { id: string }) {
   const currentAnswer = answers.find((a) => a.questionId === currentQuestion.id);
   const isCurrentConfirmed = !!currentAnswer;
   const optionLetters = ['A', 'B', 'C', 'D'];
-  const hasExplanation = currentQuestion?.explanation ?? false;
 
   if (redirecting) {
     return (
@@ -284,68 +288,51 @@ export function QuizContent({ id }: { id: string }) {
   // ============================================================
   return (
     <div
-      className={`min-h-screen bg-(--loom-black) pb-24 flex flex-col items-center mx-auto overflow-hidden ${hideNavigation ? 'pt-10' : 'pt-12'
-        }`}
-    >
-      <div className="w-full max-w-2xl px-4 mb-6">
-        {currentQuiz && (
-          <div className="mb-2">
-            <QuizTitle title={currentQuiz.title} />
-          </div>
-        )}
+      className={
+        `min-h-screen bg-(--loom-black) pb-24 flex flex-col items-center mx-auto overflow-hidden
+        ${hideNavigation ? 'pt-10' : 'pt-12'}`
+      }>
 
-        <div className="flex items-center gap-4 text-(--loom-white)/60 text-sm mb-2">
-          <span className="whitespace-nowrap">
-            Вопрос {currentIndex + 1} из {questions.length}
-          </span>
-          <div className="flex-1 h-1 bg-(--loom-white)/10 rounded-full overflow-hidden min-w-10">
-            <div
-              className="h-full bg-(--loom-cyan) transition-all duration-300"
-              style={{ width: `${((currentIndex + 1) / questions.length) * 100}%` }}
+      {currentQuiz && <QuizTitle title={currentQuiz.title} />}
+      
+      <QuizProgress currentIndex={currentIndex} total={questions.length} />
+
+      <div className="flex-1 flex flex-col justify-center w-full">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentQuestion.id}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="space-y-3"
+          >
+            <QuizQuestion question={currentQuestion} />
+            <QuestionOptions
+              options={currentQuestion.options}
+              correctOptionId={currentQuestion.correctOptionId}
+              selectedOption={selectedOption}
+              currentAnswer={currentAnswer}
+              isCurrentConfirmed={isCurrentConfirmed}
+              isSubmitting={isSubmitting}
+              optionLetters={optionLetters}
+              onSelectOption={handleSelectOption}
             />
-          </div>
-          <span className="text-(--loom-cyan) font-semibold whitespace-nowrap">
-            {Math.round(((currentIndex + 1) / questions.length) * 100)}%
-          </span>
-        </div>
+          </motion.div>
+        </AnimatePresence>
       </div>
 
-      <div className="w-full max-w-2xl px-4">
-        <QuizQuestion
-          question={currentQuestion}
-          currentAnswer={currentAnswer}
-          selectedOption={selectedOption}
-          onSelectOption={(optionId) => dispatch(selectOption(optionId))}
-          onConfirm={handleConfirmAnswer}
-          onNext={() => dispatch(nextQuestion())}
-          onFinish={() => dispatch(finishQuiz())}
-          isLast={currentIndex === questions.length - 1}
-          currentIndex={currentIndex}
-          total={questions.length}
-          optionLetters={optionLetters}
-          isPWA={hideNavigation}
-          isSubmitting={isSubmitting} // ← передаём состояние в кнопку
-        />
-      </div>
-
-      {isCurrentConfirmed && hasExplanation && (
-        <button
-          onClick={() => setSelectedExplanation(currentQuestion.explanation ?? null)}
-          className="fixed bottom-4 right-4 z-50 flex items-center justify-center w-13 h-10 rounded-full bg-(--loom-cyan)/10 hover:bg-(--loom-cyan)/20 text-(--loom-cyan) text-lg transition-colors border border-(--loom-cyan)/20 shadow-lg"
-        >
-          💡
-        </button>
-      )}
-
-      {selectedExplanation && (
-        <Modal
-          isOpen={!!selectedExplanation}
-          onClose={() => setSelectedExplanation(null)}
-          title="Объяснение"
-        >
-          <p className="text-(--loom-white)/80 leading-relaxed">{selectedExplanation}</p>
-        </Modal>
-      )}
-    </div>
+      <QuizFooter
+        isCurrentConfirmed={isCurrentConfirmed}
+        isLast={currentIndex === questions.length - 1}
+        selectedOption={selectedOption}
+        isSubmitting={isSubmitting}
+        isPWA={hideNavigation}
+        explanation={currentQuestion.explanation}
+        onConfirm={handleConfirmAnswer}
+        onNext={() => dispatch(nextQuestion())}
+        onFinish={() => dispatch(finishQuiz())}
+      />
+    </div >
   );
 }

@@ -3,7 +3,6 @@
 import { useQuizFontSize } from "@/hooks/useQuizFontSize";
 import { cn } from "@/lib/utils";
 
-
 interface QuestionTextProps {
     inlineText: string;      // текст с бэктиками (после парсинга)
     textForSizing: string;   // текст без бэктиков (для измерения)
@@ -30,8 +29,6 @@ const formatQuestionInlineText = (text: string, fontSize: number) => {
     });
 };
 
-
-
 export function QuestionText({ 
     inlineText,
     blockCode,
@@ -39,7 +36,6 @@ export function QuestionText({
     textForSizing
 
 }: QuestionTextProps) {
-
 
     const { fontSize, ref: questionRef } = useQuizFontSize({
     text: textForSizing,

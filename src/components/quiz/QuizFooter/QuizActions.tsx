@@ -1,37 +1,29 @@
 'use client'
 
 import { Button } from '@/components/ui/core/Button';
-import { cn } from '@/lib/utils';
 
-interface QuestionActionsProps {
+interface QuizActionsProps {
     isCurrentConfirmed: boolean;
     isLast: boolean;
     selectedOption: string | null;
     isSubmitting: boolean;
-    isPWA?: boolean;
     onConfirm: () => void;
     onNext: () => void;
     onFinish: () => void;
 }
 
 
-export function QuestionActions({
+export function QuizActions({
     isCurrentConfirmed,
     isLast,
     selectedOption,
     isSubmitting,
-    isPWA = false,
     onConfirm,
     onNext,
     onFinish,
-}: QuestionActionsProps) {
+}: QuizActionsProps) {
     return (
-        <div
-            className={cn(
-                'bottom-1 left-0 right-0 bg-(--loom-black)/90 backdrop-blur-sm border-t border-(--loom-white)/10 flex justify-center z-50 py-4',
-                isPWA ? 'fixed' : 'sticky'
-            )}
-        >
+        <div className='flex justify-center py-4'>
             {!isCurrentConfirmed ? (
                 <Button
                     variant="glitch"

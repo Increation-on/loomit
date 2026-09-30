@@ -34,7 +34,7 @@ import { QuizTitle } from './QuizTitle/QuizTitle';
 import { QuizProgress } from './QuizProgress/QuizProgress';
 import { AnimatePresence, motion } from 'framer-motion';
 import { QuizFooter } from './QuizFooter/QuizFooter';
-import { QuestionOptions } from './QuizOptions/QuizOptions';
+import { QuizOptions } from './QuizOptions/QuizOptions';
 
 export function QuizContent({ id }: { id: string }) {
   const dispatch = useDispatch();
@@ -264,9 +264,6 @@ export function QuizContent({ id }: { id: string }) {
     );
   }
 
-  // ============================================================
-  // ЗАГРУЗКА
-  // ============================================================
   if (quizLoading || isSessionLoading || !currentQuestion || isFetching) {
     return <QuizSkeleton />;
   }
@@ -283,21 +280,18 @@ export function QuizContent({ id }: { id: string }) {
     );
   }
 
-  // ============================================================
-  // РЕНДЕР
-  // ============================================================
   return (
     <div
       className={
-        `min-h-screen bg-(--loom-black) pb-24 flex flex-col items-center mx-auto overflow-hidden
-        ${hideNavigation ? 'pt-10' : 'pt-12'}`
+        `h-dvh bg-(--loom-black) flex flex-col items-center mx-auto overflow-hidden
+        ${hideNavigation ? 'pt-13' : 'pt-14'}`
       }>
 
       {currentQuiz && <QuizTitle title={currentQuiz.title} />}
       
       <QuizProgress currentIndex={currentIndex} total={questions.length} />
 
-      <div className="flex-1 flex flex-col justify-center w-full">
+      <div className="flex-1 flex flex-col min-h-0 w-full">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentQuestion.id}
@@ -305,10 +299,10 @@ export function QuizContent({ id }: { id: string }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="space-y-3"
+            className="flex flex-col flex-1 min-h-0"
           >
             <QuizQuestion question={currentQuestion} />
-            <QuestionOptions
+            <QuizOptions
               options={currentQuestion.options}
               correctOptionId={currentQuestion.correctOptionId}
               selectedOption={selectedOption}
@@ -327,7 +321,6 @@ export function QuizContent({ id }: { id: string }) {
         isLast={currentIndex === questions.length - 1}
         selectedOption={selectedOption}
         isSubmitting={isSubmitting}
-        isPWA={hideNavigation}
         explanation={currentQuestion.explanation}
         onConfirm={handleConfirmAnswer}
         onNext={() => dispatch(nextQuestion())}

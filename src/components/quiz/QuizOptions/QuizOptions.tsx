@@ -3,7 +3,7 @@
 import { Check, X } from "lucide-react";
 import { QuizOption } from "./QuizOption";
 
-interface QuestionOptionsProps {
+interface QuizOptionsProps {
     options: { id: string; text: string }[];
     correctOptionId: string;
     selectedOption: string | null;
@@ -14,7 +14,7 @@ interface QuestionOptionsProps {
     onSelectOption: (optionId: string) => void;
 }
 
-export function QuestionOptions({
+export function QuizOptions({
     options,
     correctOptionId,
     selectedOption,
@@ -23,9 +23,9 @@ export function QuestionOptions({
     isSubmitting = false,
     optionLetters,
     onSelectOption,
-}: QuestionOptionsProps) {
+}: QuizOptionsProps) {
     return (
-        <div className="flex flex-col gap-3 w-full mx-auto">
+        <div className="flex flex-col gap-3 w-full mx-auto shrink-0 mt-2 mb-2">
             {options.map((opt: any, idx: number) => {
                 const isSelected = selectedOption === opt.id;
                 const isCorrectOption = correctOptionId === opt.id;

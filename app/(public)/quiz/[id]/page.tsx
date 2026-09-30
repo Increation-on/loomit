@@ -57,7 +57,7 @@ export default function QuizPage() {
         </button>
       )}
 
-      <div className="flex-1 flex flex-col justify-center w-full mx-auto mt-8">
+      <div className="flex-1 flex flex-col justify-center w-full mx-auto">
         <QuizContent id={id as string} />
       </div>
 

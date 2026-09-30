@@ -1,7 +1,8 @@
 'use client'
 
-import { QuestionHint } from "./QuizHint";
-import { QuestionActions } from "./QuizActions";
+import { QuizActions } from "./QuizActions";
+import { QuizHint } from "./QuizHint";
+
 
 
 interface QuizFooterProps {
@@ -9,7 +10,6 @@ interface QuizFooterProps {
     isLast: boolean;
     selectedOption: string | null;
     isSubmitting: boolean;
-    isPWA?: boolean;
     explanation?: string;
     onConfirm: () => void;
     onNext: () => void;
@@ -21,26 +21,26 @@ export function QuizFooter({
     isLast,
     selectedOption,
     isSubmitting,
-    isPWA,
     explanation,
     onConfirm,
     onNext,
     onFinish,
- }: QuizFooterProps) {
+}: QuizFooterProps) {
     return (
-        <div className="relative">
-            <QuestionActions
+        <div className='relative border-t border-(--loom-white)/10 bg-(--loom-black)/90 backdrop-blur-sm w-full'>
+            <QuizActions
                 isCurrentConfirmed={isCurrentConfirmed}
                 isLast={isLast}
                 selectedOption={selectedOption}
                 isSubmitting={isSubmitting}
-                isPWA={isPWA}
                 onConfirm={onConfirm}
                 onNext={onNext}
                 onFinish={onFinish}
             />
             {isCurrentConfirmed && explanation && (
-                <QuestionHint explanation={explanation} />
+                <div className="absolute right-2 top-11 -translate-y-1/2">
+                    <QuizHint explanation={explanation} />
+                </div>
             )}
         </div>
     );

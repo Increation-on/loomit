@@ -23,7 +23,7 @@ export function QuizQuestion({
 
   return (
           <div className=
-            "w-full flex flex-col justify-center items-center -mt-4 mb-4 gap-2 box-border py-1 h-50">
+            "w-full flex flex-col justify-center items-center gap-2 box-border py-1 flex-1 min-h-0 mt-2">
             {/* ТЕКСТ ВОПРОСА */}
             <QuestionText
               textForSizing={textForSizing}

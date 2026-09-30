@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef, useLayoutEffect } from 'react';
 
 interface UseQuizFontSizeProps {
   text: string;
@@ -17,7 +17,6 @@ export const useQuizFontSize = ({
   maxFontSize = 24,
   step = 1,
   mode = 'canvas',
-  dependencies = [],
 }: UseQuizFontSizeProps) => {
   const [fontSize, setFontSize] = useState<number>(maxFontSize);
   const [isReady, setIsReady] = useState<boolean>(false);
@@ -27,8 +26,6 @@ export const useQuizFontSize = ({
   const adjustFontSize = useCallback(
     (node: HTMLElement) => {
       if (!node || !text) return;
-
-      setIsReady(false);
 
       const computedStyle = window.getComputedStyle(node);
       const paddingX =
@@ -132,11 +129,11 @@ export const useQuizFontSize = ({
     lastSizeRef.current = null;
   }, [text]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (elementRef.current) {
       adjustFontSize(elementRef.current);
     }
-  }, [text, adjustFontSize, ...dependencies]);
+  }, [text, adjustFontSize]);
 
   return { fontSize, isReady, ref: refCallback };
 };

@@ -37,7 +37,7 @@ export function QuestionText({
 
 }: QuestionTextProps) {
 
-    const { fontSize, ref: questionRef } = useQuizFontSize({
+    const { fontSize, ref: questionRef, isReady } = useQuizFontSize({
     text: textForSizing,
     minFontSize: 16,
     maxFontSize: 24,
@@ -59,6 +59,7 @@ export function QuestionText({
                 style={{
                     fontSize: fontSize + 'px',
                     lineHeight: '1.4',
+                    visibility: isReady ? 'visible' : 'hidden',
                 }}
             >
                 {formatQuestionInlineText(inlineText, fontSize)}

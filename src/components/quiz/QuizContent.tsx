@@ -301,7 +301,7 @@ export function QuizContent({ id }: { id: string }) {
             transition={{ duration: 0.25 }}
             className="flex flex-col flex-1 min-h-0"
           >
-            <QuizQuestion question={currentQuestion} />
+            <QuizQuestion question={currentQuestion} key={currentQuestion.id} />
             <QuizOptions
               options={currentQuestion.options}
               correctOptionId={currentQuestion.correctOptionId}

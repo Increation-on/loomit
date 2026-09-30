@@ -32,7 +32,7 @@ export function QuizOption({
   // Хук считает размер один раз, ориентируясь на стабильную ширину контейнера
   const { fontSize, isReady, ref } = useQuizFontSize({
     text,
-    minFontSize: 13,
+    minFontSize: 12,
     maxFontSize: 18,
     step: 0.5,
     dependencies: [isSelected, isCurrentConfirmed], // только для анимации рамки

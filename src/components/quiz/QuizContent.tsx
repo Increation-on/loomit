@@ -283,7 +283,7 @@ export function QuizContent({ id }: { id: string }) {
   return (
     <div
       className={
-        `h-dvh bg-(--loom-black) flex flex-col items-center mx-auto overflow-hidden
+        `h-dvh bg-(--loom-black) flex flex-col items-center mx-auto overflow-hidden w-full
         ${hideNavigation ? 'pt-13' : 'pt-14'}`
       }>
 
@@ -292,7 +292,7 @@ export function QuizContent({ id }: { id: string }) {
       <QuizProgress currentIndex={currentIndex} total={questions.length} />
 
       <div className="flex-1 flex flex-col min-h-0 w-full">
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode='wait'>
           <motion.div
             key={currentQuestion.id}
             initial={{ opacity: 0 }}

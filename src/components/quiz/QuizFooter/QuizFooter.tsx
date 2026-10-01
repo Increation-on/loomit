@@ -27,7 +27,7 @@ export function QuizFooter({
     onFinish,
 }: QuizFooterProps) {
     return (
-        <div className='relative border-t border-(--loom-white)/10 bg-(--loom-black)/90 backdrop-blur-sm w-full'>
+        <div className='relative border-t border-(--loom-white)/10 bg-(--loom-black)/90  w-full'>
             <QuizActions
                 isCurrentConfirmed={isCurrentConfirmed}
                 isLast={isLast}
@@ -38,8 +38,10 @@ export function QuizFooter({
                 onFinish={onFinish}
             />
             {isCurrentConfirmed && explanation && (
-                <div className="absolute right-2 top-11 -translate-y-1/2">
-                    <QuizHint explanation={explanation} />
+                <div className="absolute right-4 inset-y-0 flex items-center pointer-events-none">
+                    <div className="pointer-events-auto">
+                        <QuizHint explanation={explanation} />
+                    </div>
                 </div>
             )}
         </div>

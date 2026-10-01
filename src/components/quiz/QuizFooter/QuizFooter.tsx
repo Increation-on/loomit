@@ -38,7 +38,7 @@ export function QuizFooter({
                 onFinish={onFinish}
             />
             {isCurrentConfirmed && explanation && (
-                <div className="absolute right-4 inset-y-0 flex items-center pointer-events-none">
+                <div className="absolute right-0 top-2 inset-y-0 flex items-center pointer-events-none">
                     <div className="pointer-events-auto">
                         <QuizHint explanation={explanation} />
                     </div>

@@ -7,6 +7,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Providers } from "./providers";
 import { StatusBarSync } from "@/components/layout/StatusBarSync";
+import { HideScrollbar } from "@/components/layout/HideScrollbar";
 
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-display' });
 const inter = Inter({ subsets: ['latin', 'cyrillic'], variable: '--font-body' });
@@ -42,6 +43,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       <body className="min-h-full flex flex-col transition-colors duration-200">
         <Providers session={session}>
             <StatusBarSync />
+            <HideScrollbar/>
             <Header />
             <main className="flex-1">{children}</main>
             <Footer />

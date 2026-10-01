@@ -23,11 +23,6 @@ export const useQuizFontSize = ({
   const elementRef = useRef<HTMLElement | null>(null);
   const lastSizeRef = useRef<number | null>(null);
 
-
-  useLayoutEffect(() => {
-  console.log('adjust', text.slice(0, 20), 'fontSize:', fontSize, 'isReady:', isReady);
-});
-
   const adjustFontSize = useCallback(
     (node: HTMLElement) => {
       if (!node || !text) return;

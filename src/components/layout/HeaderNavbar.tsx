@@ -19,6 +19,9 @@ export function HeaderNavbar() {
                     Админка
                 </Link>
             )}
+             <Link href="/catalog" className="hover:text-loom-cyan text-loom-white">
+                Каталог
+            </Link>
         </nav>
     );
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { useSession, signOut } from 'next-auth/react';
@@ -20,9 +21,9 @@ if (!isDesktop) {
   const avatarLetter = isAuthenticated ? userName?.[0] : '?';
 
   return (
-    <header className="bg-(--loom-black) sticky top-0 z-10 px-4 h-18 flex items-center justify-between">
+    <header className="bg-(--loom-black) px-4 h-18 flex items-center justify-between">
 
-      <div className="absolute bottom-0 left-0 w-full px-4">
+      <div className="absolute bottom-2 left-0 w-full px-4">
         <img
           src="/glitch-line.png"
           alt="glitch line"
@@ -34,7 +35,7 @@ if (!isDesktop) {
         <img
           src="/logo.png"
           alt="LOOMIT"
-          className="h-28 w-auto object-contain"
+          className="h-22 w-auto object-contain"
         />
       </Link>
 
@@ -42,11 +43,11 @@ if (!isDesktop) {
         {isAuthenticated ? (
           <>
             <div className="text-left">
-              <p className="text-sm text-gray-500 leading-none">Hello,</p>
-              <p className="font-semibold text-(--loom-white)">{displayName}</p>
+              <p className="text-xs text-gray-500 leading-none">Hello,</p>
+              <p className="font-semibold text-(--loom-white) text-sm">{displayName}</p>
             </div>
             <Link href="/profile">
-              <div className="w-10 h-10 rounded-full bg-(--loom-magenta) flex items-center justify-center font-bold text-lg text-(--loom-white)">
+              <div className="w-8 h-8 rounded-full bg-(--loom-magenta) flex items-center justify-center font-bold text-sm text-(--loom-white)">
                 {avatarLetter}
               </div>
             </Link>

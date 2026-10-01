@@ -23,6 +23,11 @@ export const useQuizFontSize = ({
   const elementRef = useRef<HTMLElement | null>(null);
   const lastSizeRef = useRef<number | null>(null);
 
+
+  useLayoutEffect(() => {
+  console.log('adjust', text.slice(0, 20), 'fontSize:', fontSize, 'isReady:', isReady);
+});
+
   const adjustFontSize = useCallback(
     (node: HTMLElement) => {
       if (!node || !text) return;
@@ -112,17 +117,9 @@ export const useQuizFontSize = ({
     [text, minFontSize, maxFontSize, step, mode]
   );
 
-  const refCallback = useCallback(
-    (node: HTMLElement | null) => {
-      if (node) {
-        elementRef.current = node;
-        adjustFontSize(node);
-      } else if (elementRef.current) {
-        elementRef.current = null;
-      }
-    },
-    [adjustFontSize]
-  );
+  const refCallback = useCallback((node: HTMLElement | null) => {
+  elementRef.current = node;
+}, []);
 
   // Сброс кэша при смене текста
   useEffect(() => {

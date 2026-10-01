@@ -14,7 +14,7 @@ interface QuizOptionProps {
   icon?: React.ReactNode;
   onClick: () => void;
   className?: string;
-  containerHeight?: number;
+  containerHeight?: number | string;
 }
 
 export function QuizOption({
@@ -27,7 +27,7 @@ export function QuizOption({
   icon,
   onClick,
   className,
-  containerHeight = 65,
+  containerHeight = 'clamp(55px, 8vh, 65px)',
 }: QuizOptionProps) {
   // Хук считает размер один раз, ориентируясь на стабильную ширину контейнера
   const { fontSize, isReady, ref } = useQuizFontSize({

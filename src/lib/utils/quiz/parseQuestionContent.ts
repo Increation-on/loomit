@@ -1,9 +1,21 @@
 import { formatCode } from "./formatCode";
 
-// ✂️ Интеллектуальный парсер: изолирует исполняемый/длинный код в blockCode и сохраняет пробелы текста
 export const parseQuestionContent = (fullText: string): { inlineText: string; blockCode: string | null } => {
-  const parts = fullText.split(/(`[^`]+`)/g);
   let blockCode: string | null = null;
+  let text = fullText;
+
+  // 1. Markdown-блоки ```lang\n...\n```
+  const mdRegex = /```(\w*)\n?([\s\S]*?)```/g;
+  text = text.replace(mdRegex, (_, lang, code) => {
+    const trimmed = code.trim();
+    if (trimmed) {
+      blockCode = formatCode(trimmed);
+    }
+    return '';
+  });
+
+  // 2. Одинарные бэктики (старая логика)
+  const parts = text.split(/(`[^`]+`)/g);
   const inlineTextParts: string[] = [];
 
   parts.forEach((part) => {
@@ -20,11 +32,9 @@ export const parseQuestionContent = (fullText: string): { inlineText: string; bl
       if (isExecutableOrLong) {
         blockCode = formatted;
       } else {
-        // Оставляем короткую переменную или тип данных (`null`, `undefined`, `a`)
         inlineTextParts.push('`' + formatted + '`');
       }
     } else {
-      // Сохраняем текст и пробелы предложения в исходном состоянии
       inlineTextParts.push(part);
     }
   });

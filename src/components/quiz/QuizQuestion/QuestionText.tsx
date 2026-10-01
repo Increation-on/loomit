@@ -49,7 +49,7 @@ export function QuestionText({
     const alignClass = inlineText.length > 50 ? 'text-left' : 'text-center';
 
     return (
-        <div className={cn("w-full", !blockCode ? "h-full flex flex-col justify-center" : "h-auto")}>
+        <div className={cn("w-full flex-shrink-0", !blockCode ? "h-full flex flex-col justify-center" : "h-auto")}>
             <h2
                 ref={questionRef}
                 className={cn(

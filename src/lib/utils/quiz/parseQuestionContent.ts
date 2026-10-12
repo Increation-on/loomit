@@ -1,46 +1,15 @@
-import { formatCode } from "./formatCode";
+export const parseQuestionContent = (
+  fullText: string
+): { inlineText: string; blockCode: string | null; blockLang: string | null } => {
+  // 1. Блок ```lang\n...\n``` — вырезаем, берём первый
+  const mdRegex = /```(\w*)\n?([\s\S]*?)```/;
+  const match = fullText.match(mdRegex);
 
-export const parseQuestionContent = (fullText: string): { inlineText: string; blockCode: string | null } => {
-  let blockCode: string | null = null;
-  let text = fullText;
+  const blockCode = match ? match[2].trim() : null;
+  const blockLang = match ? match[1] || null : null;
 
-  // 1. Markdown-блоки ```lang\n...\n```
-  const mdRegex = /```(\w*)\n?([\s\S]*?)```/g;
-  text = text.replace(mdRegex, (_, lang, code) => {
-    const trimmed = code.trim();
-    if (trimmed) {
-      blockCode = formatCode(trimmed);
-    }
-    return '';
-  });
+  // 2. Всё остальное — инлайн, как есть
+  const inlineText = fullText.replace(/```[\s\S]*?```/g, '').trim();
 
-  // 2. Одинарные бэктики (старая логика)
-  const parts = text.split(/(`[^`]+`)/g);
-  const inlineTextParts: string[] = [];
-
-  parts.forEach((part) => {
-    if (part.startsWith('`') && part.endsWith('`')) {
-      const rawCode = part.slice(1, -1);
-      const formatted = formatCode(rawCode);
-      
-      const isExecutableOrLong = 
-        formatted.includes('\n') || 
-        formatted.length > 25 || 
-        formatted.includes('.') || 
-        formatted.includes(';');
-
-      if (isExecutableOrLong) {
-        blockCode = formatted;
-      } else {
-        inlineTextParts.push('`' + formatted + '`');
-      }
-    } else {
-      inlineTextParts.push(part);
-    }
-  });
-
-  return {
-    inlineText: inlineTextParts.join('').trim(),
-    blockCode,
-  };
+  return { inlineText, blockCode, blockLang };
 };

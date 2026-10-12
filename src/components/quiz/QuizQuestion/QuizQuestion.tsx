@@ -12,27 +12,21 @@ interface QuizQuestionProps {
   };
 }
 
-export function QuizQuestion({
-  question,
-}: QuizQuestionProps) {
-
-  const { inlineText, blockCode, textForSizing } = useMemo(
+export function QuizQuestion({ question }: QuizQuestionProps) {
+  const { inlineText, blockCode, blockLang, textForSizing } = useMemo(
     () => prepareQuestionContent(question.text),
     [question.text]
   );
 
   return (
-          <div className=
-            "w-full flex flex-col justify-center gap-3 items-center box-border py-1 flex-1 min-h-0 mt-2">
-            {/* ТЕКСТ ВОПРОСА */}
-            <QuestionText
-              textForSizing={textForSizing}
-              blockCode={blockCode}
-              questionId={question.id}
-              inlineText={inlineText}
-            />
-            {/* МНОГОСТРОЧНЫЙ БЛОК КОДА */}
-            {blockCode && <QuestionCodeBlock code={blockCode} />}
-          </div>
+    <div className="w-full flex flex-col justify-center gap-3 items-center box-border py-1 flex-1 min-h-0 mt-2">
+      <QuestionText
+        textForSizing={textForSizing}
+        blockCode={blockCode}
+        questionId={question.id}
+        inlineText={inlineText}
+      />
+      {blockCode && <QuestionCodeBlock code={blockCode} lang={blockLang} />}
+    </div>
   );
 }

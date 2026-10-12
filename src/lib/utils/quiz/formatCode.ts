@@ -1,51 +1,56 @@
-// 🛠 Функция форматирования блочного кода: чистит пробелы в массивах, скобках и выравнивает строки
-export const formatCode = (code: string): string => {
-  if (!code) return '';
-  if (code.includes('\n')) return code.trim();
-
-  // 1. Сжатие пробелов внутри однострочных массивов ДО форматирования строк
-  let cleanCode = code.trim().replace(/\[\s*([\s\S]*?)\s*\]/g, (_, p1) => {
-    const compacted = p1.replace(/\s*,\s*/g, ', ');
-    return '[' + compacted.trim() + ']';
-  });
-
-  // Очистка зазоров между скобками и точкой с запятой
-  cleanCode = cleanCode.replace(/\]\s*;/g, '];').replace(/\}\s*;/g, '};');
-
-  // Намертво схлопываем пустые фигурные скобки, чтобы внутри них не появлялся перенос
-  cleanCode = cleanCode.replace(/\{\s*\}/g, '{}');
-
-  // Если код короткий и плоский, возвращаем как есть
-  if (cleanCode.length < 30 && !cleanCode.includes(';')) return cleanCode;
-
-  // 2. Чистая расстановка переносов строк (lookahead (?!\}) защищает пустые скобки)
-  const formatted = cleanCode
-    .replace(/\{(?!\})/g, '{\n')
-    .replace(/(?<!\{)\}/g, '\n}')
-    .replace(/;(?![^(]*\))/g, ';\n')
-    .replace(/\n\s*\n/g, '\n');
-
-  // 3. Расчет контекстных табуляций (2 пробела на уровень отступа)
-  const lines = formatted.split('\n');
-  let currentIndent = 0;
-
-  const processedLines = lines.map(line => {
-    const trimmed = line.trim();
-    if (!trimmed) return '';
-
-    if (trimmed.startsWith('}') || trimmed.startsWith(']') || trimmed.startsWith('})')) {
-      currentIndent = Math.max(0, currentIndent - 1);
-    }
-
-    const indentSpace = '  '.repeat(currentIndent);
-    const result = indentSpace + trimmed;
-
-    if (trimmed.endsWith('{') || trimmed.endsWith('[')) {
-      currentIndent++;
-    }
-
-    return result;
-  });
-
-  return processedLines.filter(line => line !== '').join('\n');
+type PrettierModules = {
+  prettier: typeof import('prettier/standalone');
+  babel: any;
+  estree: any;
+  typescript: any;
 };
+
+let modulesPromise: Promise<PrettierModules> | null = null;
+
+async function loadPrettier(): Promise<PrettierModules> {
+  if (!modulesPromise) {
+    modulesPromise = (async () => {
+      const [prettier, babel, estree, typescript] = await Promise.all([
+        import('prettier/standalone'),
+        import('prettier/plugins/babel'),
+        import('prettier/plugins/estree'),
+        import('prettier/plugins/typescript'),
+      ]);
+      return { prettier, babel, estree, typescript };
+    })();
+  }
+  return modulesPromise;
+}
+
+function resolveParser(lang: string | null | undefined): 'babel' | 'typescript' {
+  switch (lang) {
+    case 'ts':
+    case 'typescript':
+    case 'tsx':
+      return 'typescript';
+    default:
+      return 'babel';
+  }
+}
+
+export async function formatCode(
+  code: string,
+  lang: string | null | undefined,
+  printWidth = 80
+): Promise<string> {
+  try {
+    const { prettier, babel, estree, typescript } = await loadPrettier();
+
+    return await prettier.format(code, {
+      parser: resolveParser(lang),
+      plugins: [babel, estree, typescript],
+      tabWidth: 2,
+      semi: true,
+      singleQuote: false,
+      printWidth,
+    });
+  } catch (error) {
+    console.warn('[formatCode] Prettier failed, returning raw code:', error);
+    return code;
+  }
+}

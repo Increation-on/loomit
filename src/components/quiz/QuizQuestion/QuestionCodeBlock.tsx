@@ -1,24 +1,27 @@
 'use client';
 
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { nightOwl    } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { cn } from '@/lib/utils';
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { useFormattedCode } from '@/hooks/useFormattedCode';
 
 interface QuestionCodeBlockProps {
   code: string;
 }
 
 export function QuestionCodeBlock({ code }: QuestionCodeBlockProps) {
+  const { formatted, ref } = useFormattedCode(code);
+
   return (
-    <div
-      className={cn(
-        'w-full h-fit max-h-[45vh] bg-[#1e1e1e] rounded-xl p-3 border border-(--loom-white)/5 shadow-inner scrollbar-thin pr-1.5 flex flex-col overflow-hidden',
-        code.includes('\n') ? 'justify-start' : 'justify-center'
-      )}
+<div
+      ref={ref}
+      className={
+        'w-full h-fit max-h-[45vh] bg-[#1e1e1e] rounded-xl p-3 border border-(--loom-white)/5 shadow-inner scrollbar-thin pr-1.5 flex flex-col overflow-hidden ' +
+        (formatted.includes('\n') ? 'justify-start' : 'justify-center')
+      }
     >
       <SyntaxHighlighter
         language="javascript"
-        style={nightOwl}
+        style={oneDark}
         customStyle={{
           background: 'transparent',
           margin: 0,
@@ -27,12 +30,10 @@ export function QuestionCodeBlock({ code }: QuestionCodeBlockProps) {
           lineHeight: '1.6',
           overflow: 'auto',
         }}
-        codeTagProps={{
-          className: 'font-mono',
-        }}
+        codeTagProps={{ className: 'font-mono' }}
         wrapLongLines
       >
-        {code}
+        {formatted}
       </SyntaxHighlighter>
     </div>
   );

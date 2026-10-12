@@ -6,13 +6,14 @@ import { useFormattedCode } from '@/hooks/useFormattedCode';
 
 interface QuestionCodeBlockProps {
   code: string;
+  lang?: string | null;
 }
 
-export function QuestionCodeBlock({ code }: QuestionCodeBlockProps) {
-  const { formatted, ref } = useFormattedCode(code);
+export function QuestionCodeBlock({ code, lang }: QuestionCodeBlockProps) {
+  const { formatted, ref } = useFormattedCode(code, lang);
 
   return (
-<div
+    <div
       ref={ref}
       className={
         'w-full h-fit max-h-[45vh] bg-[#1e1e1e] rounded-xl p-3 border border-(--loom-white)/5 shadow-inner scrollbar-thin pr-1.5 flex flex-col overflow-hidden ' +
@@ -20,7 +21,7 @@ export function QuestionCodeBlock({ code }: QuestionCodeBlockProps) {
       }
     >
       <SyntaxHighlighter
-        language="javascript"
+        language={lang || 'javascript'}
         style={oneDark}
         customStyle={{
           background: 'transparent',

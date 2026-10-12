@@ -26,7 +26,7 @@ export function QuizQuestion({ question }: QuizQuestionProps) {
         questionId={question.id}
         inlineText={inlineText}
       />
-      {blockCode && <QuestionCodeBlock code={blockCode} />}
+      {blockCode && <QuestionCodeBlock code={blockCode} lang={blockLang} />}
     </div>
   );
 }

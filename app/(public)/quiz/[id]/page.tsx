@@ -33,13 +33,13 @@ export default function QuizPage() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (pathname.startsWith('/quiz/') && (isPWA || isMobile)) {
-      document.body.classList.add('quiz-pwa-mode');
-    } else {
-      document.body.classList.remove('quiz-pwa-mode');
-    }
-    return () => document.body.classList.remove('quiz-pwa-mode');
-  }, [pathname, isPWA, isMobile]);
+  if (pathname.startsWith('/quiz/') && (isPWA || isMobile)) {
+    document.body.classList.add('quiz-hide-layout');
+  } else {
+    document.body.classList.remove('quiz-hide-layout');
+  }
+  return () => document.body.classList.remove('quiz-hide-layout');
+}, [pathname, isPWA, isMobile]);
 
   return (
     <div className="pb-safe pt-safe flex min-h-screen flex-col px-4">

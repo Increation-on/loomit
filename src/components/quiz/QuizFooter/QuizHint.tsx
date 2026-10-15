@@ -2,27 +2,12 @@
 
 import { useState } from 'react';
 import { Modal } from '@/components/ui/feedback/Modal';
-import { parseInlineCode, type InlineCodeSegment } from '@/lib/utils/quiz/parseInlineCode';
+import { InlineCodeText } from '@/components/ui/core/InlineCodeText';
 
 interface QuizHintProps {
   explanation: string;
 }
 
-const renderSegments = (segments: InlineCodeSegment[]) => {
-  return segments.map((segment, i) => {
-    if (segment.type === 'code') {
-      return (
-        <code
-          key={i}
-          className="font-mono bg-(--loom-white)/10 px-1.5 py-0.5 rounded text-(--loom-yellow) inline whitespace-nowrap font-semibold align-baseline mx-0.5 text-[0.9em]"
-        >
-          {segment.value}
-        </code>
-      );
-    }
-    return <span key={i}>{segment.value}</span>;
-  });
-};
 
 export function QuizHint({ explanation }: QuizHintProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -42,7 +27,7 @@ export function QuizHint({ explanation }: QuizHintProps) {
         title="Объяснение"
       >
         <p className="text-(--loom-white)/80 leading-relaxed">
-          {renderSegments(parseInlineCode(explanation))}
+          <InlineCodeText value={explanation} />
         </p>
       </Modal>
     </>

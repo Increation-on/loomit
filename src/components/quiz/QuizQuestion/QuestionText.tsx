@@ -1,8 +1,8 @@
 'use client'
 
+import { InlineCodeText } from "@/components/ui/core/InlineCodeText";
 import { useQuizFontSize } from "@/hooks/useQuizFontSize";
 import { cn } from "@/lib/utils";
-import { parseInlineCode, type InlineCodeSegment } from "@/lib/utils/quiz/parseInlineCode";
 
 interface QuestionTextProps {
     inlineText: string;      // текст с бэктиками (после парсинга)
@@ -10,23 +10,6 @@ interface QuestionTextProps {
     questionId: string;      // для dependencies в хуке
     blockCode: string | null;
 }
-
-const renderSegments = (segments: InlineCodeSegment[], fontSize: number) => {
-    return segments.map((segment, i) => {
-        if (segment.type === 'code') {
-            return (
-                <code
-                    key={i}
-                    style={{ fontSize: Math.max(fontSize * 0.9, 13) + 'px' }}
-                    className="font-mono bg-(--loom-white)/10 px-1.5 py-0.5 rounded text-(--loom-yellow) inline whitespace-nowrap font-semibold align-baseline mx-0.5"
-                >
-                    {segment.value}
-                </code>
-            );
-        }
-        return <span key={i} className="whitespace-normal">{segment.value}</span>;
-    });
-};
 
 export function QuestionText({ 
     inlineText,
@@ -61,7 +44,7 @@ export function QuestionText({
                     opacity: isReady ? '1' : '0',
                 }}
             >
-                {renderSegments(parseInlineCode(inlineText), fontSize)}
+               <InlineCodeText value={inlineText} fontSize={fontSize} textClassName="whitespace-normal" />
             </h2>
         </div>
     )

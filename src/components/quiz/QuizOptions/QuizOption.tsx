@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useQuizFontSize } from '@/hooks/useQuizFontSize';
-import { parseInlineCode, type InlineCodeSegment } from '@/lib/utils/quiz/parseInlineCode';
+import { InlineCodeText } from '@/components/ui/core/InlineCodeText';
 
 interface QuizOptionProps {
   letter: string;
@@ -62,23 +62,6 @@ export function QuizOption({
     }
   }
 
-  const renderSegments = (segments: InlineCodeSegment[], fontSize: number) => {
-  return segments.map((segment, i) => {
-    if (segment.type === 'code') {
-      return (
-        <code
-          key={i}
-          style={{ fontSize: Math.max(fontSize * 0.9, 12) + 'px' }}
-          className="font-mono bg-(--loom-white)/10 px-1.5 py-0.5 rounded text-(--loom-yellow) inline whitespace-nowrap font-semibold align-baseline mx-0.5"
-        >
-          {segment.value}
-        </code>
-      );
-    }
-    return <span key={i}>{segment.value}</span>;
-  });
-};
-
   return (
     <motion.div
       whileHover={!isCurrentConfirmed ? { scale: 1.01 } : {}}
@@ -122,7 +105,7 @@ export function QuizOption({
             display: 'block',
           }}
         >
-          {renderSegments(parseInlineCode(text), fontSize)}
+         <InlineCodeText value={text} fontSize={fontSize} />
         </span>
 
         {/* 

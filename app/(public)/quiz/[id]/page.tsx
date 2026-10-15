@@ -23,6 +23,8 @@ export default function QuizPage() {
   const [showExitModal, setShowExitModal] = useState(false);
   const { id } = useParams();
 
+  const shouldHideLayout = isPWA || isMobile;
+
   const handleConfirmExit = () => {
     goBack();
     setShowExitModal(false);
@@ -33,17 +35,17 @@ export default function QuizPage() {
   }, [dispatch]);
 
   useEffect(() => {
-  if (pathname.startsWith('/quiz/') && (isPWA || isMobile)) {
-    document.body.classList.add('quiz-hide-layout');
-  } else {
-    document.body.classList.remove('quiz-hide-layout');
-  }
-  return () => document.body.classList.remove('quiz-hide-layout');
-}, [pathname, isPWA, isMobile]);
+    if (pathname.startsWith('/quiz/') && shouldHideLayout) {
+      document.body.classList.add('quiz-hide-layout');
+    } else {
+      document.body.classList.remove('quiz-hide-layout');
+    }
+    return () => document.body.classList.remove('quiz-hide-layout');
+  }, [pathname, shouldHideLayout]);
 
   return (
     <div className="pb-safe pt-safe flex min-h-screen flex-col px-4">
-      {(isPWA || isMobile) && (
+      {shouldHideLayout && (
         <button
           onClick={() => setShowExitModal(true)}
           className={cn(

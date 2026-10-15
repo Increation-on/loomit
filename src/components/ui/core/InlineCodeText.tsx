@@ -1,6 +1,6 @@
 'use client';
 
-import { parseInlineCode } from '@/lib/utils/quiz/parseInlineCode';
+import { parseInlineCode } from '@/lib/utils/quiz';
 
 interface InlineCodeTextProps {
   value: string;

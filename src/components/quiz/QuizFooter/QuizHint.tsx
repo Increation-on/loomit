@@ -8,7 +8,6 @@ interface QuizHintProps {
   explanation: string;
 }
 
-
 export function QuizHint({ explanation }: QuizHintProps) {
   const [isOpen, setIsOpen] = useState(false);
 

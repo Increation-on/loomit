@@ -13,6 +13,7 @@ export function parseInlineCode(text: string): InlineCodeSegment[] {
   const parts = text.split(/(`[^`]+`)/g);
 
   return parts
+    // split с capture-группой может дать пустые строки на краях — отсекаем
     .filter((part) => part.length > 0)
     .map((part) => {
       if (part.startsWith('`') && part.endsWith('`')) {

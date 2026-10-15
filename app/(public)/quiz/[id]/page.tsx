@@ -12,10 +12,12 @@ import { cn } from '@/lib/utils';
 import { useQuizReturn } from '@/hooks/useQuizReturn';
 import { ChevronLeft } from 'lucide-react';
 import { QuizContent } from '@/components/quiz/QuizContent';
+import { useIsMobile } from '@/hooks/useIsMobile';
 
 export default function QuizPage() {
   const pathname = usePathname();
   const isPWA = usePWA();
+  const isMobile = useIsMobile();
   const dispatch = useDispatch();
   const { goBack } = useQuizReturn('/catalog');
   const [showExitModal, setShowExitModal] = useState(false);
@@ -31,24 +33,23 @@ export default function QuizPage() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (pathname.startsWith('/quiz/') && isPWA) {
+    if (pathname.startsWith('/quiz/') && (isPWA || isMobile)) {
       document.body.classList.add('quiz-pwa-mode');
     } else {
       document.body.classList.remove('quiz-pwa-mode');
     }
     return () => document.body.classList.remove('quiz-pwa-mode');
-  }, [pathname, isPWA]);
+  }, [pathname, isPWA, isMobile]);
 
-  
   return (
-    <div className="min-h-screen flex flex-col px-4 pb-safe pt-safe">
-      {isPWA && (
+    <div className="pb-safe pt-safe flex min-h-screen flex-col px-4">
+      {(isPWA || isMobile) && (
         <button
           onClick={() => setShowExitModal(true)}
           className={cn(
             'fixed top-[calc(env(safe-area-inset-top)+0.5rem)] left-1 z-50 flex items-center gap-2',
-            'text-(--loom-white)/60 hover:text-(--loom-white) transition-colors',
-            'bg-(--loom-black)/60 backdrop-blur-sm px-3 py-2 rounded-full',
+            'text-(--loom-white)/60 transition-colors hover:text-(--loom-white)',
+            'rounded-full bg-(--loom-black)/60 px-3 py-2 backdrop-blur-sm',
             'text-sm font-medium'
           )}
         >
@@ -57,7 +58,7 @@ export default function QuizPage() {
         </button>
       )}
 
-      <div className="flex-1 flex flex-col justify-center w-full mx-auto">
+      <div className="mx-auto flex w-full flex-1 flex-col justify-center">
         <QuizContent id={id as string} />
       </div>
 

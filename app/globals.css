@@ -267,10 +267,10 @@ html {
   -webkit-touch-callout: none;
 }
 
-/* Скрываем хедер и футер только на странице квиза в PWA */
-.quiz-pwa-mode header,
-.quiz-pwa-mode nav.fixed.bottom-0,
-.quiz-pwa-mode footer {
+/* Скрываем хедер, навбар и футер на странице квиза (PWA и мобильный браузер) */
+.quiz-hide-layout header,
+.quiz-hide-layout nav.fixed.bottom-0,
+.quiz-hide-layout footer {
   display: none !important;
 }
 

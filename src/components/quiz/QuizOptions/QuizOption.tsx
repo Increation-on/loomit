@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useQuizFontSize } from '@/hooks/useQuizFontSize';
+import { InlineCodeText } from '@/components/ui/core/InlineCodeText';
 
 interface QuizOptionProps {
   letter: string;
@@ -104,7 +105,7 @@ export function QuizOption({
             display: 'block',
           }}
         >
-          {text}
+          <InlineCodeText value={text} fontSize={fontSize} />
         </span>
 
         {/* 
@@ -113,12 +114,12 @@ export function QuizOption({
           Шрифт сразу подбирается с расчетом на то, что это место занято.
         */}
         <div className="w-1 h-1 flex items-center justify-center shrink-0 ml-2">
-          <div 
+          <div
             className="transition-opacity duration-200"
-            style={{ 
+            style={{
               // Меняем видимость плавно или мгновенно без перестроения сетки
-              opacity: icon ? 1 : 0, 
-              visibility: icon ? 'visible' : 'hidden' 
+              opacity: icon ? 1 : 0,
+              visibility: icon ? 'visible' : 'hidden'
             }}
           >
             {icon}

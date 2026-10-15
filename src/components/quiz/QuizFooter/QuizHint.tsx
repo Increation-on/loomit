@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Modal } from '@/components/ui/feedback/Modal';
+import { InlineCodeText } from '@/components/ui/core/InlineCodeText';
 
 interface QuizHintProps {
   explanation: string;
@@ -14,7 +15,7 @@ export function QuizHint({ explanation }: QuizHintProps) {
     <>
       <button
         onClick={() => setIsOpen(true)}
-         className="z-50 flex items-center justify-center w-12 h-9 rounded-full bg-(--loom-cyan)/10 hover:bg-(--loom-cyan)/20 text-(--loom-cyan) text-lg transition-colors border border-(--loom-cyan)/20 shadow-lg"
+        className="z-50 flex items-center justify-center w-12 h-9 rounded-full bg-(--loom-cyan)/10 hover:bg-(--loom-cyan)/20 text-(--loom-cyan) text-lg transition-colors border border-(--loom-cyan)/20 shadow-lg"
       >
         💡
       </button>
@@ -24,7 +25,9 @@ export function QuizHint({ explanation }: QuizHintProps) {
         onClose={() => setIsOpen(false)}
         title="Объяснение"
       >
-        <p className="text-(--loom-white)/80 leading-relaxed">{explanation}</p>
+        <p className="text-(--loom-white)/80 leading-relaxed">
+          <InlineCodeText value={explanation} />
+        </p>
       </Modal>
     </>
   );

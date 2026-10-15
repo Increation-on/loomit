@@ -1,5 +1,6 @@
 'use client'
 
+import { InlineCodeText } from "@/components/ui/core/InlineCodeText";
 import { useQuizFontSize } from "@/hooks/useQuizFontSize";
 import { cn } from "@/lib/utils";
 
@@ -10,25 +11,6 @@ interface QuestionTextProps {
     blockCode: string | null;
 }
 
-const formatQuestionInlineText = (text: string, fontSize: number) => {
-    const parts = text.split(/(`[^`]+`)/g);
-    return parts.map((part, i) => {
-        if (part.startsWith('`') && part.endsWith('`')) {
-            const code = part.slice(1, -1);
-            return (
-                <code
-                    key={i}
-                    style={{ fontSize: Math.max(fontSize * 0.9, 13) + 'px' }}
-                    className="font-mono bg-(--loom-white)/10 px-1.5 py-0.5 rounded text-(--loom-yellow) inline whitespace-nowrap font-semibold align-baseline mx-0.5"
-                >
-                    {code}
-                </code>
-            );
-        }
-        return <span key={i} className="whitespace-normal">{part}</span>;
-    });
-};
-
 export function QuestionText({ 
     inlineText,
     blockCode,
@@ -38,13 +20,13 @@ export function QuestionText({
 }: QuestionTextProps) {
 
     const { fontSize, ref: questionRef, isReady } = useQuizFontSize({
-    text: textForSizing,
-    minFontSize: 16,
-    maxFontSize: 24,
-    step: 0.5,
-    mode: 'canvas',
-    dependencies: [questionId, inlineText],
-  });
+        text: textForSizing,
+        minFontSize: 16,
+        maxFontSize: 24,
+        step: 0.5,
+        mode: 'canvas',
+        dependencies: [questionId, inlineText],
+    });
 
     const alignClass = inlineText.length > 50 ? 'text-left' : 'text-center';
 
@@ -62,9 +44,8 @@ export function QuestionText({
                     opacity: isReady ? '1' : '0',
                 }}
             >
-                {formatQuestionInlineText(inlineText, fontSize)}
+               <InlineCodeText value={inlineText} fontSize={fontSize} textClassName="whitespace-normal" />
             </h2>
         </div>
     )
 }
-

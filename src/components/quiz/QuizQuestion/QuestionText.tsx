@@ -2,6 +2,7 @@
 
 import { useQuizFontSize } from "@/hooks/useQuizFontSize";
 import { cn } from "@/lib/utils";
+import { parseInlineCode, type InlineCodeSegment } from "@/lib/utils/quiz/parseInlineCode";
 
 interface QuestionTextProps {
     inlineText: string;      // текст с бэктиками (после парсинга)
@@ -10,22 +11,20 @@ interface QuestionTextProps {
     blockCode: string | null;
 }
 
-const formatQuestionInlineText = (text: string, fontSize: number) => {
-    const parts = text.split(/(`[^`]+`)/g);
-    return parts.map((part, i) => {
-        if (part.startsWith('`') && part.endsWith('`')) {
-            const code = part.slice(1, -1);
+const renderSegments = (segments: InlineCodeSegment[], fontSize: number) => {
+    return segments.map((segment, i) => {
+        if (segment.type === 'code') {
             return (
                 <code
                     key={i}
                     style={{ fontSize: Math.max(fontSize * 0.9, 13) + 'px' }}
                     className="font-mono bg-(--loom-white)/10 px-1.5 py-0.5 rounded text-(--loom-yellow) inline whitespace-nowrap font-semibold align-baseline mx-0.5"
                 >
-                    {code}
+                    {segment.value}
                 </code>
             );
         }
-        return <span key={i} className="whitespace-normal">{part}</span>;
+        return <span key={i} className="whitespace-normal">{segment.value}</span>;
     });
 };
 
@@ -38,13 +37,13 @@ export function QuestionText({
 }: QuestionTextProps) {
 
     const { fontSize, ref: questionRef, isReady } = useQuizFontSize({
-    text: textForSizing,
-    minFontSize: 16,
-    maxFontSize: 24,
-    step: 0.5,
-    mode: 'canvas',
-    dependencies: [questionId, inlineText],
-  });
+        text: textForSizing,
+        minFontSize: 16,
+        maxFontSize: 24,
+        step: 0.5,
+        mode: 'canvas',
+        dependencies: [questionId, inlineText],
+    });
 
     const alignClass = inlineText.length > 50 ? 'text-left' : 'text-center';
 
@@ -62,9 +61,8 @@ export function QuestionText({
                     opacity: isReady ? '1' : '0',
                 }}
             >
-                {formatQuestionInlineText(inlineText, fontSize)}
+                {renderSegments(parseInlineCode(inlineText), fontSize)}
             </h2>
         </div>
     )
 }
-

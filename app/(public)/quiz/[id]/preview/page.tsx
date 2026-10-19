@@ -20,6 +20,7 @@ import { BackLink } from '@/components/navigation/BackLink';
 import { useQuizFontSize } from '@/hooks/useQuizFontSize';
 import { Modal } from '@/components/ui/feedback/Modal';
 import { resetQuiz } from '@/store/slices/quizSlice';
+import { usePageHeader } from '@/hooks/usePageHeader';
 
 export default function QuizPreviewPage() {
   const params = useParams();
@@ -50,6 +51,8 @@ export default function QuizPreviewPage() {
     mode: 'dom',
     dependencies: [quiz?.id, quiz?.description],
   });
+
+  usePageHeader({ variant: 'tab', title: 'Предпросмотр', showBack: true });
 
  const handleStartClick = () => {
   if (!quiz) return;

@@ -13,6 +13,7 @@ import { TryItCard } from '@/components/cards/TryItCard';
 import { CategoryList } from '@/components/common/CategoryList';
 import { ContinueQuizCard } from '@/components/cards/ContinueQuizCard';
 import { useNavigationTransition } from '@/components/layout/NavigationProvider';
+import { usePageHeader } from '@/hooks/usePageHeader';
 
 export default function HomePage() {
   const { data: quizzes = [], isLoading: isQuizzesLoading } = useGetQuizzesQuery({});
@@ -21,6 +22,7 @@ export default function HomePage() {
   const router = useRouter();
   const dispatch = useDispatch();
   const { setQuizOrigin } = useNavigationTransition();
+  usePageHeader({ variant: 'main' });
   
   // База правды для мгновенного UX-эффекта при загрузке — локальный Redux
   const quizState = useSelector(selectQuizState);

@@ -15,6 +15,7 @@ import { Filters } from '@/components/ui/core/Filters';
 import { Skeleton, AdminQuizRowSkeleton } from '@/components/ui/feedback/Skeleton';
 import { useNavigationTransition } from '@/components/layout/NavigationProvider';
 import { useRouter } from 'next/navigation';
+import { usePageHeader } from '@/hooks/usePageHeader';
 
 export default function AdminDashboard() {
   const { data: quizzes, isLoading, refetch } = useGetQuizzesQuery({}, {
@@ -30,6 +31,8 @@ export default function AdminDashboard() {
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [levelFilter, setLevelFilter] = useState('all');
   const [sortBy, setSortBy] = useState('newest');
+
+  usePageHeader({ variant: 'tab', title: 'Управление квизами', showBack: true });
 
   const handleDelete = async () => {
     if (!deleteId) return;

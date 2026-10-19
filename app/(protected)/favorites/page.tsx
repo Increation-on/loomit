@@ -13,6 +13,7 @@ import {
   useToggleFavoriteMutation,
 } from '@/store/api/favoritesApi';
 import { useGetStatusesQuery } from '@/store/api/attemptsApi';
+import { usePageHeader } from '@/hooks/usePageHeader';
 
 export default function FavoritesPage() {
   const { data: session, status } = useSession();
@@ -29,6 +30,8 @@ export default function FavoritesPage() {
   );
 
   const { data: attemptStatuses = {} } = useGetStatusesQuery(quizIds, {});
+
+  usePageHeader({ variant: 'tab', title: 'Избранное' });
 
   if (status === 'loading') {
     return (

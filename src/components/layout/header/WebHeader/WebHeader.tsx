@@ -9,7 +9,7 @@ import { ThemeToggle } from '@/components/ui/core/ThemeToggle';
 import { HeaderNavbar } from '../../HeaderNavbar';
 
 
-export default function Header() {
+export default function WebHeader() {
   const { data: session, status } = useSession();
   const isAuthenticated = status === 'authenticated';
   const isDesktop = useMediaQuery('(min-width: 768px)');

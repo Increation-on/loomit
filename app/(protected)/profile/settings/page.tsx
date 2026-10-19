@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { Modal } from '@/components/ui/feedback/Modal';
 import { useToast } from '@/components/ui/feedback/ToastContainer';
 import { useRouter } from 'next/navigation';
+import { usePageHeader } from '@/hooks/usePageHeader';
 
 export default function SettingsPage() {
   const { theme, toggleTheme } = useTheme();
@@ -31,6 +32,8 @@ export default function SettingsPage() {
       setShowResetModal(false);
     }
   };
+
+  usePageHeader({ variant: 'tab', title: 'Настройки', showBack: true });
 
   // Пока сервер рендерит страницу или идет гидратация, показываем дефолтное состояние (заглушку)
   const isDark = theme === 'dark';

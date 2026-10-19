@@ -5,10 +5,11 @@ import { usePathname } from 'next/navigation';
 import { useSelector } from 'react-redux'; // <-- Используем стандартный useSelector
 import { selectHeaderState } from '@/store/slices/headerSlice';
 import { usePWA } from '@/hooks/usePWA'; // <-- Твой хук
-import WebHeader from './WebHeader/WebHeader';
 import { SkeletonHeader } from '@/components/ui/feedback/Skeleton';
-import { MainHeader } from './MainHeader/MainHeader';
-import { PageHeader } from './PageHeader/PageHeader';
+import MainHeader from './MainHeader/MainHeader';
+import PageHeader from './PageHeader/PageHeader';
+import WebHeader from './WebHeader/WebHeader';
+
 
 
 export const AppHeader = () => {

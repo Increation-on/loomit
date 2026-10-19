@@ -12,6 +12,7 @@ import { useGetCategoriesQuery } from '@/store/api/categoryApi';
 import { Filters } from '@/components/ui/core/Filters';
 import { Modal } from '@/components/ui/feedback/Modal';
 import { QuizImportBlock } from '@/components/admin/QuizImportBlock';
+import { usePageHeader } from '@/hooks/usePageHeader';
 
 interface Option {
   id: string;
@@ -44,6 +45,8 @@ export default function NewQuizPage() {
   const [saving, setSaving] = useState(false);
   const { success, error: showError } = useToast();
   const { data: categories } = useGetCategoriesQuery();
+
+  usePageHeader({ variant: 'tab', title: 'Новый квиз', showBack: true });
 
   const [editModal, setEditModal] = useState<EditModalState>({
     isOpen: false,

@@ -8,12 +8,14 @@ import { useGetAllAttemptsQuery } from '@/store/api/profileApi';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
 import { useNavigationTransition } from '@/components/layout/NavigationProvider';
 import { BackLink } from '@/components/navigation/BackLink';
+import { usePageHeader } from '@/hooks/usePageHeader';
 
 export default function HistoryPage() {
   const router = useRouter();
   const { setAttemptReturnTo } = useNavigationTransition();
   const [page, setPage] = useState(1);
   const { data, isLoading } = useGetAllAttemptsQuery(page);
+  usePageHeader({ variant: 'nested', title: 'Вся история', showBack: true });
 
   return (
     <div className="p-6 max-w-2xl mx-auto pb-24 space-y-6">

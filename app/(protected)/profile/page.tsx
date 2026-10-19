@@ -7,6 +7,7 @@ import { Settings, Shield, LogOut } from 'lucide-react';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
 import { useNavigationTransition } from '@/components/layout/NavigationProvider';
 import { useRouter } from 'next/navigation';
+import { usePageHeader } from '@/hooks/usePageHeader';
 
 export default function ProfilePage() {
   const { data: session } = useSession();
@@ -15,12 +16,14 @@ export default function ProfilePage() {
   const isAdmin = session?.user?.role === 'admin';
   const date = new Date().toLocaleDateString('ru-RU');
   const router = useRouter();
+  
 
   const { data: stats, isLoading: statsLoading } = useGetStatsQuery({}, { refetchOnMountOrArgChange: true });
   const { data: attemptsData, isLoading: attemptsLoading } = useGetAttemptsQuery({}, { refetchOnMountOrArgChange: true });
   const attempts = attemptsData?.attempts;
   const { setAttemptReturnTo } = useNavigationTransition();
 
+ usePageHeader({ variant: 'tab', title: 'Профиль' });
 
   return (
     <div className="p-6 max-w-2xl mx-auto space-y-8 pb-24">

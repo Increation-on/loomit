@@ -9,6 +9,7 @@ import { Check, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
 import { BackLink } from '@/components/navigation/BackLink';
+import { usePageHeader } from '@/hooks/usePageHeader';
 
 export default function AttemptDetailPage() {
   const params = useParams();
@@ -25,6 +26,8 @@ export default function AttemptDetailPage() {
   });
 
   const isLoading = attemptLoading || (effectiveQuizId ? quizLoading : false);
+
+  usePageHeader({ variant: 'tab', title: 'Разбор ответов', showBack: true });
 
   if (isLoading) {
     return (

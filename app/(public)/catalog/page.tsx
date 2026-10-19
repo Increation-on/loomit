@@ -18,6 +18,7 @@ import {
   CatalogCardSkeleton,
 } from '@/components/ui/feedback/Skeleton';
 import { CatalogCard } from '@/components/cards/CatalogCard';
+import { usePageHeader } from '@/hooks/usePageHeader';
 
 
 export default function CatalogPage() {
@@ -35,6 +36,8 @@ export default function CatalogPage() {
   const { data: favorites = [] } = useGetFavoritesQuery(undefined, {
     skip: !session,
   });
+  
+  usePageHeader({ variant: 'tab', title: 'Каталог квизов' });
 
 
   const [toggleFavorite] = useToggleFavoriteMutation();

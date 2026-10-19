@@ -12,6 +12,7 @@ import { Filters } from '@/components/ui/core/Filters';
 import { useUpdateQuizMutation } from '@/store/api/quizApi';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
 import { Modal } from '@/components/ui/feedback/Modal';
+import { usePageHeader } from '@/hooks/usePageHeader';
 
 interface Option {
   id: string;
@@ -47,6 +48,8 @@ export default function EditQuizPage() {
   const [loading, setLoading] = useState(true);
   const { success, error: showError } = useToast();
   const [updateQuiz, { isLoading: isUpdating }] = useUpdateQuizMutation();
+
+  usePageHeader({ variant: 'tab', title: 'Редактирование', showBack: true });
 
   const [editModal, setEditModal] = useState<EditModalState>({
     isOpen: false,

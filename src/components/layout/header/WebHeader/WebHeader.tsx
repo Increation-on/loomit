@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useMediaQuery } from 'usehooks-ts';
 import NetworkIndicator from '@/components/ui/feedback/NetworkIndicator';
 import { ThemeToggle } from '@/components/ui/core/ThemeToggle';
-import { HeaderNavbar } from './HeaderNavbar';
+import { HeaderNavbar } from '../../HeaderNavbar';
 
 
 export default function Header() {

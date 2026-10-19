@@ -6,9 +6,9 @@ import { useSelector } from 'react-redux'; // <-- Используем стан�
 import { selectHeaderState } from '@/store/slices/headerSlice';
 import { usePWA } from '@/hooks/usePWA'; // <-- Твой хук
 import WebHeader from './WebHeader/WebHeader';
-import MainHeader from './MainHeader/MainHeader';
-import PageHeader from './PageHeader/PageHeader';
 import { SkeletonHeader } from '@/components/ui/feedback/Skeleton';
+import { MainHeader } from './MainHeader/MainHeader';
+import { PageHeader } from './PageHeader/PageHeader';
 
 
 export const AppHeader = () => {

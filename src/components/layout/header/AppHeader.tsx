@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { useAppDispatch } from '@/store/store';
+import { store } from '@/store/store'; // Импортируем сам store
 import { selectHeaderState, resetHeader } from '@/store/slices/headerSlice';
 import { usePWA } from '@/hooks/usePWA';
 import { SkeletonHeader } from '@/components/ui/feedback/Skeleton';
@@ -18,18 +19,14 @@ export function AppHeader() {
   const { variant, path, title, showBack } = useSelector(selectHeaderState);
 
   const prevPathname = useRef(pathname);
-  const pathRef = useRef(path);
-
-  // Безопасно обновляем реф при изменении path (вне рендера)
-  useEffect(() => {
-    pathRef.current = path;
-  }, [path]);
 
   useEffect(() => {
     if (prevPathname.current !== pathname) {
       const timeout = setTimeout(() => {
-        // Читаем актуальное значение из рефа
-        if (pathRef.current !== pathname) {
+        // Читаем актуальный path напрямую из Redux
+        const currentPath = store.getState().header.path;
+        
+        if (currentPath !== pathname) {
           dispatch(resetHeader());
         }
       }, 0);

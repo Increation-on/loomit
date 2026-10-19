@@ -42,19 +42,15 @@ export function Toast({ message, type, duration = 3000, onClose }: ToastProps) {
   return (
     <div
       className={cn(
-        'fixed bottom-4 right-4 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg',
-        'bg-(--loom-black) glitch-border',
+        'fixed right-4 bottom-4 z-50 flex items-center gap-3 rounded-xl px-4 py-3 shadow-lg',
+        'glitch-border bg-(--loom-black)',
         'animate-slide-up transition-all duration-300',
-        !isVisible && 'opacity-0 translate-y-2'
+        !isVisible && 'translate-y-2 opacity-0'
       )}
       role="alert"
     >
-      <span className={cn('text-lg font-bold', colorMap[type])}>
-        {iconMap[type]}
-      </span>
-      <span className="text-sm text-(--loom-white)">
-        {message}
-      </span>
+      <span className={cn('text-lg font-bold', colorMap[type])}>{iconMap[type]}</span>
+      <span className="text-sm text-(--loom-white)">{message}</span>
     </div>
   );
 }

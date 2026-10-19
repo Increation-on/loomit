@@ -54,10 +54,10 @@ function RadioGroupItem({ value, children, disabled, className }: RadioGroupItem
     <label
       htmlFor={id}
       className={cn(
-        'relative flex items-center gap-3 p-4 cursor-pointer rounded-xl transition-all duration-200',
+        'relative flex cursor-pointer items-center gap-3 rounded-xl p-4 transition-all duration-200',
         'bg-(--loom-white)/5 hover:bg-(--loom-white)/10',
         isChecked ? 'glitch-border' : 'border border-(--loom-white)/10',
-        disabled && 'opacity-50 cursor-not-allowed',
+        disabled && 'cursor-not-allowed opacity-50',
         className
       )}
     >
@@ -73,16 +73,16 @@ function RadioGroupItem({ value, children, disabled, className }: RadioGroupItem
         aria-checked={isChecked}
         role="radio"
       />
-      
+
       {/* Кастомный круг */}
       <div
         className={cn(
-          'w-5 h-5 rounded-full border-2 shrink-0 transition-colors',
+          'h-5 w-5 shrink-0 rounded-full border-2 transition-colors',
           isChecked ? 'border-(--loom-cyan) bg-(--loom-cyan)/20' : 'border-(--loom-white)/30'
         )}
       >
         {isChecked && (
-          <div className="w-2.5 h-2.5 rounded-full bg-(--loom-cyan) m-auto translate-y-[1.5px]" />
+          <div className="m-auto h-2.5 w-2.5 translate-y-[1.5px] rounded-full bg-(--loom-cyan)" />
         )}
       </div>
 

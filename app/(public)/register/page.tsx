@@ -8,15 +8,17 @@ import { z } from 'zod';
 import { Input } from '@/components/ui/core/Input';
 import { Button } from '@/components/ui/core/Button';
 
-const registerSchema = z.object({
-  name: z.string().min(2, 'Имя должно содержать минимум 2 символа'),
-  email: z.email('Неверный формат email'),
-  password: z.string().min(6, 'Пароль должен быть минимум 6 символов'),
-  confirmPassword: z.string(),
-}).refine(data => data.password === data.confirmPassword, {
-  message: 'Пароли не совпадают',
-  path: ['confirmPassword'],
-});
+const registerSchema = z
+  .object({
+    name: z.string().min(2, 'Имя должно содержать минимум 2 символа'),
+    email: z.email('Неверный формат email'),
+    password: z.string().min(6, 'Пароль должен быть минимум 6 символов'),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Пароли не совпадают',
+    path: ['confirmPassword'],
+  });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
@@ -25,7 +27,11 @@ export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { register, handleSubmit, formState: { errors } } = useForm<RegisterFormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
   });
 
@@ -56,10 +62,10 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="flex min-h-screen items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <h1 className="text-2xl font-bold text-center mb-6">Регистрация</h1>
-        
+        <h1 className="mb-6 text-center text-2xl font-bold">Регистрация</h1>
+
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <Input
             label="Имя"
@@ -67,7 +73,7 @@ export default function RegisterPage() {
             error={errors.name?.message}
             {...register('name')}
           />
-          
+
           <Input
             label="Email"
             type="email"
@@ -75,7 +81,7 @@ export default function RegisterPage() {
             error={errors.email?.message}
             {...register('email')}
           />
-          
+
           <Input
             label="Пароль"
             type="password"
@@ -83,7 +89,7 @@ export default function RegisterPage() {
             error={errors.password?.message}
             {...register('password')}
           />
-          
+
           <Input
             label="Подтвердите пароль"
             type="password"
@@ -91,17 +97,15 @@ export default function RegisterPage() {
             error={errors.confirmPassword?.message}
             {...register('confirmPassword')}
           />
-          
-          {error && (
-            <p className="text-sm text-red-500">{error}</p>
-          )}
-          
+
+          {error && <p className="text-sm text-red-500">{error}</p>}
+
           <Button type="submit" disabled={isLoading} className="w-full">
             {isLoading ? 'Регистрация...' : 'Зарегистрироваться'}
           </Button>
         </form>
-        
-        <p className="text-center text-sm text-gray-600 mt-4">
+
+        <p className="mt-4 text-center text-sm text-gray-600">
           Уже есть аккаунт?{' '}
           <a href="/login" className="text-blue-600 hover:underline">
             Войти

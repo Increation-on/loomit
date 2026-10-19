@@ -13,6 +13,7 @@ import { useQuizReturn } from '@/hooks/useQuizReturn';
 import { ChevronLeft } from 'lucide-react';
 import { QuizContent } from '@/components/quiz/QuizContent';
 import { useIsMobile } from '@/hooks/useIsMobile';
+import { usePageHeader } from '@/hooks/usePageHeader';
 
 export default function QuizPage() {
   const pathname = usePathname();
@@ -42,6 +43,8 @@ export default function QuizPage() {
     }
     return () => document.body.classList.remove('quiz-hide-layout');
   }, [pathname, shouldHideLayout]);
+
+  usePageHeader({ variant: 'hidden' });
 
   return (
     <div className="pb-safe pt-safe flex min-h-screen flex-col px-4">

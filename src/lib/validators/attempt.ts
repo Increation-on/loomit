@@ -1,11 +1,11 @@
 // src/lib/validators/attempt.ts
-import { z } from 'zod'
+import { z } from 'zod';
 
 const answerSchema = z.object({
   questionId: z.string(),
   selectedOptionId: z.string(),
-  isCorrect: z.boolean()
-})
+  isCorrect: z.boolean(),
+});
 
 export const attemptSchema = z.object({
   id: z.string().cuid(),
@@ -16,14 +16,14 @@ export const attemptSchema = z.object({
   totalQuestions: z.number().int().min(1),
   answers: z.array(answerSchema),
   syncStatus: z.enum(['pending', 'synced', 'failed']).default('pending'),
-  createdAt: z.date()
-})
+  createdAt: z.date(),
+});
 
-export const createAttemptSchema = attemptSchema.omit({ 
-  id: true, 
+export const createAttemptSchema = attemptSchema.omit({
+  id: true,
   createdAt: true,
-  syncStatus: true 
-})
+  syncStatus: true,
+});
 
-export type Attempt = z.infer<typeof attemptSchema>
-export type CreateAttempt = z.infer<typeof createAttemptSchema>
+export type Attempt = z.infer<typeof attemptSchema>;
+export type CreateAttempt = z.infer<typeof createAttemptSchema>;

@@ -23,9 +23,7 @@ export function useSaveAttempt(quizId: string) {
 
       try {
         const method = currentAttemptId ? 'PATCH' : 'POST';
-        const url = currentAttemptId
-          ? `/api/attempts/${currentAttemptId}`
-          : '/api/attempts';
+        const url = currentAttemptId ? `/api/attempts/${currentAttemptId}` : '/api/attempts';
 
         const response = await fetch(url, {
           method,

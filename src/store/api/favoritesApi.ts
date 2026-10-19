@@ -1,6 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-
 export interface Favorite {
   id: string;
 
@@ -27,13 +26,10 @@ export interface Favorite {
   };
 }
 
-
 interface ToggleFavoriteArgs {
   quizId: string;
   quiz: Favorite['quiz'];
 }
-
-
 
 export const favoritesApi = createApi({
   reducerPath: 'favoritesApi',
@@ -44,22 +40,14 @@ export const favoritesApi = createApi({
 
   tagTypes: ['Favorites'],
 
-
   endpoints: (builder) => ({
-
     getFavorites: builder.query<Favorite[], void>({
       query: () => '/favorites',
 
       providesTags: ['Favorites'],
     }),
 
-
-
-    toggleFavorite: builder.mutation<
-      { favorited: boolean },
-      ToggleFavoriteArgs
-    >({
-
+    toggleFavorite: builder.mutation<{ favorited: boolean }, ToggleFavoriteArgs>({
       query: ({ quizId }) => ({
         url: '/favorites',
         method: 'POST',
@@ -68,76 +56,35 @@ export const favoritesApi = createApi({
         },
       }),
 
+      async onQueryStarted({ quizId, quiz }, { dispatch, queryFulfilled }) {
+        const patchResult = dispatch(
+          favoritesApi.util.updateQueryData('getFavorites', undefined, (draft) => {
+            const index = draft.findIndex((fav) => fav.quiz.id === quizId);
 
+            // уже есть → удаляем
+            if (index !== -1) {
+              draft.splice(index, 1);
 
-      async onQueryStarted(
-        { quizId, quiz },
-        { dispatch, queryFulfilled }
-      ) {
+              return;
+            }
 
+            // нет → добавляем
+            draft.unshift({
+              id: `temp-${quizId}`,
 
-        const patchResult =
-          dispatch(
-            favoritesApi.util.updateQueryData(
-              'getFavorites',
-              undefined,
-              (draft) => {
-
-
-                const index =
-                  draft.findIndex(
-                    (fav) =>
-                      fav.quiz.id === quizId
-                  );
-
-
-
-                // уже есть → удаляем
-                if (index !== -1) {
-
-                  draft.splice(index, 1);
-
-                  return;
-                }
-
-
-
-                // нет → добавляем
-                draft.unshift({
-
-                  id: `temp-${quizId}`,
-
-                  quiz,
-
-                });
-
-              }
-            )
-          );
-
-
+              quiz,
+            });
+          })
+        );
 
         try {
-
           await queryFulfilled;
-
-
         } catch {
-
           patchResult.undo();
-
         }
-
       },
-
     }),
-
   }),
 });
 
-
-
-export const {
-  useGetFavoritesQuery,
-  useToggleFavoriteMutation,
-} = favoritesApi;
+export const { useGetFavoritesQuery, useToggleFavoriteMutation } = favoritesApi;

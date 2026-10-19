@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/core/Button';
 import { StarButton } from '@/components/ui/core/StarButton';
 import { useNavigationTransition } from '@/components/layout/NavigationProvider';
 
-
 interface QuizFinishScreenProps {
   id: string;
   score: number;
@@ -47,46 +46,44 @@ export function QuizFinishScreen({
   }, [attemptId]);
 
   return (
-    <div className="min-h-screen bg-(--loom-black) flex flex-col items-center justify-center p-6 text-center space-y-6 -mt-18">
+    <div className="-mt-18 flex min-h-screen flex-col items-center justify-center space-y-6 bg-(--loom-black) p-6 text-center">
       <h2
-        className="text-4xl font-bold text-(--loom-yellow) glitch-text"
+        className="glitch-text text-4xl font-bold text-(--loom-yellow)"
         data-text="Квиз завершён! mt-"
       >
         Квиз завершён!
       </h2>
 
-      <div className="text-(--loom-white) text-6xl font-bold">
+      <div className="text-6xl font-bold text-(--loom-white)">
         {score} <span className="text-2xl text-(--loom-white)/60">/ {total}</span>
       </div>
 
       {quizData && (
-        <div className="flex flex-col items-center gap-2 mt-2">
+        <div className="mt-2 flex flex-col items-center gap-2">
           <div
             onClick={() => onToggleFavorite(quizData.id, quizData)}
-            className="flex items-center gap-2 px-5 py-2 rounded-full bg-(--loom-white)/5 hover:bg-(--loom-white)/10 border border-(--loom-white)/10 transition-all cursor-pointer text-(--loom-white)/80 hover:text-(--loom-white) min-w-45 justify-center"
+            className="flex min-w-45 cursor-pointer items-center justify-center gap-2 rounded-full border border-(--loom-white)/10 bg-(--loom-white)/5 px-5 py-2 text-(--loom-white)/80 transition-all hover:bg-(--loom-white)/10 hover:text-(--loom-white)"
           >
             <StarButton
               active={favoriteIds.has(quizData.id)}
               size={20}
-              className="text-(--loom-yellow)! hover:scale-110 transition-transform"
+              className="text-(--loom-yellow)! transition-transform hover:scale-110"
               onClick={() => onToggleFavorite(quizData.id, quizData)}
             />
             <span className="text-sm font-medium">
-              {favoriteIds.has(quizData.id)
-                ? 'В избранном'
-                : 'Добавить в избранное'}
+              {favoriteIds.has(quizData.id) ? 'В избранном' : 'Добавить в избранное'}
             </span>
           </div>
         </div>
       )}
 
-      <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm mt-6">
+      <div className="mt-6 flex w-full max-w-sm flex-col gap-4 sm:flex-row">
         <Button
           onClick={() => {
             onReset();
             router.push(`/quiz/${id}`);
           }}
-          className="flex-1 bg-(--loom-yellow) text-black font-bold py-3 rounded-xl hover:opacity-90 transition"
+          className="flex-1 rounded-xl bg-(--loom-yellow) py-3 font-bold text-black transition hover:opacity-90"
         >
           Пройти заново
         </Button>
@@ -96,7 +93,7 @@ export function QuizFinishScreen({
             onReset();
             onRedirect();
           }}
-          className="flex-1 bg-(--loom-white)/10 text-(--loom-white) py-3 rounded-xl border border-(--loom-white)/20 hover:bg-(--loom-white)/20 transition"
+          className="flex-1 rounded-xl border border-(--loom-white)/20 bg-(--loom-white)/10 py-3 text-(--loom-white) transition hover:bg-(--loom-white)/20"
         >
           В каталог
         </Button>
@@ -109,7 +106,7 @@ export function QuizFinishScreen({
               router.push(`/profile/attempts/${attemptId}?quizId=${id}`);
             }
           }}
-          className="flex-1 py-3 rounded-xl text-base"
+          className="flex-1 rounded-xl py-3 text-base"
         >
           Разобрать ответы
         </Button>

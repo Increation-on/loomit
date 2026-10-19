@@ -1,33 +1,33 @@
-import type { Metadata, Viewport } from "next";
+import './globals.css';
+import type { Metadata, Viewport } from 'next';
 import { Space_Grotesk, Inter } from 'next/font/google';
 import { getServerSession } from 'next-auth';
 import { authOptions } from './api/auth/[...nextauth]/route';
-import "./globals.css";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
-import { Providers } from "./providers";
-import { StatusBarSync } from "@/components/layout/StatusBarSync";
-import { HideScrollbar } from "@/components/layout/HideScrollbar";
+import Footer from '@/components/layout/Footer';
+import { Providers } from './providers';
+import { StatusBarSync } from '@/components/layout/StatusBarSync';
+import { HideScrollbar } from '@/components/layout/HideScrollbar';
+import { AppHeader } from '@/components/layout/header/AppHeader';
 
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-display' });
 const inter = Inter({ subsets: ['latin', 'cyrillic'], variable: '--font-body' });
 
 export const viewport: Viewport = {
-  width: "device-width",
+  width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
-  viewportFit: "cover", 
-  themeColor: "#121212"
+  viewportFit: 'cover',
+  themeColor: '#121212',
 };
 
 export const metadata: Metadata = {
-  title: "LoomIt — Квизы по собеседованиям",
-  description: "Проходи квизы, готовься к собеседованиям, сохраняй прогресс",
-  manifest: "/manifest.json",
+  title: 'LoomIt — Квизы по собеседованиям',
+  description: 'Проходи квизы, готовься к собеседованиям, сохраняй прогресс',
+  manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
-    statusBarStyle: "black-translucent",
-    title: "LoomIt",
+    statusBarStyle: 'black-translucent',
+    title: 'LoomIt',
   },
 };
 
@@ -35,23 +35,24 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const session = await getServerSession(authOptions);
 
   return (
-    <html lang="ru" className={`${spaceGrotesk.variable} ${inter.variable} h-full antialiased dark`} suppressHydrationWarning>
+    <html
+      lang="ru"
+      className={`${spaceGrotesk.variable} ${inter.variable} dark h-full antialiased`}
+      suppressHydrationWarning
+    >
       <head>
         {/* Жесткий нативный фикс: перебивает дефолтный сброс браузера при перезагрузке */}
         <meta name="theme-color" content="#121212" />
       </head>
-      <body className="min-h-full flex flex-col transition-colors duration-200">
+      <body className="flex min-h-full flex-col transition-colors duration-200">
         <Providers session={session}>
-            <StatusBarSync />
-            <HideScrollbar/>
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
+          <StatusBarSync />
+          <HideScrollbar />
+          <AppHeader />
+          <main className="flex-1">{children}</main>
+          <Footer />
         </Providers>
       </body>
     </html>
   );
 }
-
-
-

@@ -19,7 +19,7 @@ export function QuizQuestion({ question }: QuizQuestionProps) {
   );
 
   return (
-    <div className="w-full flex flex-col justify-center gap-3 items-center box-border py-1 flex-1 min-h-0 mt-2">
+    <div className="mt-2 box-border flex min-h-0 w-full flex-1 flex-col items-center justify-center gap-3 py-1">
       <QuestionText
         textForSizing={textForSizing}
         blockCode={blockCode}

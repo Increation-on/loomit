@@ -29,11 +29,9 @@ export const useQuizFontSize = ({
 
       const computedStyle = window.getComputedStyle(node);
       const paddingX =
-        parseFloat(computedStyle.paddingLeft) +
-        parseFloat(computedStyle.paddingRight);
+        parseFloat(computedStyle.paddingLeft) + parseFloat(computedStyle.paddingRight);
       const paddingY =
-        parseFloat(computedStyle.paddingTop) +
-        parseFloat(computedStyle.paddingBottom);
+        parseFloat(computedStyle.paddingTop) + parseFloat(computedStyle.paddingBottom);
 
       let availableWidth = node.clientWidth - paddingX;
       let availableHeight = node.clientHeight - paddingY;
@@ -113,8 +111,8 @@ export const useQuizFontSize = ({
   );
 
   const refCallback = useCallback((node: HTMLElement | null) => {
-  elementRef.current = node;
-}, []);
+    elementRef.current = node;
+  }, []);
 
   // Сброс кэша при смене текста
   useEffect(() => {

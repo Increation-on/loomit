@@ -62,10 +62,10 @@ function CheckboxGroupItem({ value, children, disabled, className }: CheckboxGro
     <label
       htmlFor={id}
       className={cn(
-        'relative flex items-center gap-3 p-4 cursor-pointer rounded-xl transition-all duration-200',
+        'relative flex cursor-pointer items-center gap-3 rounded-xl p-4 transition-all duration-200',
         'bg-(--loom-white)/5 hover:bg-(--loom-white)/10',
         isChecked ? 'glitch-border' : 'border border-(--loom-white)/10',
-        disabled && 'opacity-50 cursor-not-allowed',
+        disabled && 'cursor-not-allowed opacity-50',
         className
       )}
     >
@@ -93,8 +93,8 @@ function CheckboxGroupItem({ value, children, disabled, className }: CheckboxGro
       {/* Кастомный квадрат */}
       <div
         className={cn(
-          'w-5 h-5 rounded shrink-0 transition-colors flex items-center justify-center',
-          isChecked ? 'border-(--loom-cyan) bg-(--loom-cyan)/20' : 'border-(--loom-white)/30 border'
+          'flex h-5 w-5 shrink-0 items-center justify-center rounded transition-colors',
+          isChecked ? 'border-(--loom-cyan) bg-(--loom-cyan)/20' : 'border border-(--loom-white)/30'
         )}
       >
         {isChecked && (
@@ -105,7 +105,7 @@ function CheckboxGroupItem({ value, children, disabled, className }: CheckboxGro
             strokeWidth="3"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="w-3.5 h-3.5 text-(--loom-cyan)"
+            className="h-3.5 w-3.5 text-(--loom-cyan)"
           >
             <polyline points="20 6 9 17 4 12" />
           </svg>

@@ -14,11 +14,7 @@ interface CategoryListProps {
   className?: string;
 }
 
-export function CategoryList({ 
-  limit = 4, 
-  showAllLink = true,
-  className 
-}: CategoryListProps) {
+export function CategoryList({ limit = 4, showAllLink = true, className }: CategoryListProps) {
   const router = useRouter();
   const { data: categories, isLoading } = useGetCategoriesQuery({});
 
@@ -39,28 +35,33 @@ export function CategoryList({
   const displayed = limit ? categories.slice(0, limit) : categories;
 
   return (
-    <div className={cn('space-y-3 relative overflow-hidden', className)}>
-       <span className="flex mt-1 text-lg">Категории</span>
+    <div className={cn('relative space-y-3 overflow-hidden', className)}>
+      <span className="mt-1 flex text-lg">Категории</span>
       {displayed.map((cat: any) => (
         <div
           key={cat.id}
           onClick={() => router.push(`/catalog?category=${cat.id}`)}
-          className="bg-(--loom-white)/5 rounded-2xl p-5 cursor-pointer flex justify-between items-center relative glitch-border hover:bg-(--loom-white)/10 transition-colors overflow-hidden"
+          className="glitch-border relative flex cursor-pointer items-center justify-between overflow-hidden rounded-2xl bg-(--loom-white)/5 p-5 transition-colors hover:bg-(--loom-white)/10"
         >
-          <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute left-0 right-0 mx-auto w-full h-0.75 glitch-scanline-gradient opacity-50 blur-[1px] animate-scanline" />
+          <div className="pointer-events-none absolute inset-0">
+            <div className="glitch-scanline-gradient animate-scanline absolute right-0 left-0 mx-auto h-0.75 w-full opacity-50 blur-[1px]" />
           </div>
           <div>
-            <h3 className="font-bold text-lg text-(--loom-magenta)">{cat.name}</h3>
+            <h3 className="text-lg font-bold text-(--loom-magenta)">{cat.name}</h3>
             <p className="text-sm text-(--loom-white)/60">
-              {cat._count?.quizzes || 0} {pluralize(cat._count?.quizzes || 0, 'квиз', 'квиза', 'квизов')}
+              {cat._count?.quizzes || 0}{' '}
+              {pluralize(cat._count?.quizzes || 0, 'квиз', 'квиза', 'квизов')}
             </p>
           </div>
           <div>
             {cat.iconUrl ? (
-              <img src={cat.iconUrl} alt={cat.name} className="w-12 h-12 rounded-full object-contain" />
+              <img
+                src={cat.iconUrl}
+                alt={cat.name}
+                className="h-12 w-12 rounded-full object-contain"
+              />
             ) : (
-              <div className="w-12 h-12 rounded-full bg-(--loom-cyan)/20 flex items-center justify-center text-(--loom-cyan) font-bold">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-(--loom-cyan)/20 font-bold text-(--loom-cyan)">
                 {cat.name[0]}
               </div>
             )}
@@ -71,7 +72,10 @@ export function CategoryList({
       {showAllLink && categories.length > limit && (
         <div className="mt-2 flex justify-end">
           <Link href="/catalog" className="text-sm text-(--loom-yellow)">
-            <span className="flex mt-1">Все категории<ChevronRight size={20} /></span>
+            <span className="mt-1 flex">
+              Все категории
+              <ChevronRight size={20} />
+            </span>
           </Link>
         </div>
       )}

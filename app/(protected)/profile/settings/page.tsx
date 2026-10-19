@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { Modal } from '@/components/ui/feedback/Modal';
 import { useToast } from '@/components/ui/feedback/ToastContainer';
 import { useRouter } from 'next/navigation';
+import { usePageHeader } from '@/hooks/usePageHeader';
 
 export default function SettingsPage() {
   const { theme, toggleTheme } = useTheme();
@@ -15,7 +16,6 @@ export default function SettingsPage() {
   const [isLoading, setIsLoading] = useState(false);
   const { success, error: showError } = useToast();
   const router = useRouter();
-
 
   const handleResetProgress = async () => {
     setIsLoading(true);
@@ -32,11 +32,13 @@ export default function SettingsPage() {
     }
   };
 
+  usePageHeader({ variant: 'tab', title: 'Настройки', showBack: true });
+
   // Пока сервер рендерит страницу или идет гидратация, показываем дефолтное состояние (заглушку)
   const isDark = theme === 'dark';
 
   return (
-    <div className="p-6 max-w-2xl mx-auto space-y-6 pb-24">
+    <div className="mx-auto max-w-2xl space-y-6 p-6 pb-24">
       {/* Назад */}
       <BackLink fallback="/profile" />
 
@@ -44,12 +46,12 @@ export default function SettingsPage() {
       <h1 className="text-2xl font-bold text-(--loom-white)">Настройки</h1>
 
       {/* Тема */}
-      <div className="bg-(--loom-white)/5 rounded-2xl p-5 glitch-border relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute left-0 right-0 mx-auto w-full h-0.75 glitch-scanline-gradient opacity-50 blur-[1px] animate-scanline" />
+      <div className="glitch-border relative overflow-hidden rounded-2xl bg-(--loom-white)/5 p-5">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="glitch-scanline-gradient animate-scanline absolute right-0 left-0 mx-auto h-0.75 w-full opacity-50 blur-[1px]" />
         </div>
 
-        <div className="flex items-center justify-between relative z-10">
+        <div className="relative z-10 flex items-center justify-between">
           <div className="flex items-center gap-3">
             {isDark ? (
               <Moon size={20} className="text-(--loom-cyan)" />
@@ -57,36 +59,34 @@ export default function SettingsPage() {
               <Sun size={20} className="text-(--loom-yellow)" />
             )}
             <div>
-              <span className="text-(--loom-white) font-medium">Тема</span>
-              <p className="text-sm text-(--loom-white)/60">
-                {isDark ? 'Тёмная' : 'Светлая'}
-              </p>
+              <span className="font-medium text-(--loom-white)">Тема</span>
+              <p className="text-sm text-(--loom-white)/60">{isDark ? 'Тёмная' : 'Светлая'}</p>
             </div>
           </div>
 
-          <label className="relative inline-flex items-center cursor-pointer">
+          <label className="relative inline-flex cursor-pointer items-center">
             <input
               type="checkbox"
               checked={theme === 'dark'}
               onChange={toggleTheme}
-              className="sr-only peer"
+              className="peer sr-only"
             />
-            <div className="w-11 h-6 bg-(--loom-white)/10 rounded-full peer peer-checked:bg-(--loom-cyan) transition-colors duration-200 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-(--loom-white) after:rounded-full after:h-5 after:w-5 after:transition-all after:duration-200 peer-checked:after:translate-x-5" />
+            <div className="peer h-6 w-11 rounded-full bg-(--loom-white)/10 transition-colors duration-200 peer-checked:bg-(--loom-cyan) after:absolute after:top-0.5 after:left-0.5 after:h-5 after:w-5 after:rounded-full after:bg-(--loom-white) after:transition-all after:duration-200 after:content-[''] peer-checked:after:translate-x-5" />
           </label>
         </div>
       </div>
 
       {/* Сброс прогресса */}
-      <div className="bg-(--loom-white)/5 rounded-2xl p-5 glitch-border relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute left-0 right-0 mx-auto w-full h-0.75 glitch-scanline-gradient opacity-50 blur-[1px] animate-scanline" />
+      <div className="glitch-border relative overflow-hidden rounded-2xl bg-(--loom-white)/5 p-5">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="glitch-scanline-gradient animate-scanline absolute right-0 left-0 mx-auto h-0.75 w-full opacity-50 blur-[1px]" />
         </div>
 
-        <div className="flex items-center justify-between relative z-10">
+        <div className="relative z-10 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Trash2 size={20} className="text-red-400" />
             <div>
-              <span className="text-(--loom-white) font-medium">Сбросить прогресс</span>
+              <span className="font-medium text-(--loom-white)">Сбросить прогресс</span>
               <p className="text-sm text-red-400/60">Все попытки будут удалены безвозвратно</p>
             </div>
           </div>
@@ -103,22 +103,22 @@ export default function SettingsPage() {
       </div>
 
       {/* Уведомления (заглушка) */}
-      <div className="bg-(--loom-white)/5 rounded-2xl p-5 glitch-border relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute left-0 right-0 mx-auto w-full h-0.75 glitch-scanline-gradient opacity-50 blur-[1px] animate-scanline" />
+      <div className="glitch-border relative overflow-hidden rounded-2xl bg-(--loom-white)/5 p-5">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="glitch-scanline-gradient animate-scanline absolute right-0 left-0 mx-auto h-0.75 w-full opacity-50 blur-[1px]" />
         </div>
 
-        <div className="flex items-center justify-between relative z-10">
+        <div className="relative z-10 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Bell size={20} className="text-(--loom-white)/60" />
             <div>
-              <span className="text-(--loom-white) font-medium">Push-уведомления</span>
+              <span className="font-medium text-(--loom-white)">Push-уведомления</span>
               <p className="text-sm text-(--loom-white)/40">Скоро появится</p>
             </div>
           </div>
 
-          <div className="w-11 h-6 bg-(--loom-white)/10 rounded-full opacity-50 cursor-not-allowed relative">
-            <div className="absolute top-0.5 left-0.5 w-5 h-5 bg-(--loom-white)/30 rounded-full" />
+          <div className="relative h-6 w-11 cursor-not-allowed rounded-full bg-(--loom-white)/10 opacity-50">
+            <div className="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-(--loom-white)/30" />
           </div>
         </div>
       </div>

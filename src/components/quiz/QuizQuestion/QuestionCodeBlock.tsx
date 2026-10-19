@@ -16,7 +16,7 @@ export function QuestionCodeBlock({ code, lang }: QuestionCodeBlockProps) {
     <div
       ref={ref}
       className={
-        'w-full h-fit max-h-[45vh] bg-[#1e1e1e] rounded-xl p-3 border border-(--loom-white)/5 shadow-inner scrollbar-thin pr-1.5 flex flex-col overflow-hidden ' +
+        'flex h-fit max-h-[45vh] w-full scrollbar-thin flex-col overflow-hidden rounded-xl border border-(--loom-white)/5 bg-[#1e1e1e] p-3 pr-1.5 shadow-inner ' +
         (formatted.includes('\n') ? 'justify-start' : 'justify-center')
       }
     >

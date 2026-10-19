@@ -20,7 +20,7 @@ interface FiltersProps {
   sortBy?: string;
   setSortBy?: (value: string) => void;
   showSort?: boolean;
-  
+
   className?: string;
 }
 
@@ -60,12 +60,12 @@ export function Filters({
     <div className={cn('space-y-4', className)}>
       {/* Категории */}
       <div>
-        <span className="text-sm text-(--loom-white)/60 block mb-2">Категория</span>
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+        <span className="mb-2 block text-sm text-(--loom-white)/60">Категория</span>
+        <div className="scrollbar-hide flex gap-2 overflow-x-auto pb-1">
           {isLoading ? (
             <>
               {[1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} className="h-8 w-24 rounded-full shrink-0" />
+                <Skeleton key={i} className="h-8 w-24 shrink-0 rounded-full" />
               ))}
             </>
           ) : (
@@ -74,7 +74,7 @@ export function Filters({
                 key={option.value}
                 onClick={() => setCategoryFilter(option.value)}
                 className={cn(
-                  'px-4 py-2 text-sm rounded-full transition-colors whitespace-nowrap',
+                  'rounded-full px-4 py-2 text-sm whitespace-nowrap transition-colors',
                   categoryFilter === option.value
                     ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
                     : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
@@ -90,14 +90,14 @@ export function Filters({
       {/* Уровни (только если передан levelFilter) */}
       {levelFilter !== undefined && setLevelFilter !== undefined && (
         <div>
-          <span className="text-sm text-(--loom-white)/60 block mb-2">Уровень</span>
-          <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+          <span className="mb-2 block text-sm text-(--loom-white)/60">Уровень</span>
+          <div className="scrollbar-hide flex gap-2 overflow-x-auto pb-1">
             {levelOptions.map((option) => (
               <button
                 key={option.value}
                 onClick={() => setLevelFilter(option.value)}
                 className={cn(
-                  'px-4 py-2 text-sm rounded-full transition-colors whitespace-nowrap',
+                  'rounded-full px-4 py-2 text-sm whitespace-nowrap transition-colors',
                   levelFilter === option.value
                     ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
                     : 'bg-(--loom-white)/5 text-(--loom-white)/60 hover:bg-(--loom-white)/10'
@@ -113,15 +113,15 @@ export function Filters({
       {/* Сортировка (только если showSort = true) */}
       {showSort && sortBy !== undefined && setSortBy !== undefined && (
         <div>
-          <span className="text-sm text-(--loom-white)/60 block mb-2">Сортировка</span>
-          <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+          <span className="mb-2 block text-sm text-(--loom-white)/60">Сортировка</span>
+          <div className="scrollbar-hide flex gap-2 overflow-x-auto pb-1">
             {sortOptions.map((option) => (
               <Button
                 key={option.value}
                 variant={sortBy === option.value ? 'glitch' : 'secondary'}
                 size="sm"
                 onClick={() => setSortBy(option.value)}
-                className="px-4 py-2 text-sm shrink-0"
+                className="shrink-0 px-4 py-2 text-sm"
               >
                 {option.label}
               </Button>

@@ -1,6 +1,6 @@
-import { defaultCache } from "@serwist/next/worker";
-import type { PrecacheEntry } from "serwist";
-import { Serwist } from "serwist";
+import { defaultCache } from '@serwist/next/worker';
+import type { PrecacheEntry } from 'serwist';
+import { Serwist } from 'serwist';
 
 declare const self: ServiceWorkerGlobalScopeEventMap & {
   __SW_MANIFEST: (PrecacheEntry | string)[] | undefined;
@@ -15,9 +15,9 @@ const serwist = new Serwist({
   fallbacks: {
     entries: [
       {
-        url: "/offline",
+        url: '/offline',
         matcher({ request }) {
-          return request.destination === "document";
+          return request.destination === 'document';
         },
       },
     ],

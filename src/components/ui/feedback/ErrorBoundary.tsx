@@ -43,19 +43,16 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       return (
         <div
           className={cn(
-            'flex flex-col items-center justify-center min-h-80 p-8 text-center',
-            'bg-(--loom-black) glitch-border rounded-xl',
+            'flex min-h-80 flex-col items-center justify-center p-8 text-center',
+            'glitch-border rounded-xl bg-(--loom-black)',
             this.props.className
           )}
         >
-          <div className="text-5xl mb-4 text-(--loom-cyan) font-bold">
-            ⚡
-          </div>
-          <h2 className="text-xl font-bold text-(--loom-white) mb-2">
-            Что-то пошло не так
-          </h2>
-          <p className="text-(--loom-white)/60 mb-6 max-w-md">
-            {this.state.error?.message || 'Произошла непредвиденная ошибка. Попробуйте перезагрузить страницу.'}
+          <div className="mb-4 text-5xl font-bold text-(--loom-cyan)">⚡</div>
+          <h2 className="mb-2 text-xl font-bold text-(--loom-white)">Что-то пошло не так</h2>
+          <p className="mb-6 max-w-md text-(--loom-white)/60">
+            {this.state.error?.message ||
+              'Произошла непредвиденная ошибка. Попробуйте перезагрузить страницу.'}
           </p>
           <Button variant="glitch" onClick={this.handleReset}>
             Попробовать снова

@@ -3,10 +3,7 @@ import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
-export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
@@ -58,9 +55,7 @@ export async function GET(
 
     // 🔑 Ищем вопрос по тексту, а не по индексу
     // (потому что ответы идут в порядке прохождения, а вопросы — в порядке order)
-    const question = attempt.quiz.questions.find(
-      (q: any) => q.text === questionText
-    ) || null;
+    const question = attempt.quiz.questions.find((q: any) => q.text === questionText) || null;
 
     let optionsArray: any[] = [];
     if (question?.options) {

@@ -6,10 +6,7 @@ import { Skeleton } from '@/components/ui/feedback/Skeleton';
 import { BackLink } from '@/components/navigation/BackLink';
 import { CategoryForm } from '@/components/admin/categories/CategoryForm';
 import { CategoryList } from '@/components/admin/categories/CategoryList';
-import {
-  useGetCategoriesQuery,
-  useCreateCategoryMutation,
-} from '@/store/api/categoryApi';
+import { useGetCategoriesQuery, useCreateCategoryMutation } from '@/store/api/categoryApi';
 
 export default function CategoriesPage() {
   const { data: categories = [], isLoading } = useGetCategoriesQuery();
@@ -45,13 +42,13 @@ export default function CategoriesPage() {
 
   if (isLoading) {
     return (
-      <div className="p-4 max-w-2xl mx-auto pb-24">
-        <Skeleton className="h-10 w-64 mb-6" />
-        <div className="flex gap-3 mb-4">
+      <div className="mx-auto max-w-2xl p-4 pb-24">
+        <Skeleton className="mb-6 h-10 w-64" />
+        <div className="mb-4 flex gap-3">
           <Skeleton className="h-10 flex-1 rounded-xl" />
           <Skeleton className="h-10 w-32 rounded-full" />
         </div>
-        <div className="flex items-center gap-4 mb-6">
+        <div className="mb-6 flex items-center gap-4">
           <Skeleton className="h-12 w-12 rounded-lg" />
           <Skeleton className="h-4 w-32" />
         </div>
@@ -65,14 +62,12 @@ export default function CategoriesPage() {
   }
 
   return (
-    <div className="p-4 max-w-2xl mx-auto pb-24">
+    <div className="mx-auto max-w-2xl p-4 pb-24">
       <div className="mt-2 mb-2">
         <BackLink fallback="/admin" className="mb-4" />
       </div>
 
-      <h1 className="text-2xl font-bold text-(--loom-white) mb-6">
-        Управление категориями
-      </h1>
+      <h1 className="mb-6 text-2xl font-bold text-(--loom-white)">Управление категориями</h1>
 
       <CategoryForm onAdd={handleAddCategory} isLoading={isCreating} />
       <CategoryList categories={categories} />

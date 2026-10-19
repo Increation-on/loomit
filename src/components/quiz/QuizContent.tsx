@@ -41,8 +41,14 @@ export function QuizContent({ id }: { id: string }) {
   const currentQuestion = useSelector(selectCurrentQuestion);
   const score = useSelector(selectScore);
   const selectedOption = useSelector(selectSelectedOption);
-  const { questions, answers, currentIndex, isFinished, currentQuiz, attemptId: reduxAttemptId } =
-    useSelector(selectQuizState);
+  const {
+    questions,
+    answers,
+    currentIndex,
+    isFinished,
+    currentQuiz,
+    attemptId: reduxAttemptId,
+  } = useSelector(selectQuizState);
   const questionOrder = useSelector(selectQuestionOrder);
 
   const {
@@ -78,10 +84,7 @@ export function QuizContent({ id }: { id: string }) {
     };
   }, [hideNavigation]);
 
-  const favoriteIds = useMemo(
-    () => new Set(favorites.map((fav) => fav.quiz.id)),
-    [favorites]
-  );
+  const favoriteIds = useMemo(() => new Set(favorites.map((fav) => fav.quiz.id)), [favorites]);
 
   // Сброс стора при смене квиза
   useEffect(() => {
@@ -177,7 +180,7 @@ export function QuizContent({ id }: { id: string }) {
   }, [id, dispatch, setAttemptId, resetCounter, refetchQuiz]);
 
   // ============================================================
-  // ПОДТВЕРЖДЕНИЕ ОТВЕТА 
+  // ПОДТВЕРЖДЕНИЕ ОТВЕТА
   // ============================================================
   const handleConfirmAnswer = async () => {
     if (isSubmitting || !currentQuestion || !selectedOption) return;
@@ -240,9 +243,7 @@ export function QuizContent({ id }: { id: string }) {
         total={questions.length}
         quizData={quizData}
         favoriteIds={favoriteIds}
-        onToggleFavorite={(quizId, quiz) =>
-          toggleFavorite({ quizId, quiz }).unwrap()
-        }
+        onToggleFavorite={(quizId, quiz) => toggleFavorite({ quizId, quiz }).unwrap()}
         onReset={async () => {
           if (attemptId) {
             await fetch(`/api/attempts/${attemptId}`, {
@@ -274,7 +275,7 @@ export function QuizContent({ id }: { id: string }) {
 
   if (redirecting) {
     return (
-      <div className="min-h-screen bg-(--loom-black) flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-(--loom-black)">
         <Skeleton className="h-full w-full rounded-xl" />
       </div>
     );
@@ -282,24 +283,21 @@ export function QuizContent({ id }: { id: string }) {
 
   return (
     <div
-      className={
-        `h-dvh bg-(--loom-black) flex flex-col items-center mx-auto overflow-hidden w-full
-        ${hideNavigation ? 'pt-13' : 'pt-14'}`
-      }>
-
+      className={`mx-auto flex h-dvh w-full flex-col items-center overflow-hidden bg-(--loom-black) ${hideNavigation ? 'pt-13' : 'pt-14'}`}
+    >
       {currentQuiz && <QuizTitle title={currentQuiz.title} />}
-      
+
       <QuizProgress currentIndex={currentIndex} total={questions.length} />
 
-      <div className="flex-1 flex flex-col min-h-0 w-full">
-        <AnimatePresence mode='wait'>
+      <div className="flex min-h-0 w-full flex-1 flex-col">
+        <AnimatePresence mode="wait">
           <motion.div
             key={currentQuestion.id}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="flex flex-col flex-1 min-h-0"
+            className="flex min-h-0 flex-1 flex-col"
           >
             <QuizQuestion question={currentQuestion} key={currentQuestion.id} />
             <QuizOptions
@@ -326,6 +324,6 @@ export function QuizContent({ id }: { id: string }) {
         onNext={() => dispatch(nextQuestion())}
         onFinish={() => dispatch(finishQuiz())}
       />
-    </div >
+    </div>
   );
 }

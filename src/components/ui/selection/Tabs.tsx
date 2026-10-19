@@ -68,11 +68,11 @@ export function TabsTrigger({ value, children, className }: TabsTriggerProps) {
       aria-selected={isSelected}
       onClick={() => onValueChange(value)}
       className={cn(
-        'px-4 py-2 text-sm font-medium transition-all rounded-lg',
-        'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-(--loom-cyan)',
+        'rounded-lg px-4 py-2 text-sm font-medium transition-all',
+        'focus-visible:ring-1 focus-visible:ring-(--loom-cyan) focus-visible:outline-none',
         isSelected
-          ? 'bg-(--loom-white)/10 text-(--loom-cyan) glitch-border'
-          : 'text-(--loom-white)/50 hover:text-(--loom-white) hover:bg-(--loom-white)/5',
+          ? 'glitch-border bg-(--loom-white)/10 text-(--loom-cyan)'
+          : 'text-(--loom-white)/50 hover:bg-(--loom-white)/5 hover:text-(--loom-white)',
         className
       )}
     >
@@ -89,14 +89,11 @@ interface TabsContentProps {
 
 export function TabsContent({ value, children, className }: TabsContentProps) {
   const { value: selectedValue } = useTabs();
-  
+
   if (selectedValue !== value) return null;
-  
+
   return (
-    <div
-      role="tabpanel"
-      className={cn('mt-4', className)}
-    >
+    <div role="tabpanel" className={cn('mt-4', className)}>
       {children}
     </div>
   );

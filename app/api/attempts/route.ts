@@ -53,14 +53,13 @@ export async function POST(request: Request) {
     const questionsMap = Object.fromEntries(questions.map((q) => [q.id, q]));
 
     // 3. Определяем порядок вопросов (приходит от клиента, где уже зашафлен)
-    const orderIds = questionOrder && Array.isArray(questionOrder) && questionOrder.length > 0
-      ? questionOrder
-      : questions.map((q) => q.id);
+    const orderIds =
+      questionOrder && Array.isArray(questionOrder) && questionOrder.length > 0
+        ? questionOrder
+        : questions.map((q) => q.id);
 
     // 4. Получаем вопросы в нужном порядке
-    const orderedQuestions = orderIds
-      .map((id: string) => questionsMap[id])
-      .filter(Boolean);
+    const orderedQuestions = orderIds.map((id: string) => questionsMap[id]).filter(Boolean);
 
     // 5. Формируем вопросы с опциями — ТОЛЬКО нормализация, БЕЗ шафла.
     //    Порядок опций уже зашафлен на клиенте и приходит через Redux.

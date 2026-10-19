@@ -7,10 +7,7 @@ import { useDispatch } from 'react-redux';
 import { quizApi } from '@/store/api/quizApi';
 
 import { useGetQuizByIdQuery } from '@/store/api/quizApi';
-import {
-  useGetFavoritesQuery,
-  useToggleFavoriteMutation,
-} from '@/store/api/favoritesApi';
+import { useGetFavoritesQuery, useToggleFavoriteMutation } from '@/store/api/favoritesApi';
 
 import { Button } from '@/components/ui/core/Button';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
@@ -20,6 +17,7 @@ import { BackLink } from '@/components/navigation/BackLink';
 import { useQuizFontSize } from '@/hooks/useQuizFontSize';
 import { Modal } from '@/components/ui/feedback/Modal';
 import { resetQuiz } from '@/store/slices/quizSlice';
+import { usePageHeader } from '@/hooks/usePageHeader';
 
 export default function QuizPreviewPage() {
   const params = useParams();
@@ -29,7 +27,12 @@ export default function QuizPreviewPage() {
 
   const { data: session } = useSession();
 
-  const { data: quiz, isLoading, isFetching, refetch } = useGetQuizByIdQuery(id, {
+  const {
+    data: quiz,
+    isLoading,
+    isFetching,
+    refetch,
+  } = useGetQuizByIdQuery(id, {
     refetchOnMountOrArgChange: true,
   });
   const { data: favorites = [] } = useGetFavoritesQuery(undefined, { skip: !session });
@@ -42,7 +45,11 @@ export default function QuizPreviewPage() {
   const hasCurrentAttempt = !!quiz?.activeAttemptId;
   const favoriteIds = useMemo(() => new Set(favorites.map((fav) => fav.quiz.id)), [favorites]);
 
-  const { fontSize: descriptionFontSize, isReady, ref: descriptionCallbackRef } = useQuizFontSize({
+  const {
+    fontSize: descriptionFontSize,
+    isReady,
+    ref: descriptionCallbackRef,
+  } = useQuizFontSize({
     text: quiz?.description || '',
     minFontSize: 12,
     maxFontSize: 18,
@@ -51,19 +58,21 @@ export default function QuizPreviewPage() {
     dependencies: [quiz?.id, quiz?.description],
   });
 
- const handleStartClick = () => {
-  if (!quiz) return;
+  usePageHeader({ variant: 'tab', title: 'Предпросмотр', showBack: true });
 
-  if (quiz.activeAttemptId) {
-    setIsCurrentModalOpen(true);
-  } else if (quiz.otherAttempt) {
-    setIsOtherModalOpen(true);
-  } else { 
-    // ✅ Сброс Redux перед переходом
-    dispatch(resetQuiz());
-    router.push(`/quiz/${id}`);
-  }
-};
+  const handleStartClick = () => {
+    if (!quiz) return;
+
+    if (quiz.activeAttemptId) {
+      setIsCurrentModalOpen(true);
+    } else if (quiz.otherAttempt) {
+      setIsOtherModalOpen(true);
+    } else {
+      // ✅ Сброс Redux перед переходом
+      dispatch(resetQuiz());
+      router.push(`/quiz/${id}`);
+    }
+  };
 
   const handleForceReset = async (attemptIdToClose: string) => {
     setIsResetting(true);
@@ -103,9 +112,9 @@ export default function QuizPreviewPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-[80vh] flex items-center justify-center p-4">
-        <div className="max-w-md w-full space-y-4">
-          <Skeleton className="h-10 w-3/4 mx-auto" />
+      <div className="flex min-h-[80vh] items-center justify-center p-4">
+        <div className="w-full max-w-md space-y-4">
+          <Skeleton className="mx-auto h-10 w-3/4" />
           <Skeleton className="h-5 w-full" />
           <Skeleton className="h-5 w-2/3" />
           <Skeleton className="h-12 w-full rounded-full" />
@@ -116,7 +125,7 @@ export default function QuizPreviewPage() {
 
   if (!quiz) {
     return (
-      <div className="min-h-[80vh] flex items-center justify-center p-4">
+      <div className="flex min-h-[80vh] items-center justify-center p-4">
         <p className="text-(--loom-white)/60">Квиз не найден</p>
       </div>
     );
@@ -129,15 +138,15 @@ export default function QuizPreviewPage() {
   };
 
   return (
-    <div className="min-h-[80vh] flex flex-col p-4">
-      <div className="max-w-md w-full mt-3">
+    <div className="flex min-h-[80vh] flex-col p-4">
+      <div className="mt-3 w-full max-w-md">
         <BackLink fallback="/catalog" />
       </div>
 
-      <div className="flex-1 flex items-center justify-center">
-        <div className="max-w-md w-full bg-(--loom-white)/5 rounded-2xl p-7 glitch-border relative overflow-hidden">
-          <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute left-0 right-0 mx-auto w-full h-0.75 glitch-scanline-gradient opacity-50 blur-[1px] animate-scanline" />
+      <div className="flex flex-1 items-center justify-center">
+        <div className="glitch-border relative w-full max-w-md overflow-hidden rounded-2xl bg-(--loom-white)/5 p-7">
+          <div className="pointer-events-none absolute inset-0">
+            <div className="glitch-scanline-gradient animate-scanline absolute right-0 left-0 mx-auto h-0.75 w-full opacity-50 blur-[1px]" />
           </div>
 
           <div className="relative z-10 space-y-4 text-center">
@@ -147,10 +156,10 @@ export default function QuizPreviewPage() {
                 <img
                   src={quiz.category.iconUrl}
                   alt={quiz.category.name}
-                  className="w-18 h-18 rounded-full object-contain"
+                  className="h-18 w-18 rounded-full object-contain"
                 />
               ) : (
-                <div className="w-18 h-18 rounded-full bg-(--loom-cyan)/20 flex items-center justify-center text-(--loom-cyan) text-2xl font-bold">
+                <div className="flex h-18 w-18 items-center justify-center rounded-full bg-(--loom-cyan)/20 text-2xl font-bold text-(--loom-cyan)">
                   {quiz.category?.name?.[0] || '?'}
                 </div>
               )}
@@ -167,10 +176,10 @@ export default function QuizPreviewPage() {
             </div>
 
             {quiz.description && (
-              <div className="flex items-center justify-center max-h-25 overflow-hidden w-full relative">
+              <div className="relative flex max-h-25 w-full items-center justify-center overflow-hidden">
                 <p
                   ref={descriptionCallbackRef}
-                  className="text-(--loom-white)/60 text-center w-full wrap-break-word"
+                  className="w-full text-center wrap-break-word text-(--loom-white)/60"
                   style={{
                     fontSize: `${descriptionFontSize}px`,
                     lineHeight: '1.4',
@@ -183,15 +192,14 @@ export default function QuizPreviewPage() {
             )}
 
             <div className="flex flex-wrap justify-center gap-2 text-xs">
-              <span className="text-(--loom-magenta) font-medium">
+              <span className="font-medium text-(--loom-magenta)">
                 {quiz.category?.name || 'Без категории'}
               </span>
               <span className="text-(--loom-white)/30">•</span>
               <span
                 className={cn(
                   'font-semibold',
-                  levelColors[quiz.level as keyof typeof levelColors] ||
-                    'text-(--loom-white)/60'
+                  levelColors[quiz.level as keyof typeof levelColors] || 'text-(--loom-white)/60'
                 )}
               >
                 {quiz.level
@@ -199,9 +207,7 @@ export default function QuizPreviewPage() {
                   : 'Любой уровень'}
               </span>
               <span className="text-(--loom-white)/30">•</span>
-              <span className="text-(--loom-white)/60">
-                {quiz.questions?.length || 0} вопросов
-              </span>
+              <span className="text-(--loom-white)/60">{quiz.questions?.length || 0} вопросов</span>
             </div>
 
             <div className="pt-2">
@@ -214,8 +220,8 @@ export default function QuizPreviewPage() {
                 {isFetching
                   ? 'Обновление данных...'
                   : hasCurrentAttempt
-                  ? 'Продолжить квиз'
-                  : 'Начать квиз'}
+                    ? 'Продолжить квиз'
+                    : 'Начать квиз'}
               </Button>
             </div>
           </div>
@@ -228,7 +234,7 @@ export default function QuizPreviewPage() {
         title="У вас есть незавершенная попытка"
       >
         <div className="space-y-4">
-          <p className="text-(--loom-white)/80 text-sm leading-relaxed">
+          <p className="text-sm leading-relaxed text-(--loom-white)/80">
             Вы уже начинали проходить этот квиз ранее. Хотите продолжить с того места, где
             остановились, или начать заново?
           </p>
@@ -248,7 +254,7 @@ export default function QuizPreviewPage() {
               variant="outline"
               disabled={isResetting}
               onClick={handleResetCurrentQuiz}
-              className="w-full py-2 text-sm text-red-500 border-red-500/30 hover:bg-red-500/10"
+              className="w-full border-red-500/30 py-2 text-sm text-red-500 hover:bg-red-500/10"
             >
               {isResetting ? 'Сброс...' : 'Начать заново (стереть прогресс)'}
             </Button>
@@ -262,9 +268,9 @@ export default function QuizPreviewPage() {
         title="Обнаружен другой активный квиз"
       >
         <div className="space-y-4">
-          <p className="text-(--loom-white)/80 text-sm leading-relaxed">
+          <p className="text-sm leading-relaxed text-(--loom-white)/80">
             У вас уже есть незавершенный квиз{' '}
-            <span className="text-(--loom-cyan) font-semibold">
+            <span className="font-semibold text-(--loom-cyan)">
               «{quiz.otherAttempt?.quizTitle}»
             </span>
             . Чтобы начать этот, вам необходимо сбросить текущий прогресс другого квиза, либо

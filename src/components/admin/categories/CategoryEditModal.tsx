@@ -11,7 +11,12 @@ interface CategoryEditModalProps {
   isOpen: boolean;
   category: any | null;
   onClose: () => void;
-  onSave: (id: string, name: string, iconUrl: string | null, iconFile: File | null) => Promise<void>;
+  onSave: (
+    id: string,
+    name: string,
+    iconUrl: string | null,
+    iconFile: File | null
+  ) => Promise<void>;
   isSaving?: boolean;
 }
 
@@ -78,26 +83,21 @@ export function CategoryEditModal({
 
         <div className="flex items-center gap-4">
           {getCurrentIcon() ? (
-            <div className="w-12 h-12 rounded-lg border border-(--loom-white)/10 overflow-hidden bg-(--loom-white)/5 flex items-center justify-center">
+            <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-lg border border-(--loom-white)/10 bg-(--loom-white)/5">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={getCurrentIcon()!} alt="Превью" className="w-full h-full object-contain" />
+              <img src={getCurrentIcon()!} alt="Превью" className="h-full w-full object-contain" />
             </div>
           ) : (
-            <div className="w-12 h-12 rounded-lg border border-(--loom-white)/10 bg-(--loom-white)/5 flex items-center justify-center text-(--loom-white)/40">
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-(--loom-white)/10 bg-(--loom-white)/5 text-(--loom-white)/40">
               ?
             </div>
           )}
 
           <div className="flex flex-col gap-2">
-            <label className="cursor-pointer text-sm text-(--loom-white)/60 hover:text-(--loom-white) transition-colors flex items-center gap-2">
+            <label className="flex cursor-pointer items-center gap-2 text-sm text-(--loom-white)/60 transition-colors hover:text-(--loom-white)">
               <Upload size={14} />
               {iconFile ? 'Заменить' : 'Загрузить'}
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                className="hidden"
-              />
+              <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
             </label>
             <button
               onClick={() => {
@@ -108,8 +108,10 @@ export function CategoryEditModal({
                 }
               }}
               className={cn(
-                'text-sm flex items-center gap-1 transition-colors',
-                removeIcon ? 'text-red-400 hover:text-red-300' : 'text-(--loom-white)/40 hover:text-(--loom-white)'
+                'flex items-center gap-1 text-sm transition-colors',
+                removeIcon
+                  ? 'text-red-400 hover:text-red-300'
+                  : 'text-(--loom-white)/40 hover:text-(--loom-white)'
               )}
             >
               {removeIcon ? <X size={14} /> : 'Убрать иконку'}

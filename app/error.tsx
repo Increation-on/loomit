@@ -1,12 +1,12 @@
 // app/error.tsx
-'use client'
+'use client';
 
 export default function Error({
   error,
   reset,
 }: {
-  error: Error & { digest?: string }
-  reset: () => void
+  error: Error & { digest?: string };
+  reset: () => void;
 }) {
   return (
     <div>
@@ -14,5 +14,5 @@ export default function Error({
       <p>{error.message || 'Произошла непредвиденная ошибка'}</p>
       <button onClick={reset}>Попробовать снова</button>
     </div>
-  )
+  );
 }

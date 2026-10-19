@@ -6,10 +6,12 @@ import { categoryApi } from './api/categoryApi';
 import { favoritesApi } from './api/favoritesApi';
 import quizReducer from './slices/quizSlice';
 import syncReducer from './slices/syncSlice';
+import headerReducer from './slices/headerSlice';
 import idbStorage from '@/lib/idbStorage';
 import { useDispatch } from 'react-redux';
 import { offlineMiddleware } from './middleware/offlineMiddleware';
 import { profileApi } from './api/profileApi';
+
 
 
 const quizPersistConfig = {
@@ -31,6 +33,7 @@ export const store = configureStore({
   reducer: {
     quiz: persistedQuizReducer,
     sync: persistedSyncReducer,
+    header: headerReducer,
     [attemptsApi.reducerPath]: attemptsApi.reducer,
     [quizApi.reducerPath]: quizApi.reducer,
     [categoryApi.reducerPath] : categoryApi.reducer,

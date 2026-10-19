@@ -264,3 +264,18 @@ export function QuizSkeleton() {
     </div>
   );
 }
+
+///SkeletonHeader
+export function SkeletonHeader() {
+  return (
+    <header 
+      className="sticky top-0 z-50 flex h-14 w-full items-center border-b px-4 backdrop-blur-md"
+      style={{
+        backgroundColor: 'var(--nav-bg)',
+        borderColor: 'rgba(255, 255, 255, 0.1)', // Или используй переменную, если есть
+      }}
+    >
+      <Skeleton className="h-6 w-24 rounded-md" />
+    </header>
+  );
+}

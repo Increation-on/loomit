@@ -11,6 +11,16 @@ interface PageHeaderProps {
 export default function PageHeader({ title, showBack = false }: PageHeaderProps) {
   const router = useRouter();
 
+  const handleBack = () => {
+    // Проверяем, есть ли история для возврата
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      // Фолбэк: если истории нет, ведем на главную
+      router.push('/'); 
+    }
+  };
+
   return (
     <header 
       className="sticky top-0 z-50 flex h-12 w-full items-center px-4 backdrop-blur-sm"
@@ -22,7 +32,7 @@ export default function PageHeader({ title, showBack = false }: PageHeaderProps)
       <div className="flex w-10 shrink-0 items-center justify-start">
         {showBack && (
           <button
-            onClick={() => router.back()}
+            onClick={handleBack}
             className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-white/10 transition-colors -ml-2"
             aria-label="Назад"
           >

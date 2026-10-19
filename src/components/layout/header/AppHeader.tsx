@@ -3,8 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { useSelector } from 'react-redux';
-import { useAppDispatch } from '@/store/store';
-import { store } from '@/store/store'; // Импортируем сам store
+import { useAppDispatch, store } from '@/store/store';
 import { selectHeaderState, resetHeader } from '@/store/slices/headerSlice';
 import { usePWA } from '@/hooks/usePWA';
 import { SkeletonHeader } from '@/components/ui/feedback/Skeleton';

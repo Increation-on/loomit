@@ -2,7 +2,8 @@
 
 import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { useAppDispatch } from '@/store/store';
 import { selectHeaderState, resetHeader } from '@/store/slices/headerSlice';
 import { usePWA } from '@/hooks/usePWA';
 import { SkeletonHeader } from '@/components/ui/feedback/Skeleton';
@@ -13,19 +14,22 @@ import WebHeader from './WebHeader/WebHeader';
 export function AppHeader() {
   const isPWA = usePWA();
   const pathname = usePathname();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { variant, path, title, showBack } = useSelector(selectHeaderState);
 
-  // Запоминаем предыдущий pathname, чтобы понять, был ли переход
   const prevPathname = useRef(pathname);
+  const pathRef = useRef(path);
+
+  // Безопасно обновляем реф при изменении path (вне рендера)
+  useEffect(() => {
+    pathRef.current = path;
+  }, [path]);
 
   useEffect(() => {
-    // Если путь изменился, но стейт не обновился (variant все еще от старой страницы)
     if (prevPathname.current !== pathname) {
-      
-      // Даем странице шанс вызвать usePageHeader (через микротаск)
       const timeout = setTimeout(() => {
-        if (path !== pathname) {
+        // Читаем актуальное значение из рефа
+        if (pathRef.current !== pathname) {
           dispatch(resetHeader());
         }
       }, 0);
@@ -33,7 +37,7 @@ export function AppHeader() {
       prevPathname.current = pathname;
       return () => clearTimeout(timeout);
     }
-  }, [pathname, path, dispatch]);
+  }, [pathname, dispatch]);
 
   // 1. Если не PWA — показываем старый веб-хедер
   if (!isPWA) {
@@ -45,13 +49,12 @@ export function AppHeader() {
     return null;
   }
 
-  // 3. Если стейт пустой (страница забыла вызвать usePageHeader)
-  // или если мы только что сбросили его через useEffect
+  // 3. Если стейт пустой
   if (!variant) {
     return null;
   }
 
-  // 4. Защита от моргания: данные есть, но они от старой страницы
+  // 4. Защита от моргания
   if (path !== pathname) {
     return <SkeletonHeader />;
   }

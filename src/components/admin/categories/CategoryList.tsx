@@ -5,10 +5,7 @@ import { CategoryItem } from './CategoryItem';
 import { CategoryEditModal } from './CategoryEditModal';
 import { Modal } from '@/components/ui/feedback/Modal';
 import { useToast } from '@/components/ui/feedback/ToastContainer';
-import {
-  useDeleteCategoryMutation,
-  useUpdateCategoryMutation,
-} from '@/store/api/categoryApi';
+import { useDeleteCategoryMutation, useUpdateCategoryMutation } from '@/store/api/categoryApi';
 
 interface CategoryListProps {
   categories: any[];
@@ -72,7 +69,7 @@ export function CategoryList({ categories }: CategoryListProps) {
 
   if (categories.length === 0) {
     return (
-      <p className="text-(--loom-white)/60 text-center py-10">
+      <p className="py-10 text-center text-(--loom-white)/60">
         Пока нет категорий. Создайте первую!
       </p>
     );

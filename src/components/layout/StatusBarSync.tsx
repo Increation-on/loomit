@@ -14,7 +14,7 @@ export function StatusBarSync() {
     const enforceColor = () => {
       // Ищем абсолютно ВСЕ мета-теги theme-color (Next.js может плодить дубликаты при переходах)
       const metas = document.querySelectorAll('meta[name="theme-color"]');
-      
+
       if (metas.length > 0) {
         metas.forEach((meta) => {
           if (meta.getAttribute('content') !== targetColor) {
@@ -40,10 +40,10 @@ export function StatusBarSync() {
       enforceColor();
     });
 
-    observer.observe(document.head, { 
-      childList: true, 
-      subtree: true, 
-      attributes: true 
+    observer.observe(document.head, {
+      childList: true,
+      subtree: true,
+      attributes: true,
     });
 
     return () => observer.disconnect();
@@ -51,14 +51,14 @@ export function StatusBarSync() {
 
   return (
     /* Наша физическая темная маска-заглушка из прошлого шага (План Б) */
-    <div 
+    <div
       style={{
         position: 'fixed',
         top: 0,
         left: 0,
         right: 0,
-        height: 'env(safe-area-inset-top, 0px)', 
-        backgroundColor: '#121212', 
+        height: 'env(safe-area-inset-top, 0px)',
+        backgroundColor: '#121212',
         zIndex: 9999,
         pointerEvents: 'none',
       }}

@@ -18,9 +18,16 @@ import { useRouter } from 'next/navigation';
 import { usePageHeader } from '@/hooks/usePageHeader';
 
 export default function AdminDashboard() {
-  const { data: quizzes, isLoading, refetch } = useGetQuizzesQuery({}, {
-    refetchOnMountOrArgChange: true,
-  });
+  const {
+    data: quizzes,
+    isLoading,
+    refetch,
+  } = useGetQuizzesQuery(
+    {},
+    {
+      refetchOnMountOrArgChange: true,
+    }
+  );
 
   const router = useRouter();
   const { setQuizOrigin } = useNavigationTransition();
@@ -61,7 +68,9 @@ export default function AdminDashboard() {
     const sorted = [...filteredQuizzes];
     switch (sortBy) {
       case 'newest':
-        return sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        return sorted.sort(
+          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
       case 'alphabetical':
         return sorted.sort((a, b) => a.title.localeCompare(b.title));
       case 'popular':
@@ -73,8 +82,8 @@ export default function AdminDashboard() {
 
   if (isLoading) {
     return (
-      <div className="p-4 max-w-4xl mx-auto pb-24">
-        <div className="flex justify-between items-center mb-6">
+      <div className="mx-auto max-w-4xl p-4 pb-24">
+        <div className="mb-6 flex items-center justify-between">
           <Skeleton className="h-8 w-48" />
           <Skeleton className="h-10 w-36 rounded-full" />
         </div>
@@ -91,8 +100,8 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="p-4 max-w-4xl mx-auto pb-24">
-      <div className="flex justify-between items-center mb-6">
+    <div className="mx-auto max-w-4xl p-4 pb-24">
+      <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-(--loom-white)">Управление квизами</h1>
         <Link href="/admin/quiz/new">
           <Button variant="glitch">
@@ -120,18 +129,22 @@ export default function AdminDashboard() {
       />
 
       {sortedQuizzes.length === 0 ? (
-        <div className="text-center py-16 text-(--loom-white)/60 mt-3">
+        <div className="mt-3 py-16 text-center text-(--loom-white)/60">
           <p>Нет квизов по выбранным фильтрам</p>
         </div>
       ) : (
         <div className="space-y-4">
           {sortedQuizzes.map((quiz: any) => (
-            <Card key={quiz.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 mt-4">
+            <Card
+              key={quiz.id}
+              className="mt-4 flex flex-col justify-between gap-3 p-4 sm:flex-row sm:items-center"
+            >
               <div className="flex-1">
-                <h2 className="text-(--loom-white) font-semibold text-lg">{quiz.title}</h2>
-                <div className="flex flex-wrap gap-2 text-sm text-(--loom-white)/60 mt-1">
+                <h2 className="text-lg font-semibold text-(--loom-white)">{quiz.title}</h2>
+                <div className="mt-1 flex flex-wrap gap-2 text-sm text-(--loom-white)/60">
                   <span>
-                    {quiz._count?.questions || 0} {pluralize(quiz._count?.questions || 0, 'вопрос', 'вопроса', 'вопросов')}
+                    {quiz._count?.questions || 0}{' '}
+                    {pluralize(quiz._count?.questions || 0, 'вопрос', 'вопроса', 'вопросов')}
                   </span>
                   <span>•</span>
                   <span>
@@ -160,7 +173,7 @@ export default function AdminDashboard() {
                   )}
                 </div>
               </div>
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex flex-wrap gap-2">
                 <Button
                   variant="ghost"
                   size="sm"

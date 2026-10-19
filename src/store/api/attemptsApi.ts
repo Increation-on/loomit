@@ -35,7 +35,4 @@ export const attemptsApi = createApi({
   }),
 });
 
-export const {
-  useSaveAttemptMutation,
-  useGetStatusesQuery,
-} = attemptsApi;
+export const { useSaveAttemptMutation, useGetStatusesQuery } = attemptsApi;

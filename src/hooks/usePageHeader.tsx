@@ -1,7 +1,7 @@
 // src/hooks/usePageHeader.ts
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { useAppDispatch } from '@/store/store'; // Путь может отличаться, проверь свой
+import { useAppDispatch } from '@/store/store';
 import { setHeader, HeaderVariant } from '@/store/slices/headerSlice';
 
 interface PageHeaderConfig {

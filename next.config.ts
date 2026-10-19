@@ -1,5 +1,5 @@
-import type { NextConfig } from 'next'
-import withSerwistInit from '@serwist/next'
+import type { NextConfig } from 'next';
+import withSerwistInit from '@serwist/next';
 
 const revision = crypto.randomUUID();
 
@@ -8,10 +8,8 @@ const withSerwist = withSerwistInit({
   swDest: 'public/sw.js',
   disable: process.env.NODE_ENV === 'development',
   cacheOnNavigation: true,
-  additionalPrecacheEntries: [
-    { url: '/offline', revision },
-  ],
-})
+  additionalPrecacheEntries: [{ url: '/offline', revision }],
+});
 
 const nextConfig: NextConfig = {
   async rewrites() {
@@ -31,6 +29,6 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-}
+};
 
-export default withSerwist(nextConfig)
+export default withSerwist(nextConfig);

@@ -4,10 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { adminQuizCreateSchema } from '@/lib/validators/quiz';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
-export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = await getServerSession(authOptions);
   if ((session?.user as any)?.role !== 'admin') {
@@ -44,19 +41,16 @@ export async function GET(
 
 /**
  * PUT /api/admin/quizzes/[id]
- * 
+ *
  * Updates the quiz as an aggregate:
  * - updates quiz fields (title, description, category, level)
  * - creates new questions
  * - updates existing questions (via deleteMany + create)
  * - removes deleted questions
- * 
+ *
  * Questions are child entities — they are saved only through the parent quiz.
  */
-export async function PUT(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = await getServerSession(authOptions);
   if ((session?.user as any)?.role !== 'admin') {
@@ -137,15 +131,12 @@ export async function PUT(
 
 /**
  * DELETE /api/admin/quizzes/[id]
- * 
+ *
  * Deletes the entire quiz.
  * All child entities (questions) are deleted automatically via Prisma cascade.
  * Attempts are deleted manually to avoid foreign key constraint violations.
  */
-export async function DELETE(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = await getServerSession(authOptions);
   if ((session?.user as any)?.role !== 'admin') {

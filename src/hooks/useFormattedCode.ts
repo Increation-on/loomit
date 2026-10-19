@@ -23,10 +23,7 @@ export function useFormattedCode(code: string, lang?: string | null) {
 
       const fontSize = parseFloat(getComputedStyle(node).fontSize) || 14;
       const availableWidth = width - CONTAINER_PADDING;
-      const printWidth = Math.max(
-        40,
-        Math.floor(availableWidth / (fontSize * CHAR_WIDTH_RATIO))
-      );
+      const printWidth = Math.max(40, Math.floor(availableWidth / (fontSize * CHAR_WIDTH_RATIO)));
 
       const result = await formatCode(code, lang, printWidth);
       if (!cancelled) setFormatted(result);

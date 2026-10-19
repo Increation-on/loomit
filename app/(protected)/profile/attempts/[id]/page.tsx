@@ -31,7 +31,7 @@ export default function AttemptDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="p-6 max-w-2xl mx-auto space-y-6">
+      <div className="mx-auto max-w-2xl space-y-6 p-6">
         <Skeleton className="h-6 w-32" />
         <Skeleton className="h-10 w-3/4" />
         <Skeleton className="h-4 w-1/2" />
@@ -46,7 +46,7 @@ export default function AttemptDetailPage() {
 
   if (!attempt) {
     return (
-      <div className="p-6 max-w-2xl mx-auto">
+      <div className="mx-auto max-w-2xl p-6">
         <p className="text-(--loom-white)/60">Попытка не найдена</p>
       </div>
     );
@@ -55,14 +55,17 @@ export default function AttemptDetailPage() {
   const scorePercent = Math.round((attempt.score / attempt.totalQuestions) * 100);
 
   return (
-    <div className="p-6 max-w-2xl mx-auto pb-24 space-y-8">
+    <div className="mx-auto max-w-2xl space-y-8 p-6 pb-24">
       <BackLink fallback="/profile/history" />
 
       <div>
-        <h1 className="text-2xl font-bold text-(--loom-white) mb-2">{attempt.quizTitle}</h1>
+        <h1 className="mb-2 text-2xl font-bold text-(--loom-white)">{attempt.quizTitle}</h1>
         <div className="flex flex-wrap gap-4 text-(--loom-white)/60">
           <span>
-            Результат: <span className="text-(--loom-yellow) font-semibold">{attempt.score}/{attempt.totalQuestions}</span>
+            Результат:{' '}
+            <span className="font-semibold text-(--loom-yellow)">
+              {attempt.score}/{attempt.totalQuestions}
+            </span>
           </span>
           <span>•</span>
           <span>{scorePercent}%</span>
@@ -76,9 +79,7 @@ export default function AttemptDetailPage() {
           const isCorrect = a.isCorrect ?? false;
 
           // 🔑 Ищем вопрос по тексту (questionId в attempt.answers нет)
-          const realQuestion = quiz?.questions?.find(
-            (q: any) => q.text === a.questionText
-          );
+          const realQuestion = quiz?.questions?.find((q: any) => q.text === a.questionText);
 
           const getSelectedText = () => {
             return a.selectedOptionText || a.selectedOptionId; // ← просто текст
@@ -89,24 +90,28 @@ export default function AttemptDetailPage() {
           };
 
           const explanation = realQuestion?.explanation;
-         
+
           return (
             <div
               key={i}
               className={cn(
-                'p-4 bg-(--loom-white)/5 rounded-xl glitch-border flex items-start gap-4 transition-colors',
+                'glitch-border flex items-start gap-4 rounded-xl bg-(--loom-white)/5 p-4 transition-colors',
                 isCorrect ? 'border-l-4 border-(--loom-cyan)' : 'border-l-4 border-(--glitch-pink)'
               )}
             >
-              <div className={cn(
-                'w-8 h-8 rounded-full flex items-center justify-center shrink-0',
-                isCorrect ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)' : 'bg-(--glitch-pink)/20 text-(--glitch-pink)'
-              )}>
+              <div
+                className={cn(
+                  'flex h-8 w-8 shrink-0 items-center justify-center rounded-full',
+                  isCorrect
+                    ? 'bg-(--loom-cyan)/20 text-(--loom-cyan)'
+                    : 'bg-(--glitch-pink)/20 text-(--glitch-pink)'
+                )}
+              >
                 {isCorrect ? <Check size={16} /> : <X size={16} />}
               </div>
 
               <div className="flex-1 space-y-1">
-                <p className="text-(--loom-white) font-medium text-sm">
+                <p className="text-sm font-medium text-(--loom-white)">
                   {i + 1}. {a.questionText || realQuestion?.text || 'Вопрос'}
                 </p>
                 <div className="flex flex-wrap gap-4 text-sm">
@@ -125,8 +130,8 @@ export default function AttemptDetailPage() {
                 </div>
 
                 {explanation && (
-                  <div className="mt-2 text-sm text-(--loom-white)/60 bg-(--loom-white)/5 p-3 rounded-lg">
-                    <span className="text-(--loom-cyan) font-medium">Объяснение: </span>
+                  <div className="mt-2 rounded-lg bg-(--loom-white)/5 p-3 text-sm text-(--loom-white)/60">
+                    <span className="font-medium text-(--loom-cyan)">Объяснение: </span>
                     {explanation}
                   </div>
                 )}

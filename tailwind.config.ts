@@ -1,4 +1,4 @@
-import type { Config } from 'tailwindcss'
+import type { Config } from 'tailwindcss';
 
 const config: Config = {
   darkMode: 'class',
@@ -22,7 +22,7 @@ const config: Config = {
           pink: 'var(--glitch-pink)',
           darkpurple: 'var(--glitch-darkpurple)',
           blue: 'var(--glitch-blue)',
-        }
+        },
       },
       backgroundImage: {
         'loom-gradient': 'linear-gradient(to right, #FFD700, #00FFFF, #8B00FF)',
@@ -48,6 +48,6 @@ const config: Config = {
     },
   },
   plugins: [],
-}
+};
 
-export default config
+export default config;

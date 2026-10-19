@@ -1,4 +1,4 @@
 {
-    "prisma.pinToPrisma6": false,
-    "compile-hero.disable-compile-files-on-did-save-code": true
+  "prisma.pinToPrisma6": false,
+  "compile-hero.disable-compile-files-on-did-save-code": true
 }

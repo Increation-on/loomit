@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]/route';
 
-
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any)?.role !== 'admin') {
@@ -19,7 +18,7 @@ export async function POST(request: Request) {
 
     const blob = await put(`icons/${Date.now()}-${file.name}`, file, {
       access: 'public',
-      token: process.env.BLOB_READ_WRITE_TOKEN, 
+      token: process.env.BLOB_READ_WRITE_TOKEN,
     });
 
     return NextResponse.json(blob);

@@ -98,9 +98,7 @@ export function QuizImportBlock({ onImport }: QuizImportBlockProps) {
     const { categoryName, ...rest } = validated.data;
     const normalizedInput = normalizeCategoryName(categoryName);
 
-    const exact = categories.find(
-      (c: any) => normalizeCategoryName(c.name) === normalizedInput
-    );
+    const exact = categories.find((c: any) => normalizeCategoryName(c.name) === normalizedInput);
 
     if (exact) {
       finalizeImport(rest, exact.id);
@@ -166,8 +164,8 @@ export function QuizImportBlock({ onImport }: QuizImportBlockProps) {
 
   return (
     <>
-      <div className="glitch-border rounded-xl bg-(--loom-cyan)/5 p-4 mb-6">
-        <div className="flex flex-col sm:flex-row gap-2">
+      <div className="glitch-border mb-6 rounded-xl bg-(--loom-cyan)/5 p-4">
+        <div className="flex flex-col gap-2 sm:flex-row">
           <Button
             variant="secondary"
             onClick={() => fileInputRef.current?.click()}
@@ -190,10 +188,10 @@ export function QuizImportBlock({ onImport }: QuizImportBlockProps) {
 
         <button
           onClick={() => setIsHelpModalOpen(true)}
-          className="flex items-center gap-1.5 mt-3 text-(--loom-yellow) hover:text-(--loom-cyan) transition-colors"
+          className="mt-3 flex items-center gap-1.5 text-(--loom-yellow) transition-colors hover:text-(--loom-cyan)"
         >
           <Lightbulb size={16} />
-          <span className='text-(--loom-cyan)/60 text-sm'>Подсказка по формату JSON</span>
+          <span className="text-sm text-(--loom-cyan)/60">Подсказка по формату JSON</span>
         </button>
       </div>
 
@@ -215,31 +213,23 @@ export function QuizImportBlock({ onImport }: QuizImportBlockProps) {
         onConfirm={() => processImport(jsonText)}
         onCancel={() => setIsPasteModalOpen(false)}
       >
-        <p className="text-sm text-(--loom-white)/60 mb-3">
-          Вставьте сюда содержимое JSON-файла
-        </p>
+        <p className="mb-3 text-sm text-(--loom-white)/60">Вставьте сюда содержимое JSON-файла</p>
         <textarea
           value={jsonText}
           onChange={(e) => setJsonText(e.target.value)}
           placeholder='{"title": "...", "questions": [...]}'
-          className="w-full bg-(--loom-black) border border-(--loom-white)/10 rounded-xl px-3 py-2 text-(--loom-white) focus:outline-none focus:border-(--loom-cyan) resize-y min-h-48 font-mono text-xs"
+          className="min-h-48 w-full resize-y rounded-xl border border-(--loom-white)/10 bg-(--loom-black) px-3 py-2 font-mono text-xs text-(--loom-white) focus:border-(--loom-cyan) focus:outline-none"
           disabled={isProcessing}
         />
       </Modal>
 
       {/* Модалка-подсказка по формату */}
-      <Modal
-        isOpen={isHelpModalOpen}
-        onClose={() => setIsHelpModalOpen(false)}
-        title="Формат JSON"
-      >
+      <Modal isOpen={isHelpModalOpen} onClose={() => setIsHelpModalOpen(false)} title="Формат JSON">
         <div className="space-y-3 text-sm text-(--loom-white)/70">
-          <p className="text-sm">
-            Импортируйте квиз, вставив JSON или загрузив файл:
-          </p>
+          <p className="text-sm">Импортируйте квиз, вставив JSON или загрузив файл:</p>
 
-          <pre className="p-3 bg-(--loom-black) rounded-lg border border-(--loom-white)/10 overflow-x-auto font-mono text-[10px] text-(--loom-white)/70 leading-relaxed">
-{`{
+          <pre className="overflow-x-auto rounded-lg border border-(--loom-white)/10 bg-(--loom-black) p-3 font-mono text-[10px] leading-relaxed text-(--loom-white)/70">
+            {`{
   "title": "Название квиза",
   "description": "Описание (опционально)",
   "categoryName": "JavaScript",
@@ -260,7 +250,7 @@ export function QuizImportBlock({ onImport }: QuizImportBlockProps) {
 }`}
           </pre>
 
-          <ul className="space-y-1 text-xs text-(--loom-white)/50 list-disc list-inside">
+          <ul className="list-inside list-disc space-y-1 text-xs text-(--loom-white)/50">
             <li>
               <strong className="text-(--loom-white)/70">level</strong>: JUNIOR, MIDDLE или SENIOR
             </li>
@@ -268,7 +258,8 @@ export function QuizImportBlock({ onImport }: QuizImportBlockProps) {
               <strong className="text-(--loom-white)/70">options</strong>: ровно 4 варианта
             </li>
             <li>
-              <strong className="text-(--loom-white)/70">correctOptionId</strong>: должен совпадать с id одного из вариантов
+              <strong className="text-(--loom-white)/70">correctOptionId</strong>: должен совпадать
+              с id одного из вариантов
             </li>
             <li>
               Код в бэктиках <code className="text-(--loom-cyan)">`...`</code> — только в{' '}
@@ -276,7 +267,8 @@ export function QuizImportBlock({ onImport }: QuizImportBlockProps) {
               <strong className="text-(--loom-white)/70">explanation</strong>
             </li>
             <li>
-              <strong className="text-(--loom-white)/70">categoryName</strong>: если категории нет — предложим создать
+              <strong className="text-(--loom-white)/70">categoryName</strong>: если категории нет —
+              предложим создать
             </li>
           </ul>
         </div>

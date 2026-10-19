@@ -15,32 +15,29 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     const inputId = id || label?.toLowerCase().replace(/\s/g, '-');
 
     return (
-      <div className="space-y-1 w-full">
+      <div className="w-full space-y-1">
         {label && (
-          <label
-            htmlFor={inputId}
-            className="block text-sm font-medium text-(--loom-white)/80"
-          >
+          <label htmlFor={inputId} className="block text-sm font-medium text-(--loom-white)/80">
             {label}
           </label>
         )}
-        
-        <div className="relative glitch-border rounded-xl bg-(--loom-white)/5 w-full">
+
+        <div className="glitch-border relative w-full rounded-xl bg-(--loom-white)/5">
           {leftIcon && (
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-(--loom-white)/40">
+            <div className="absolute top-1/2 left-3 -translate-y-1/2 text-(--loom-white)/40">
               {leftIcon}
             </div>
           )}
           <input
             id={inputId}
             className={cn(
-              'w-full bg-transparent text-(--loom-white) rounded-xl px-4 py-3',
+              'w-full rounded-xl bg-transparent px-4 py-3 text-(--loom-white)',
               'placeholder:text-(--loom-white)/30',
               leftIcon && 'pl-10',
               rightIcon && 'pr-10',
               'focus:outline-none',
               'transition-all duration-200',
-              'disabled:opacity-50 disabled:cursor-not-allowed',
+              'disabled:cursor-not-allowed disabled:opacity-50',
               error && 'border-red-500 focus:border-red-500',
               className
             )}
@@ -50,17 +47,14 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             {...props}
           />
           {rightIcon && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-(--loom-white)/40">
+            <div className="absolute top-1/2 right-3 -translate-y-1/2 text-(--loom-white)/40">
               {rightIcon}
             </div>
           )}
         </div>
-        
+
         {error && (
-          <p
-            id={`${inputId}-error`}
-            className="text-sm text-red-500"
-          >
+          <p id={`${inputId}-error`} className="text-sm text-red-500">
             {error}
           </p>
         )}

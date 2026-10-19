@@ -137,49 +137,49 @@ export default function NewQuizPage() {
     }
 
     setQuestions(updated);
-    setEditModal(prev => ({ ...prev, isOpen: false }));
+    setEditModal((prev) => ({ ...prev, isOpen: false }));
   };
 
   const handleImport = (data: {
-  title: string;
-  description?: string;
-  categoryId: string;
-  level: 'JUNIOR' | 'MIDDLE' | 'SENIOR';
-  questions: any[];
-}) => {
-  setTitle(data.title);
-  setDescription(data.description || '');
-  setCategoryId(data.categoryId);
-  setLevel(data.level);
-  setQuestions(data.questions);
-};
+    title: string;
+    description?: string;
+    categoryId: string;
+    level: 'JUNIOR' | 'MIDDLE' | 'SENIOR';
+    questions: any[];
+  }) => {
+    setTitle(data.title);
+    setDescription(data.description || '');
+    setCategoryId(data.categoryId);
+    setLevel(data.level);
+    setQuestions(data.questions);
+  };
 
   return (
-    <div className="p-4 max-w-2xl mx-auto pb-24">
-      <h1 className="text-2xl font-bold text-(--loom-white) mb-6">Новый квиз</h1>
+    <div className="mx-auto max-w-2xl p-4 pb-24">
+      <h1 className="mb-6 text-2xl font-bold text-(--loom-white)">Новый квиз</h1>
       <QuizImportBlock onImport={handleImport} />
-<div className="flex items-center gap-3 my-6">
-  <div className="flex-1 h-px bg-linear-to-r from-transparent via-(--loom-cyan)/30 to-transparent" />
-  <span className="text-xs text-(--loom-white)/40 uppercase tracking-widest font-mono">
-    или
-  </span>
-  <div className="flex-1 h-px bg-linear-to-r from-transparent via-(--loom-cyan)/30 to-transparent" />
-</div>
-      <div className="space-y-4 mb-6">
-        <label className="text-xl font-medium text-(--loom-white)/80 mb-2 block">Название</label>
+      <div className="my-6 flex items-center gap-3">
+        <div className="h-px flex-1 bg-linear-to-r from-transparent via-(--loom-cyan)/30 to-transparent" />
+        <span className="font-mono text-xs tracking-widest text-(--loom-white)/40 uppercase">
+          или
+        </span>
+        <div className="h-px flex-1 bg-linear-to-r from-transparent via-(--loom-cyan)/30 to-transparent" />
+      </div>
+      <div className="mb-6 space-y-4">
+        <label className="mb-2 block text-xl font-medium text-(--loom-white)/80">Название</label>
         <Input
           placeholder="Название квиза"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
 
-        <label className="block text-xl font-medium text-(--loom-white)/80 mb-2">Описание</label>
-        <div className="glitch-border rounded-xl bg-(--loom-white)/5 w-full overflow-hidden">
+        <label className="mb-2 block text-xl font-medium text-(--loom-white)/80">Описание</label>
+        <div className="glitch-border w-full overflow-hidden rounded-xl bg-(--loom-white)/5">
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Описание квиза"
-            className="w-full bg-transparent text-(--loom-white) rounded-xl px-4 py-3 min-h-24 h-auto resize-y focus:outline-none placeholder:text-(--loom-white)/30"
+            className="h-auto min-h-24 w-full resize-y rounded-xl bg-transparent px-4 py-3 text-(--loom-white) placeholder:text-(--loom-white)/30 focus:outline-none"
           />
         </div>
 
@@ -194,7 +194,7 @@ export default function NewQuizPage() {
         />
       </div>
 
-      <div className="space-y-4 mb-6">
+      <div className="mb-6 space-y-4">
         {questions.map((q, qi) => (
           <Card key={q.id} className="p-4">
             <CardHeader className="flex flex-row items-start justify-between p-0 pb-3">
@@ -203,13 +203,13 @@ export default function NewQuizPage() {
                 variant="ghost"
                 size="icon"
                 onClick={() => deleteQuestion(qi)}
-                className="h-8 w-8 text-red-400 hover:text-red-300 hover:bg-red-400/10"
+                className="h-8 w-8 text-red-400 hover:bg-red-400/10 hover:text-red-300"
               >
                 <Trash2 size={16} />
               </Button>
             </CardHeader>
 
-            <CardContent className="p-0 space-y-3">
+            <CardContent className="space-y-3 p-0">
               {/* Вопрос — клик открывает модалку */}
               <div
                 onClick={() => {
@@ -220,23 +220,27 @@ export default function NewQuizPage() {
                     value: q.text,
                   });
                 }}
-                className="w-full bg-(--loom-black) border border-(--loom-white)/10 rounded-xl px-3 py-2 text-(--loom-white) cursor-pointer min-h-12 hover:border-(--loom-cyan)/50 transition-colors"
+                className="min-h-12 w-full cursor-pointer rounded-xl border border-(--loom-white)/10 bg-(--loom-black) px-3 py-2 text-(--loom-white) transition-colors hover:border-(--loom-cyan)/50"
               >
-                {q.text || <span className="text-(--loom-white)/30">Нажмите чтобы ввести вопрос</span>}
+                {q.text || (
+                  <span className="text-(--loom-white)/30">Нажмите чтобы ввести вопрос</span>
+                )}
               </div>
 
               {q.options.map((opt, oi) => (
-                <div key={opt.id} className="flex gap-3 items-center">
+                <div key={opt.id} className="flex items-center gap-3">
                   <button
                     onClick={() => setCorrectOption(qi, opt.id)}
                     className={cn(
-                      'w-5 h-5 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors',
+                      'flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors',
                       q.correctOptionId === opt.id
                         ? 'border-(--loom-cyan) bg-(--loom-cyan)/20'
                         : 'border-(--loom-white)/30 hover:border-(--loom-white)/50'
                     )}
                   >
-                    {q.correctOptionId === opt.id && <Check size={12} className="text-(--loom-cyan)" />}
+                    {q.correctOptionId === opt.id && (
+                      <Check size={12} className="text-(--loom-cyan)" />
+                    )}
                   </button>
 
                   <Input
@@ -259,7 +263,9 @@ export default function NewQuizPage() {
 
               {/* Объяснение — клик открывает модалку */}
               <div className="mt-2">
-                <label className="block text-sm text-(--loom-white)/60 mb-1">Объяснение (необязательно)</label>
+                <label className="mb-1 block text-sm text-(--loom-white)/60">
+                  Объяснение (необязательно)
+                </label>
                 <div
                   onClick={() => {
                     setEditModal({
@@ -269,9 +275,13 @@ export default function NewQuizPage() {
                       value: q.explanation || '',
                     });
                   }}
-                  className="w-full bg-(--loom-black) border border-(--loom-white)/10 rounded-xl px-3 py-2 text-(--loom-white) cursor-pointer min-h-12 hover:border-(--loom-cyan)/50 transition-colors"
+                  className="min-h-12 w-full cursor-pointer rounded-xl border border-(--loom-white)/10 bg-(--loom-black) px-3 py-2 text-(--loom-white) transition-colors hover:border-(--loom-cyan)/50"
                 >
-                  {q.explanation || <span className="text-(--loom-white)/30">Нажмите чтобы добавить объяснение</span>}
+                  {q.explanation || (
+                    <span className="text-(--loom-white)/30">
+                      Нажмите чтобы добавить объяснение
+                    </span>
+                  )}
                 </div>
               </div>
             </CardContent>
@@ -279,14 +289,16 @@ export default function NewQuizPage() {
         ))}
       </div>
 
-      <div className="flex gap-3 mb-20">
+      <div className="mb-20 flex gap-3">
         <Button variant="secondary" onClick={addQuestion}>
           <Plus size={16} className="mr-2" /> Добавить вопрос
         </Button>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-(--loom-black)/90 backdrop-blur-sm border-t border-(--loom-white)/10 flex gap-3 justify-end">
-        <Button variant="ghost" onClick={() => router.back()}>Отмена</Button>
+      <div className="fixed right-0 bottom-0 left-0 flex justify-end gap-3 border-t border-(--loom-white)/10 bg-(--loom-black)/90 p-4 backdrop-blur-sm">
+        <Button variant="ghost" onClick={() => router.back()}>
+          Отмена
+        </Button>
         <Button variant="glitch" onClick={saveQuiz} disabled={saving}>
           {saving ? 'Сохранение...' : 'Сохранить'}
         </Button>
@@ -295,30 +307,33 @@ export default function NewQuizPage() {
       {/* Единая модалка для всего */}
       <Modal
         isOpen={editModal.isOpen}
-        onClose={() => setEditModal(prev => ({ ...prev, isOpen: false }))}
+        onClose={() => setEditModal((prev) => ({ ...prev, isOpen: false }))}
         title={
           editModal.type === 'question'
             ? 'Редактировать вопрос'
             : editModal.type === 'explanation'
-            ? 'Редактировать объяснение'
-            : 'Редактировать вариант'
+              ? 'Редактировать объяснение'
+              : 'Редактировать вариант'
         }
       >
         <textarea
           value={editModal.value}
-          onChange={(e) => setEditModal(prev => ({ ...prev, value: e.target.value }))}
-          className="w-full bg-(--loom-black) border border-(--loom-white)/10 rounded-xl px-3 py-2 text-(--loom-white) focus:outline-none focus:border-(--loom-cyan) resize-y min-h-24"
+          onChange={(e) => setEditModal((prev) => ({ ...prev, value: e.target.value }))}
+          className="min-h-24 w-full resize-y rounded-xl border border-(--loom-white)/10 bg-(--loom-black) px-3 py-2 text-(--loom-white) focus:border-(--loom-cyan) focus:outline-none"
           placeholder={
             editModal.type === 'question'
               ? 'Введите текст вопроса'
               : editModal.type === 'explanation'
-              ? 'Введите объяснение'
-              : 'Введите текст варианта'
+                ? 'Введите объяснение'
+                : 'Введите текст варианта'
           }
           rows={4}
         />
-        <div className="flex justify-end gap-2 mt-4">
-          <Button variant="ghost" onClick={() => setEditModal(prev => ({ ...prev, isOpen: false }))}>
+        <div className="mt-4 flex justify-end gap-2">
+          <Button
+            variant="ghost"
+            onClick={() => setEditModal((prev) => ({ ...prev, isOpen: false }))}
+          >
             Отмена
           </Button>
           <Button variant="glitch" onClick={handleEditSave}>

@@ -17,10 +17,10 @@ export function QuizTitle({ title }: QuizTitleProps) {
   });
 
   return (
-    <div className="h-12 flex items-center justify-center">
+    <div className="flex h-12 items-center justify-center">
       <h1
         ref={ref}
-        className="font-bold text-(--loom-cyan) text-center w-full"
+        className="w-full text-center font-bold text-(--loom-cyan)"
         style={{ fontSize: `${fontSize}px`, lineHeight: 1.2 }}
       >
         {title}

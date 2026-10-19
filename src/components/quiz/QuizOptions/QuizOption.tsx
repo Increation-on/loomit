@@ -71,7 +71,7 @@ export function QuizOption({
       aria-label={`Вариант ${letter}`}
       className={cn(
         // Оставляем рамку 'border' (1px), чтобы она идеально совпадала с glitch-border
-        'flex items-stretch rounded-xl border cursor-pointer transition-colors duration-200 w-full overflow-hidden',
+        'flex w-full cursor-pointer items-stretch overflow-hidden rounded-xl border transition-colors duration-200',
         'bg-(--loom-white)/5',
         borderClass,
         className
@@ -79,7 +79,7 @@ export function QuizOption({
       style={{ height: containerHeight }}
     >
       {/* Левая часть: Буква */}
-      <div className="flex items-center justify-center px-4 py-2 border-r border-(--loom-white)/10 shrink-0">
+      <div className="flex shrink-0 items-center justify-center border-r border-(--loom-white)/10 px-4 py-2">
         <span className={cn('text-lg font-bold', letterClass)}>{letter}</span>
       </div>
 
@@ -90,7 +90,7 @@ export function QuizOption({
       */}
       <div
         ref={ref}
-        className="flex-1 flex items-center justify-between px-4 py-2 min-h-0 overflow-hidden"
+        className="flex min-h-0 flex-1 items-center justify-between overflow-hidden px-4 py-2"
         style={{
           visibility: isReady ? 'visible' : 'hidden',
         }}
@@ -113,13 +113,13 @@ export function QuizOption({
           Он присутствует в DOM всегда, резервируя ровно 32px (w-8).
           Шрифт сразу подбирается с расчетом на то, что это место занято.
         */}
-        <div className="w-1 h-1 flex items-center justify-center shrink-0 ml-2">
+        <div className="ml-2 flex h-1 w-1 shrink-0 items-center justify-center">
           <div
             className="transition-opacity duration-200"
             style={{
               // Меняем видимость плавно или мгновенно без перестроения сетки
               opacity: icon ? 1 : 0,
-              visibility: icon ? 'visible' : 'hidden'
+              visibility: icon ? 'visible' : 'hidden',
             }}
           >
             {icon}

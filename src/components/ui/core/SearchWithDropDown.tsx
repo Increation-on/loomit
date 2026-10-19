@@ -16,9 +16,9 @@ interface SearchWithDropdownProps {
   origin?: string; // 👈 добавляем
 }
 
-export function SearchWithDropdown({ 
-  items, 
-  isLoading, 
+export function SearchWithDropdown({
+  items,
+  isLoading,
   placeholder = 'Поиск...',
   className,
   origin = '/', // 👈 дефолт — главная
@@ -36,9 +36,7 @@ export function SearchWithDropdown({
       return;
     }
     const filtered = items
-      .filter((item: any) =>
-        item.title.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+      .filter((item: any) => item.title.toLowerCase().includes(searchQuery.toLowerCase()))
       .slice(0, 5);
     setSuggestions(filtered);
     setIsDropdownOpen(true);
@@ -60,7 +58,7 @@ export function SearchWithDropdown({
                 setIsDropdownOpen(false);
                 setSuggestions([]);
               }}
-              className="text-(--loom-white)/40 hover:text-(--loom-white) transition-colors"
+              className="text-(--loom-white)/40 transition-colors hover:text-(--loom-white)"
               aria-label="Очистить поиск"
             >
               ✕
@@ -72,7 +70,7 @@ export function SearchWithDropdown({
       />
 
       {isDropdownOpen && suggestions.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 z-30 glitch-border rounded-xl bg-(--loom-black) p-2 max-h-60 overflow-y-auto shadow-xl">
+        <div className="glitch-border absolute top-full right-0 left-0 z-30 mt-2 max-h-60 overflow-y-auto rounded-xl bg-(--loom-black) p-2 shadow-xl">
           {suggestions.map((quiz: any) => (
             <button
               key={quiz.id}
@@ -82,10 +80,10 @@ export function SearchWithDropdown({
                 setIsDropdownOpen(false);
                 setSearchQuery('');
               }}
-              className="w-full text-left px-3 py-2 text-sm text-(--loom-white) hover:bg-(--loom-white)/10 rounded-lg transition-colors flex justify-between items-center"
+              className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm text-(--loom-white) transition-colors hover:bg-(--loom-white)/10"
             >
               <span className="truncate">{quiz.title}</span>
-              <span className="text-(--loom-cyan) text-xs">Перейти</span>
+              <span className="text-xs text-(--loom-cyan)">Перейти</span>
             </button>
           ))}
         </div>

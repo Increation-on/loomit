@@ -10,12 +10,12 @@ export function useTheme() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
-    
+
     const saved = localStorage.getItem('theme') as 'light' | 'dark' | null;
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
+
     // Если в localStorage ничего нет, по умолчанию ставим dark
-    const initial = saved || (prefersDark ? 'dark' : 'dark'); 
+    const initial = saved || (prefersDark ? 'dark' : 'dark');
     setTheme(initial);
   }, []); // Передали [] — выполнится один раз, бесконечного цикла не будет
 
@@ -32,9 +32,9 @@ export function useTheme() {
       // ОБМАН ONE UI: Удаляем .dark, чтобы включить базовый светлый CSS,
       // но НЕ вешаем класс .light, чтобы Samsung S25 не сделал часы чёрными.
       root.classList.remove('dark');
-      root.classList.remove('light'); 
+      root.classList.remove('light');
     }
-    
+
     localStorage.setItem('theme', theme);
   }, [theme, mounted]); // Зависимости указаны корректно, линтер будет доволен
 

@@ -66,45 +66,44 @@ export function CatalogCard({
   const { setQuizOrigin } = useNavigationTransition();
 
   return (
-    <Card className={cn('overflow-hidden flex flex-row p-4 gap-3 min-h-39', className)}>
+    <Card className={cn('flex min-h-39 flex-row gap-3 overflow-hidden p-4', className)}>
       {/* Левая часть */}
-      <div className="flex-1 flex flex-col h-full min-w-0">
+      <div className="flex h-full min-w-0 flex-1 flex-col">
         {/* Заголовок */}
-        <div className="flex items-start gap-3 h-13">
-          <div className="w-12 h-12 rounded-full shrink-0 overflow-hidden bg-(--loom-black) border border-(--loom-white)/10 flex items-center justify-center">
+        <div className="flex h-13 items-start gap-3">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-(--loom-white)/10 bg-(--loom-black)">
             {quiz.category?.iconUrl ? (
               <img
                 src={quiz.category.iconUrl}
                 alt={quiz.category.name}
-                className="w-full h-full object-contain"
+                className="h-full w-full object-contain"
               />
             ) : (
-              <span className="text-(--loom-cyan) font-bold text-lg">
+              <span className="text-lg font-bold text-(--loom-cyan)">
                 {quiz.category?.name?.[0] || '?'}
               </span>
             )}
           </div>
 
-          <div className="flex flex-col min-w-0">
-            <h3 className="text-lg font-semibold text-(--loom-white) line-clamp-2 leading-tight">
+          <div className="flex min-w-0 flex-col">
+            <h3 className="line-clamp-2 text-lg leading-tight font-semibold text-(--loom-white)">
               {quiz.title}
             </h3>
-            <p className="text-sm text-(--loom-white)/60 line-clamp-1 min-h-5">
+            <p className="line-clamp-1 min-h-5 text-sm text-(--loom-white)/60">
               {quiz.description || ' '}
             </p>
           </div>
         </div>
 
         {/* Теги */}
-        <div className="flex flex-wrap justify-center gap-2 text-xs mt-5">
-          <span className="text-(--loom-white)/50 whitespace-nowrap">
-            {questionsCount}{' '}
-            {pluralize(questionsCount, 'вопрос', 'вопроса', 'вопросов')}
+        <div className="mt-5 flex flex-wrap justify-center gap-2 text-xs">
+          <span className="whitespace-nowrap text-(--loom-white)/50">
+            {questionsCount} {pluralize(questionsCount, 'вопрос', 'вопроса', 'вопросов')}
           </span>
 
           <div className="flex items-center gap-1.5 whitespace-nowrap">
             <span className="text-(--loom-white)/20">●</span>
-            <span className="text-(--loom-magenta) truncate max-w-25 md:max-w-35">
+            <span className="max-w-25 truncate text-(--loom-magenta) md:max-w-35">
               {quiz.category?.name || 'Без категории'}
             </span>
             <span className="text-(--loom-white)/20">●</span>
@@ -112,18 +111,18 @@ export function CatalogCard({
 
           <div className="flex items-center gap-1.5 whitespace-nowrap">
             <span className="text-(--loom-white)/50">{levelLabel}</span>
-            <span className={cn('w-1.5 h-1.5 rounded-full', levelDotColor)} />
+            <span className={cn('h-1.5 w-1.5 rounded-full', levelDotColor)} />
           </div>
 
           {/* Общее количество попыток + последняя попытка — в одной строке */}
           {(attemptsCount > 0 || lastAttempt) && (
             <>
               {attemptsCount > 0 && (
-                <span className="text-(--loom-white)/50 whitespace-nowrap">
+                <span className="whitespace-nowrap text-(--loom-white)/50">
                   {attemptsCount} {pluralize(attemptsCount, 'попытка', 'попытки', 'попыток')}
                 </span>
               )}
-              <div className="min-h-5 min-w-10 flex items-center justify-center">
+              <div className="flex min-h-5 min-w-10 items-center justify-center">
                 {lastAttempt ? (
                   <span
                     className={cn(
@@ -136,7 +135,7 @@ export function CatalogCard({
                     {lastAttempt.score}/{lastAttempt.totalQuestions}
                   </span>
                 ) : (
-                  <div className="h-4 w-10 bg-(--loom-white)/5 rounded animate-pulse" />
+                  <div className="h-4 w-10 animate-pulse rounded bg-(--loom-white)/5" />
                 )}
               </div>
             </>
@@ -147,7 +146,7 @@ export function CatalogCard({
         <div className="mt-auto pt-2">
           <Button
             variant="outline"
-            className="w-full glitch-border text-(--loom-cyan) hover:text-(--loom-white) hover:bg-(--loom-cyan)/10 transition-all flex items-center justify-center relative"
+            className="glitch-border relative flex w-full items-center justify-center text-(--loom-cyan) transition-all hover:bg-(--loom-cyan)/10 hover:text-(--loom-white)"
             onClick={() => {
               setQuizOrigin(origin); // 👈 использовать origin
               router.push(`/quiz/${quiz.id}/preview`);
@@ -161,16 +160,16 @@ export function CatalogCard({
 
       {/* Правая часть */}
       {showFavorite && (
-        <div className="relative flex items-center justify-center shrink-0 w-12 h-full pl-3">
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-px h-[80%] overflow-hidden bg-(--loom-white)/10">
-            <div className="absolute inset-x-0 top-0 h-1/2 bg-linear-to-b from-(--loom-yellow)/0 via-(--loom-magenta) to-(--loom-cyan)/0 shadow-[0_0_10px_var(--loom-magenta)] drop-shadow-[0_0_12px_var(--loom-cyan)] animate-divider-flow" />
+        <div className="relative flex h-full w-12 shrink-0 items-center justify-center pl-3">
+          <div className="absolute top-1/2 left-0 h-[80%] w-px -translate-y-1/2 overflow-hidden bg-(--loom-white)/10">
+            <div className="animate-divider-flow absolute inset-x-0 top-0 h-1/2 bg-linear-to-b from-(--loom-yellow)/0 via-(--loom-magenta) to-(--loom-cyan)/0 shadow-[0_0_10px_var(--loom-magenta)] drop-shadow-[0_0_12px_var(--loom-cyan)]" />
           </div>
 
           <StarButton
             active={isFavorited}
             size={28}
-            className="hover:scale-110 transition-transform"
-            onClick={onFavoriteToggle ?? (() => { })}
+            className="transition-transform hover:scale-110"
+            onClick={onFavoriteToggle ?? (() => {})}
           />
         </div>
       )}

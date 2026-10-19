@@ -1,14 +1,11 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
 export const quizImportSchema = z.object({
   title: z
     .string()
     .min(1, 'Название обязательно')
     .max(200, 'Название не должно превышать 200 символов'),
-  description: z
-    .string()
-    .max(1000, 'Описание не должно превышать 1000 символов')
-    .optional(),
+  description: z.string().max(1000, 'Описание не должно превышать 1000 символов').optional(),
   categoryName: z
     .string()
     .min(1, 'Название категории обязательно')
@@ -21,9 +18,7 @@ export const quizImportSchema = z.object({
   questions: z
     .array(
       z.object({
-        text: z
-          .string()
-          .min(1, 'Текст вопроса обязателен'),
+        text: z.string().min(1, 'Текст вопроса обязателен'),
         options: z
           .array(
             z.object({
@@ -32,9 +27,7 @@ export const quizImportSchema = z.object({
             })
           )
           .length(4, 'Должно быть ровно 4 варианта ответа'),
-        correctOptionId: z
-          .string()
-          .min(1, 'Укажите правильный вариант (correctOptionId)'),
+        correctOptionId: z.string().min(1, 'Укажите правильный вариант (correctOptionId)'),
         explanation: z.string().optional(),
       })
     )
@@ -43,6 +36,6 @@ export const quizImportSchema = z.object({
   // Флаги для разрешения конфликта категорий
   forceCategoryId: z.string().optional(),
   forceCreateCategory: z.boolean().optional(),
-})
+});
 
-export type QuizImport = z.infer<typeof quizImportSchema>
+export type QuizImport = z.infer<typeof quizImportSchema>;

@@ -4,7 +4,11 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSelector, useDispatch } from 'react-redux';
-import { useGetQuizzesQuery, useGetQuizByIdQuery, useCancelAttemptMutation } from '@/store/api/quizApi';
+import {
+  useGetQuizzesQuery,
+  useGetQuizByIdQuery,
+  useCancelAttemptMutation,
+} from '@/store/api/quizApi';
 import { selectQuizState, resetQuiz } from '@/store/slices/quizSlice';
 import { persistor } from '@/store/store';
 import { SearchWithDropdown } from '@/components/ui/core/SearchWithDropDown';
@@ -18,12 +22,12 @@ import { usePageHeader } from '@/hooks/usePageHeader';
 export default function HomePage() {
   const { data: quizzes = [], isLoading: isQuizzesLoading } = useGetQuizzesQuery({});
   const [cancelAttempt] = useCancelAttemptMutation();
-  
+
   const router = useRouter();
   const dispatch = useDispatch();
   const { setQuizOrigin } = useNavigationTransition();
   usePageHeader({ variant: 'main' });
-  
+
   // База правды для мгновенного UX-эффекта при загрузке — локальный Redux
   const quizState = useSelector(selectQuizState);
   const currentQuiz = quizState.currentQuiz;
@@ -35,13 +39,13 @@ export default function HomePage() {
   const [attemptStatuses, setAttemptStatuses] = useState<Record<string, any>>({});
 
   const { data: currentQuizData, isFetching: isQuizDetailsFetching } = useGetQuizByIdQuery(
-    currentQuiz?.id || '', 
-    { 
+    currentQuiz?.id || '',
+    {
       skip: !currentQuiz?.id,
-      refetchOnMountOrArgChange: true
+      refetchOnMountOrArgChange: true,
     }
   );
-  
+
   const activeAttemptId = currentQuizData?.activeAttemptId;
   const totalQuestions = currentQuizData?.questions?.length || 0;
 
@@ -71,7 +75,9 @@ export default function HomePage() {
       }
     };
     fetchStatuses();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, [shuffledQuizzes]);
 
   const cardWidth = useMemo(() => 160 + 16, []);
@@ -97,7 +103,10 @@ export default function HomePage() {
 
   // Истинный признак наличия незаконченного квиза.
   // ⚡ Важно: если идет отмена (isCancelling === true), этот флаг мгновенно падает в false!
-  const hasUnfinished = hasLocalUnfinished && !isCancelling && (isQuizDetailsFetching ? true : (currentQuizData ? !!activeAttemptId : true));
+  const hasUnfinished =
+    hasLocalUnfinished &&
+    !isCancelling &&
+    (isQuizDetailsFetching ? true : currentQuizData ? !!activeAttemptId : true);
 
   // ⚡ Фикс заголовка: "Continue?" пишется ТОЛЬКО если квиз реально есть и мы его НЕ отменяем в данный момент
   const showContinueSection = hasUnfinished;
@@ -117,10 +126,10 @@ export default function HomePage() {
     const targetAttemptId = activeAttemptId || quizState.attemptId;
 
     if (!targetAttemptId || isCancelling) return;
-    
+
     // ⚡ Мгновенно переключаем стейт. hasUnfinished станет false, заголовок сменится на "Try it"
     setIsCancelling(true);
-    
+
     try {
       await cancelAttempt(targetAttemptId).unwrap();
       dispatch(resetQuiz());
@@ -135,21 +144,17 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-(--loom-black) text-(--loom-white) pb-24 relative">
-      {isCancelling && (
-        <div className="absolute inset-0 z-50 bg-transparent cursor-not-allowed" />
-      )}
+    <div className="relative min-h-screen bg-(--loom-black) pb-24 text-(--loom-white)">
+      {isCancelling && <div className="absolute inset-0 z-50 cursor-not-allowed bg-transparent" />}
 
-      <div className="p-4 mb-2">
+      <div className="mb-2 p-4">
         <SearchWithDropdown items={quizzes} placeholder="Поиск квизов..." origin="/" />
       </div>
 
-      <div className="px-4 mb-6">
-        <div className="flex justify-between items-center mb-4">
+      <div className="mb-6 px-4">
+        <div className="mb-4 flex items-center justify-between">
           {/* ⚡ Динамический заголовок секции */}
-          <h2 className="text-lg font-bold">
-            {showContinueSection ? 'Continue?' : 'Try it'}
-          </h2>
+          <h2 className="text-lg font-bold">{showContinueSection ? 'Continue?' : 'Try it'}</h2>
         </div>
 
         {/* ⚡ НОВЫЙ ИДЕАЛЬНЫЙ СТЕК ОПРЕДЕЛЕНИЯ СКЕЛЕТОНОВ */}
@@ -171,7 +176,7 @@ export default function HomePage() {
           // Единый этаж для "Try it" блока
           <div
             ref={scrollRef}
-            className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory w-max max-w-full touch-pan-x try-it-scroll"
+            className="scrollbar-hide try-it-scroll flex w-max max-w-full touch-pan-x snap-x snap-mandatory gap-4 overflow-x-auto pb-2"
           >
             {isQuizzesLoading || isCancelling || shuffledQuizzes.length === 0 ? (
               // ⚡ Если список еще грузится ИЛИ идет процесс отмены квиза — рендерим ровный TryItSkeleton!
@@ -205,7 +210,7 @@ export default function HomePage() {
         )}
       </div>
 
-      <div className="px-4 mt-6">
+      <div className="mt-6 px-4">
         <CategoryList limit={4} />
       </div>
     </div>

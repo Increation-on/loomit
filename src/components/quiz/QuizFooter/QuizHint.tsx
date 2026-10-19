@@ -15,17 +15,13 @@ export function QuizHint({ explanation }: QuizHintProps) {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="z-50 flex items-center justify-center w-12 h-9 rounded-full bg-(--loom-cyan)/10 hover:bg-(--loom-cyan)/20 text-(--loom-cyan) text-lg transition-colors border border-(--loom-cyan)/20 shadow-lg"
+        className="z-50 flex h-9 w-12 items-center justify-center rounded-full border border-(--loom-cyan)/20 bg-(--loom-cyan)/10 text-lg text-(--loom-cyan) shadow-lg transition-colors hover:bg-(--loom-cyan)/20"
       >
         💡
       </button>
 
-      <Modal
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        title="Объяснение"
-      >
-        <p className="text-(--loom-white)/80 leading-relaxed">
+      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="Объяснение">
+        <p className="leading-relaxed text-(--loom-white)/80">
           <InlineCodeText value={explanation} />
         </p>
       </Modal>

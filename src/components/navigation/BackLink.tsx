@@ -27,7 +27,7 @@ export function BackLink({
     <button
       onClick={goBack}
       className={cn(
-        'inline-flex items-center gap-2 text-(--loom-white)/60 hover:text-(--loom-white) transition-colors active:scale-[0.98]',
+        'inline-flex items-center gap-2 text-(--loom-white)/60 transition-colors hover:text-(--loom-white) active:scale-[0.98]',
         className
       )}
     >

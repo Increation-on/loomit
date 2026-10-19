@@ -81,10 +81,7 @@ async function createAttemptWithFirstAnswer({
 // ============================================================
 // 1. GET — восстановление сессии
 // ============================================================
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: attemptId } = await params;
 
@@ -157,10 +154,7 @@ export async function GET(
 // ============================================================
 // 2. PATCH — сохранение ответа (или создание + сохранение)
 // ============================================================
-export async function PATCH(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: attemptId } = await params;
     const body = await request.json();

@@ -18,11 +18,11 @@ export default function Footer() {
   // Десктопная версия
   if (isDesktop) {
     return (
-      <footer className="border-t bg-gray-50 mt-auto">
+      <footer className="mt-auto border-t bg-gray-50">
         <div className="container mx-auto px-4 py-6">
           <div className="text-center text-sm text-gray-600">
             <p>© {new Date().getFullYear()} LoomIt. Все права защищены.</p>
-            <p className="text-xs mt-1">Создавайте и проходите квизы даже без интернета</p>
+            <p className="mt-1 text-xs">Создавайте и проходите квизы даже без интернета</p>
           </div>
         </div>
       </footer>
@@ -31,24 +31,23 @@ export default function Footer() {
 
   // Мобильная версия (Bottom Nav)
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-(--nav-bg) backdrop-blur-lg z-50 pb-safe">
-      
+    <nav className="pb-safe fixed right-0 bottom-0 left-0 z-50 bg-(--nav-bg) backdrop-blur-lg">
       {/* Глитч-линия прямо над навбаром */}
       <div className="absolute top-0 left-0 w-full px-4">
-        <img 
-          src="/glitch-line.png" 
-          alt="glitch line" 
-          className="w-full h-0.5 object-cover pointer-events-none" 
+        <img
+          src="/glitch-line.png"
+          alt="glitch line"
+          className="pointer-events-none h-0.5 w-full object-cover"
         />
       </div>
 
-      <div className="flex justify-around items-center h-16 max-w-md mx-auto relative z-10">
+      <div className="relative z-10 mx-auto flex h-16 max-w-md items-center justify-around">
         <AnimatedLink
           href="/"
-          onContextMenu={(e) => e.preventDefault()} 
+          onContextMenu={(e) => e.preventDefault()}
           className={`flex flex-col items-center gap-1 transition-all duration-100 ${
-            pathname === '/' 
-              ? 'text-(--loom-yellow)' 
+            pathname === '/'
+              ? 'text-(--loom-yellow)'
               : 'text-(--loom-white)/40 hover:text-(--loom-white)'
           } active:translate-y-1 active:text-(--loom-yellow) active:opacity-50`}
         >
@@ -58,10 +57,10 @@ export default function Footer() {
 
         <AnimatedLink
           href="/catalog"
-          onContextMenu={(e) => e.preventDefault()} 
+          onContextMenu={(e) => e.preventDefault()}
           className={`flex flex-col items-center gap-1 transition-all duration-100 ${
-            pathname === '/catalog' 
-              ? 'text-(--loom-yellow)' 
+            pathname === '/catalog'
+              ? 'text-(--loom-yellow)'
               : 'text-(--loom-white)/40 hover:text-(--loom-white)'
           } active:translate-y-1 active:text-(--loom-yellow) active:opacity-50`}
         >
@@ -71,23 +70,23 @@ export default function Footer() {
 
         <AnimatedLink
           href="/favorites"
-          onContextMenu={(e) => e.preventDefault()} 
+          onContextMenu={(e) => e.preventDefault()}
           className={`flex flex-col items-center gap-1 transition-all duration-100 ${
-            pathname === '/favorites' 
-              ? 'text-(--loom-yellow)' 
+            pathname === '/favorites'
+              ? 'text-(--loom-yellow)'
               : 'text-(--loom-white)/40 hover:text-(--loom-white)'
           } active:translate-y-1 active:text-(--loom-yellow) active:opacity-50`}
         >
           <Star size={24} />
           <span className="text-xs">Избранное</span>
         </AnimatedLink>
-        
-        <AnimatedLink 
+
+        <AnimatedLink
           href="/profile"
-          onContextMenu={(e) => e.preventDefault()} 
+          onContextMenu={(e) => e.preventDefault()}
           className={`flex flex-col items-center gap-1 transition-all duration-100 ${
-            pathname === '/profile' 
-              ? 'text-(--loom-yellow)' 
+            pathname === '/profile'
+              ? 'text-(--loom-yellow)'
               : 'text-(--loom-white)/40 hover:text-(--loom-white)'
           } active:translate-y-1 active:text-(--loom-yellow) active:opacity-50`}
         >

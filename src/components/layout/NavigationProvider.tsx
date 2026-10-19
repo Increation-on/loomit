@@ -2,13 +2,7 @@
 
 'use client';
 
-import {
-  createContext,
-  useContext,
-  useState,
-  ReactNode,
-  useEffect,
-} from 'react';
+import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 
 type NavigationContextType = {
@@ -32,21 +26,14 @@ type NoiseLine = {
   rotate: number;
 };
 
-const COLORS = [
-  'var(--loom-cyan)',
-  'var(--loom-magenta)',
-  'var(--loom-yellow)',
-];
+const COLORS = ['var(--loom-cyan)', 'var(--loom-magenta)', 'var(--loom-yellow)'];
 
 function generateNoise(): NoiseLine[] {
   return Array.from({ length: 10 }, (_, i) => ({
     id: i,
     top: 10 + Math.random() * 80,
     left: 5 + Math.random() * 80,
-    width:
-      Math.random() > 0.85
-        ? 20 + Math.random() * 10
-        : 4 + Math.random() * 12,
+    width: Math.random() > 0.85 ? 20 + Math.random() * 10 : 4 + Math.random() * 12,
     color: COLORS[Math.floor(Math.random() * COLORS.length)],
     delay: Math.random() * 0.12,
     rotate: Math.random() * 2 - 1,
@@ -55,11 +42,7 @@ function generateNoise(): NoiseLine[] {
 
 const NavigationContext = createContext<NavigationContextType | null>(null);
 
-export function NavigationProvider({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export function NavigationProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(false);
   const [noise, setNoise] = useState<NoiseLine[]>([]);
   const pathname = usePathname();
@@ -133,9 +116,7 @@ export function useNavigationTransition() {
   const ctx = useContext(NavigationContext);
 
   if (!ctx) {
-    throw new Error(
-      'useNavigationTransition must be used inside NavigationProvider'
-    );
+    throw new Error('useNavigationTransition must be used inside NavigationProvider');
   }
 
   return ctx;

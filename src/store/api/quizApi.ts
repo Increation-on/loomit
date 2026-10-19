@@ -4,7 +4,7 @@ export const quizApi = createApi({
   reducerPath: 'quizApi',
   baseQuery: fetchBaseQuery({ baseUrl: '/api' }),
   // Добавляем тег 'Attempt' для сквозной синхронизации сессий
-  tagTypes: ['Quizzes', 'Quiz', 'Attempt'], 
+  tagTypes: ['Quizzes', 'Quiz', 'Attempt'],
   endpoints: (builder) => ({
     getQuizzes: builder.query<any[], any>({
       query: () => '/quizzes',
@@ -14,10 +14,7 @@ export const quizApi = createApi({
     getQuizById: builder.query({
       query: (id: string) => `/quizzes/${id}`,
       // Хук подписывается и на сам квиз, и на статус попытки
-      providesTags: (result, error, id) => [
-        { type: 'Quiz', id },
-        'Attempt'
-      ], 
+      providesTags: (result, error, id) => [{ type: 'Quiz', id }, 'Attempt'],
     }),
     updateQuiz: builder.mutation({
       query: ({ id, ...patch }) => ({
@@ -41,9 +38,9 @@ export const quizApi = createApi({
   }),
 });
 
-export const { 
-  useGetQuizzesQuery, 
-  useGetQuizByIdQuery, 
+export const {
+  useGetQuizzesQuery,
+  useGetQuizByIdQuery,
   useUpdateQuizMutation,
-  useCancelAttemptMutation 
+  useCancelAttemptMutation,
 } = quizApi;

@@ -14,26 +14,18 @@ export function EmptyState({ title, description, icon, className }: EmptyStatePr
   return (
     <div
       className={cn(
-        'flex flex-col items-center justify-center py-16 px-4 text-center',
-        'bg-(--loom-black) glitch-border rounded-xl',
+        'flex flex-col items-center justify-center px-4 py-16 text-center',
+        'glitch-border rounded-xl bg-(--loom-black)',
         className
       )}
     >
       {icon ? (
-        <div className="text-4xl mb-4 text-(--loom-cyan)">
-          {icon}
-        </div>
+        <div className="mb-4 text-4xl text-(--loom-cyan)">{icon}</div>
       ) : (
-        <div className="text-4xl mb-4 text-(--loom-cyan)">⊘</div>
+        <div className="mb-4 text-4xl text-(--loom-cyan)">⊘</div>
       )}
-      <h2 className="text-xl font-bold text-(--loom-white) mb-2">
-        {title}
-      </h2>
-      {description && (
-        <p className="text-(--loom-white)/60 max-w-sm">
-          {description}
-        </p>
-      )}
+      <h2 className="mb-2 text-xl font-bold text-(--loom-white)">{title}</h2>
+      {description && <p className="max-w-sm text-(--loom-white)/60">{description}</p>}
     </div>
   );
 }

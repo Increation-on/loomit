@@ -7,22 +7,22 @@ export function HideScrollbar() {
   const hideNavigation = usePWA();
 
   useEffect(() => {
-  const root = document.documentElement;
-  const body = document.body;
+    const root = document.documentElement;
+    const body = document.body;
 
-  if (hideNavigation) {
-    root.classList.add('hide-scrollbar');
-    body.classList.add('hide-scrollbar');
-  } else {
-    root.classList.remove('hide-scrollbar');
-    body.classList.remove('hide-scrollbar');
-  }
+    if (hideNavigation) {
+      root.classList.add('hide-scrollbar');
+      body.classList.add('hide-scrollbar');
+    } else {
+      root.classList.remove('hide-scrollbar');
+      body.classList.remove('hide-scrollbar');
+    }
 
-  return () => {
-    root.classList.remove('hide-scrollbar');
-    body.classList.remove('hide-scrollbar');
-  };
-}, [hideNavigation]);
+    return () => {
+      root.classList.remove('hide-scrollbar');
+      body.classList.remove('hide-scrollbar');
+    };
+  }, [hideNavigation]);
 
   return null;
 }

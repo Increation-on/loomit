@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
+import { GlitchLine } from '@/components/common/GlitchLine';
 
 interface PageHeaderProps {
   title: string;
@@ -17,12 +18,12 @@ export default function PageHeader({ title, showBack = false }: PageHeaderProps)
       router.back();
     } else {
       // Фолбэк: если истории нет, ведем на главную
-      router.push('/'); 
+      router.push('/');
     }
   };
 
   return (
-    <header 
+    <header
       className="sticky top-0 z-50 flex h-12 w-full items-center px-4 backdrop-blur-sm"
       style={{
         backgroundColor: 'var(--nav-bg)',
@@ -33,7 +34,7 @@ export default function PageHeader({ title, showBack = false }: PageHeaderProps)
         {showBack && (
           <button
             onClick={handleBack}
-            className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-white/10 transition-colors -ml-2"
+            className="-ml-2 flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-white/10"
             aria-label="Назад"
           >
             <ChevronLeft className="h-6 w-6 text-(--loom-white)" />
@@ -43,22 +44,14 @@ export default function PageHeader({ title, showBack = false }: PageHeaderProps)
 
       {/* Центральная часть */}
       <div className="flex-1 text-center">
-        <h1 className="truncate text-base font-semibold text-(--loom-white)">
-          {title}
-        </h1>
+        <h1 className="truncate text-base font-semibold text-(--loom-white)">{title}</h1>
       </div>
 
       {/* Правая часть */}
       <div className="w-10 shrink-0" />
 
       {/* Глитч-полоска внизу */}
-      <div className="absolute bottom-0 left-0 w-full px-4 pointer-events-none">
-        <img
-          src="/glitch-line.png"
-          alt="glitch line"
-          className="w-full h-0.5 object-cover z-20"
-        />
-      </div>
+      <GlitchLine />
     </header>
   );
 }

@@ -23,9 +23,6 @@ export async function DELETE() {
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Failed to reset progress:', error);
-    return NextResponse.json(
-      { error: 'Failed to reset progress' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to reset progress' }, { status: 500 });
   }
 }

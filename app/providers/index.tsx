@@ -17,7 +17,7 @@ import { Session } from 'next-auth';
 
 export function Providers({
   children,
-  session
+  session,
 }: {
   children: React.ReactNode;
   session: Session | null;
@@ -60,14 +60,12 @@ export function Providers({
   return (
     <SessionProvider session={session}>
       <ReduxProvider store={store}>
-         <PersistGate 
+        <PersistGate
           loading={<div className="min-h-screen bg-(--loom-black)" />}
           persistor={persistor}
         >
           <ToastContainer>
-            <NavigationProvider>
-              {children}
-            </NavigationProvider>
+            <NavigationProvider>{children}</NavigationProvider>
           </ToastContainer>
         </PersistGate>
       </ReduxProvider>

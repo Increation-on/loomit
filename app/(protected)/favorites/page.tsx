@@ -8,10 +8,7 @@ import { Skeleton } from '@/components/ui/feedback/Skeleton';
 import { CatalogCard } from '@/components/cards/CatalogCard';
 import { pluralize } from '@/lib/utils';
 
-import {
-  useGetFavoritesQuery,
-  useToggleFavoriteMutation,
-} from '@/store/api/favoritesApi';
+import { useGetFavoritesQuery, useToggleFavoriteMutation } from '@/store/api/favoritesApi';
 import { useGetStatusesQuery } from '@/store/api/attemptsApi';
 import { usePageHeader } from '@/hooks/usePageHeader';
 
@@ -24,10 +21,7 @@ export default function FavoritesPage() {
 
   const [toggleFavorite] = useToggleFavoriteMutation();
 
-  const quizIds = useMemo(
-    () => favorites.map((fav) => fav.quiz.id),
-    [favorites]
-  );
+  const quizIds = useMemo(() => favorites.map((fav) => fav.quiz.id), [favorites]);
 
   const { data: attemptStatuses = {} } = useGetStatusesQuery(quizIds, {});
 
@@ -35,8 +29,8 @@ export default function FavoritesPage() {
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen bg-(--loom-black) text-(--loom-white) pb-24 px-4 pt-6">
-        <h1 className="text-2xl font-bold mb-6">Избранное</h1>
+      <div className="min-h-screen bg-(--loom-black) px-4 pt-6 pb-24 text-(--loom-white)">
+        <h1 className="mb-6 text-2xl font-bold">Избранное</h1>
         <Skeleton className="h-32 w-full rounded-xl" />
       </div>
     );
@@ -44,27 +38,27 @@ export default function FavoritesPage() {
 
   if (!session) {
     return (
-      <div className="min-h-screen bg-(--loom-black) text-(--loom-white) flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-(--loom-white)/5 rounded-2xl p-8 glitch-border text-center space-y-4">
-          <div className="text-6xl mb-4">⭐</div>
+      <div className="flex min-h-screen items-center justify-center bg-(--loom-black) p-4 text-(--loom-white)">
+        <div className="glitch-border w-full max-w-md space-y-4 rounded-2xl bg-(--loom-white)/5 p-8 text-center">
+          <div className="mb-4 text-6xl">⭐</div>
 
           <h2 className="text-2xl font-bold">Избранное доступно только авторизованным</h2>
 
-          <p className="text-(--loom-white)/60 text-sm">
+          <p className="text-sm text-(--loom-white)/60">
             Войдите или зарегистрируйтесь, чтобы сохранять квизы и возвращаться к ним позже.
           </p>
 
           <div className="flex flex-col gap-3 pt-4">
             <a
               href="/login"
-              className="w-full py-3 px-4 bg-(--loom-yellow) text-(--loom-black) font-semibold rounded-xl hover:opacity-90 transition text-center"
+              className="w-full rounded-xl bg-(--loom-yellow) px-4 py-3 text-center font-semibold text-(--loom-black) transition hover:opacity-90"
             >
               Войти
             </a>
 
             <a
               href="/register"
-              className="w-full py-3 px-4 bg-(--loom-white)/10 text-(--loom-white) rounded-xl hover:bg-(--loom-white)/20 transition text-center border border-(--loom-white)/20"
+              className="w-full rounded-xl border border-(--loom-white)/20 bg-(--loom-white)/10 px-4 py-3 text-center text-(--loom-white) transition hover:bg-(--loom-white)/20"
             >
               Зарегистрироваться
             </a>
@@ -76,10 +70,10 @@ export default function FavoritesPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-(--loom-black) text-(--loom-white) pb-24 px-4 pt-6">
-        <h1 className="text-2xl font-bold mb-6">Избранное</h1>
+      <div className="min-h-screen bg-(--loom-black) px-4 pt-6 pb-24 text-(--loom-white)">
+        <h1 className="mb-6 text-2xl font-bold">Избранное</h1>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {[1, 2, 3, 4].map((i) => (
             <Skeleton key={i} className="h-32 w-full rounded-xl" />
           ))}
@@ -90,8 +84,8 @@ export default function FavoritesPage() {
 
   if (favorites.length === 0) {
     return (
-      <div className="min-h-screen bg-(--loom-black) text-(--loom-white) pb-24 px-4 pt-6">
-        <h1 className="text-2xl font-bold mb-6">Избранное</h1>
+      <div className="min-h-screen bg-(--loom-black) px-4 pt-6 pb-24 text-(--loom-white)">
+        <h1 className="mb-6 text-2xl font-bold">Избранное</h1>
 
         <EmptyState
           title="Нет избранных квизов"
@@ -102,8 +96,8 @@ export default function FavoritesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-(--loom-black) text-(--loom-white) pb-24 px-4 pt-6">
-      <div className="flex justify-between items-center mb-6">
+    <div className="min-h-screen bg-(--loom-black) px-4 pt-6 pb-24 text-(--loom-white)">
+      <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Избранное</h1>
 
         <span className="text-sm text-(--loom-white)/60">
@@ -111,7 +105,7 @@ export default function FavoritesPage() {
         </span>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {favorites.map((fav) => (
           <CatalogCard
             key={fav.quiz.id}
@@ -119,7 +113,7 @@ export default function FavoritesPage() {
             lastAttempt={attemptStatuses[fav.quiz.id]}
             showFavorite
             isFavorited={true}
-            origin="/favorites" 
+            origin="/favorites"
             onFavoriteToggle={() =>
               toggleFavorite({
                 quizId: fav.quiz.id,

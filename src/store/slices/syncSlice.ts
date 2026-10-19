@@ -28,9 +28,7 @@ const syncSlice = createSlice({
       state.pendingActions.push(action.payload);
     },
     removePendingAction(state, action: PayloadAction<string>) {
-      state.pendingActions = state.pendingActions.filter(
-        (item) => item.id !== action.payload
-      );
+      state.pendingActions = state.pendingActions.filter((item) => item.id !== action.payload);
     },
     clearQueue(state) {
       state.pendingActions = [];
@@ -41,7 +39,7 @@ const syncSlice = createSlice({
   },
 });
 
-export const { addPendingAction, removePendingAction, clearQueue, setSyncStatus  } =
+export const { addPendingAction, removePendingAction, clearQueue, setSyncStatus } =
   syncSlice.actions;
 
 const RETRY_DELAYS = [1000, 2000, 4000];

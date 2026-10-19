@@ -16,12 +16,5 @@ export function FormField({ name, label, ...props }: FormFieldProps) {
 
   const error = errors[name]?.message as string | undefined;
 
-  return (
-    <Input
-      label={label}
-      error={error}
-      {...register(name)}
-      {...props}
-    />
-  );
+  return <Input label={label} error={error} {...register(name)} {...props} />;
 }

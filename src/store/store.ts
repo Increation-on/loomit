@@ -1,5 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from 'redux-persist';
 import { attemptsApi } from './api/attemptsApi';
 import { quizApi } from './api/quizApi';
 import { categoryApi } from './api/categoryApi';
@@ -11,8 +20,6 @@ import idbStorage from '@/lib/idbStorage';
 import { useDispatch } from 'react-redux';
 import { offlineMiddleware } from './middleware/offlineMiddleware';
 import { profileApi } from './api/profileApi';
-
-
 
 const quizPersistConfig = {
   key: 'quiz',
@@ -36,9 +43,9 @@ export const store = configureStore({
     header: headerReducer,
     [attemptsApi.reducerPath]: attemptsApi.reducer,
     [quizApi.reducerPath]: quizApi.reducer,
-    [categoryApi.reducerPath] : categoryApi.reducer,
+    [categoryApi.reducerPath]: categoryApi.reducer,
     [profileApi.reducerPath]: profileApi.reducer,
-    [favoritesApi.reducerPath]: favoritesApi.reducer
+    [favoritesApi.reducerPath]: favoritesApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -51,7 +58,7 @@ export const store = configureStore({
       .concat(offlineMiddleware)
       .concat(profileApi.middleware)
       .concat(categoryApi.middleware)
-      .concat(favoritesApi.middleware)
+      .concat(favoritesApi.middleware),
 });
 
 export const persistor = persistStore(store);

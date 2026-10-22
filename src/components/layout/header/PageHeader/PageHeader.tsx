@@ -1,8 +1,10 @@
+// src/components/layout/header/PageHeader/PageHeader.tsx
 'use client';
 
 import { useRouter } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
 import { GlitchLine } from '@/components/common/GlitchLine';
+import { useNavigationTransition } from '@/components/layout/NavigationProvider';
 
 interface PageHeaderProps {
   title: string;
@@ -11,25 +13,40 @@ interface PageHeaderProps {
 
 export default function PageHeader({ title, showBack = false }: PageHeaderProps) {
   const router = useRouter();
+  
+  // Достаем контекст квиза
+  const { 
+    quizOrigin, 
+    attemptReturnTo, 
+    clearQuizOrigin, 
+    clearAttemptReturnTo, 
+    startGlitchTransition 
+  } = useNavigationTransition();
 
   const handleBack = () => {
-    // Проверяем, есть ли история для возврата
-    if (window.history.length > 1) {
-      router.back();
+    startGlitchTransition();
+    
+    // Та же самая умная логика, что и в BackLink
+    if (attemptReturnTo) {
+      router.push(attemptReturnTo);
+      clearAttemptReturnTo();
+    } else if (quizOrigin) {
+      router.push(quizOrigin);
+      clearQuizOrigin();
     } else {
-      // Фолбэк: если истории нет, ведем на главную
-      router.push('/');
+      if (window.history.length > 1) {
+        router.back();
+      } else {
+        router.push('/');
+      }
     }
   };
 
   return (
     <header
       className="sticky top-0 z-50 flex h-12 w-full items-center px-4 backdrop-blur-sm"
-      style={{
-        backgroundColor: 'var(--nav-bg)',
-      }}
+      style={{ backgroundColor: 'var(--nav-bg)' }}
     >
-      {/* Левая часть */}
       <div className="flex w-10 shrink-0 items-center justify-start">
         {showBack && (
           <button
@@ -42,15 +59,12 @@ export default function PageHeader({ title, showBack = false }: PageHeaderProps)
         )}
       </div>
 
-      {/* Центральная часть */}
       <div className="flex-1 text-center">
         <h1 className="truncate text-base font-semibold text-(--loom-white)">{title}</h1>
       </div>
 
-      {/* Правая часть */}
       <div className="w-10 shrink-0" />
-
-      {/* Глитч-полоска внизу */}
+      
       <GlitchLine />
     </header>
   );

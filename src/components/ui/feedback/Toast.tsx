@@ -55,12 +55,14 @@ export function Toast({ message, type, duration = 4000, onClose }: ToastProps) {
       )}
     >
       <span className={cn('text-lg font-bold', colorMap[type])}>{iconMap[type]}</span>
-      <span className="min-w-0 flex-1 wrap-break-word text-sm text-center text-(--loom-white) line-clamp-6">
+      <span className="min-w-0 flex-1 wrap-break-word text-sm text-left text-(--loom-white) line-clamp-6">
         {message}
       </span>
       <button
         type="button"
-        onClick={() => setIsVisible(false)}
+        onClick={() => {
+          if (isVisible) setIsVisible(false);
+        }}
         aria-label="Закрыть уведомление"
         className="grid h-8 w-8 shrink-0 place-items-center rounded-md text-(--loom-white)/60 transition-colors hover:bg-white/10 hover:text-(--loom-white) focus-visible:outline-2 focus-visible:outline-(--loom-cyan)"
       >

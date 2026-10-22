@@ -3,7 +3,8 @@
 import { useRouter } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useNavigationTransition } from '@/components/layout/NavigationProvider';
+import { useNavigationTransition } from '../layout/NavigationProvider';
+
 
 interface BackLinkProps {
   fallback?: string;
@@ -22,7 +23,6 @@ export function BackLink({
 }: BackLinkProps) {
   const router = useRouter();
   
-  // Достаем контекст квиза напрямую из провайдера
   const { 
     quizOrigin, 
     attemptReturnTo, 
@@ -34,7 +34,7 @@ export function BackLink({
   const handleBack = () => {
     startGlitchTransition();
 
-    // 1. Если мы в контексте квиза (умный возврат)
+    // 1. Умный возврат для квизов
     if (attemptReturnTo) {
       router.push(attemptReturnTo);
       clearAttemptReturnTo();
@@ -42,11 +42,13 @@ export function BackLink({
       router.push(quizOrigin);
       clearQuizOrigin();
     } else {
-      // 2. Обычный возврат для всех остальных страниц
-      if (window.history.length > 1) {
+      // 2. Проверяем, есть ли внутренняя история Next.js (idx > 0)
+      const hasInternalHistory = typeof window !== 'undefined' && window.history.state?.idx > 0;
+      
+      if (hasInternalHistory) {
         router.back();
       } else {
-        router.push(fallback);
+        router.push(fallback || '/');
       }
     }
   };

@@ -1,10 +1,9 @@
-// src/components/layout/header/PageHeader/PageHeader.tsx
 'use client';
 
 import { useRouter } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
 import { GlitchLine } from '@/components/common/GlitchLine';
-import { useNavigationTransition } from '@/components/layout/NavigationProvider';
+import { useNavigationTransition } from '../../NavigationProvider';
 
 interface PageHeaderProps {
   title: string;
@@ -13,8 +12,6 @@ interface PageHeaderProps {
 
 export default function PageHeader({ title, showBack = false }: PageHeaderProps) {
   const router = useRouter();
-  
-  // Достаем контекст квиза
   const { 
     quizOrigin, 
     attemptReturnTo, 
@@ -26,7 +23,6 @@ export default function PageHeader({ title, showBack = false }: PageHeaderProps)
   const handleBack = () => {
     startGlitchTransition();
     
-    // Та же самая умная логика, что и в BackLink
     if (attemptReturnTo) {
       router.push(attemptReturnTo);
       clearAttemptReturnTo();
@@ -34,7 +30,10 @@ export default function PageHeader({ title, showBack = false }: PageHeaderProps)
       router.push(quizOrigin);
       clearQuizOrigin();
     } else {
-      if (window.history.length > 1) {
+      // Проверяем, есть ли внутренняя история Next.js
+      const hasInternalHistory = typeof window !== 'undefined' && window.history.state?.idx > 0;
+      
+      if (hasInternalHistory) {
         router.back();
       } else {
         router.push('/');

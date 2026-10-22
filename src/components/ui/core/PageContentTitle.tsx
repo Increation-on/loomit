@@ -25,7 +25,7 @@ export function PageContentTitle({
   return (
     <div className={`mb-6 flex flex-col gap-3 ${className || ''}`}>
       {showBack && <BackLink fallback={fallback} />}
-      <h1 className="font-display text-2xl font-bold text-(--loom-white) sm:text-3xl">
+      <h1 className="font-display text-2xl font-bold text-(--loom-white) sm:text-3xl text-center">
         {title}
       </h1>
     </div>

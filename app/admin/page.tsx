@@ -106,7 +106,7 @@ export default function AdminDashboard() {
       {/* Умный заголовок (скроется в PWA) */}
       <PageContentTitle 
         title="Управление квизами" 
-        showBack={false} 
+        showBack 
         className="mb-6" 
       />
 

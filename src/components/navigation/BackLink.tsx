@@ -1,10 +1,9 @@
-// src/components/ui/core/BackLink.tsx
-
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useQuizReturn } from '@/hooks/useQuizReturn';
+import { useNavigationTransition } from '@/components/layout/NavigationProvider';
 
 interface BackLinkProps {
   fallback?: string;
@@ -21,11 +20,40 @@ export function BackLink({
   iconSize = 22,
   children,
 }: BackLinkProps) {
-  const { goBack } = useQuizReturn(fallback);
+  const router = useRouter();
+  
+  // Достаем контекст квиза напрямую из провайдера
+  const { 
+    quizOrigin, 
+    attemptReturnTo, 
+    clearQuizOrigin, 
+    clearAttemptReturnTo, 
+    startGlitchTransition 
+  } = useNavigationTransition();
+
+  const handleBack = () => {
+    startGlitchTransition();
+
+    // 1. Если мы в контексте квиза (умный возврат)
+    if (attemptReturnTo) {
+      router.push(attemptReturnTo);
+      clearAttemptReturnTo();
+    } else if (quizOrigin) {
+      router.push(quizOrigin);
+      clearQuizOrigin();
+    } else {
+      // 2. Обычный возврат для всех остальных страниц
+      if (window.history.length > 1) {
+        router.back();
+      } else {
+        router.push(fallback);
+      }
+    }
+  };
 
   return (
     <button
-      onClick={goBack}
+      onClick={handleBack}
       className={cn(
         'inline-flex items-center gap-2 text-(--loom-white)/60 transition-colors hover:text-(--loom-white) active:scale-[0.98]',
         className

@@ -5,18 +5,15 @@ import { Button } from '@/components/ui/core/Button';
 import { useEffect } from 'react';
 
 export default function NotFound() {
-
-   useEffect(() => {
+  useEffect(() => {
     document.documentElement.classList.add('quiz-hide-layout');
-    
-    // Убираем класс, когда уходим со страницы
     return () => {
       document.documentElement.classList.remove('quiz-hide-layout');
     };
   }, []);
 
   return (
-   <div className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden px-4 text-center">
+    <div className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden px-4 text-center">
       
       {/* Фоновый глитч-сканлайн */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-30">
@@ -24,10 +21,8 @@ export default function NotFound() {
         <div className="absolute left-0 h-px w-full bg-(--loom-magenta) animate-scanline shadow-[0_0_10px_var(--loom-magenta)]" style={{ animationDelay: '1.5s' }} />
       </div>
 
-      {/* 
-        404 с постоянным глитч-эффектом и градиентом.
-        Классы glitch-number и glitch-layer описаны в globals.css ниже.
-      */}
+      {/* 404 с постоянным глитч-эффектом и градиентом. */}
+      {/* Классы animate-glitch-cyan и animate-glitch-magenta описаны в globals.css */}
       <div className="relative mb-6 select-none animate-glitch-float">
         <h1 
           className="font-display text-[120px] font-black leading-none tracking-tighter gradient-text drop-shadow-[0_0_15px_rgba(0,255,255,0.3)] sm:text-[180px]" 
@@ -36,15 +31,15 @@ export default function NotFound() {
           404
         </h1>
         
-        {/* Цветные слои для глитча (постоянно двигаются) */}
+        {/* Цветные слои для глитча (добавлен text-center и w-full) */}
         <span 
-          className="absolute inset-0 text-[120px] font-black leading-none tracking-tighter text-(--loom-cyan) mix-blend-screen animate-glitch-cyan sm:text-[180px]" 
+          className="absolute inset-0 w-full text-center text-[120px] font-black leading-none tracking-tighter text-(--loom-cyan) mix-blend-screen animate-glitch-cyan sm:text-[180px]" 
           aria-hidden="true"
         >
           404
         </span>
         <span 
-          className="absolute inset-0 text-[120px] font-black leading-none tracking-tighter text-(--loom-magenta) mix-blend-screen animate-glitch-magenta sm:text-[180px]" 
+          className="absolute inset-0 w-full text-center text-[120px] font-black leading-none tracking-tighter text-(--loom-magenta) mix-blend-screen animate-glitch-magenta sm:text-[180px]" 
           aria-hidden="true"
         >
           404
@@ -60,15 +55,16 @@ export default function NotFound() {
         Давай вернёмся к тому, что точно работает.
       </p>
 
-      <div className="flex w-full flex-col gap-4 sm:w-auto sm:flex-row">
-        <Link href="/" className="w-full sm:w-auto">
-          <Button variant="glitch" size="lg" className="w-[60vw]">
+      {/* Обертка для кнопок: flex-1 на ссылках, чтобы кнопки были одинаковыми */}
+      <div className="flex w-full max-w-70 flex-col gap-4 sm:max-w-none sm:w-auto sm:flex-row">
+        <Link href="/" className="w-full sm:w-auto sm:flex-1">
+          <Button variant="glitch" size="lg" className="w-full">
             На главную
           </Button>
         </Link>
         
-        <Link href="/catalog" className="w-full sm:w-auto">
-          <Button variant="outline" size="lg" className="w-[60vw]">
+        <Link href="/catalog" className="w-full sm:w-auto sm:flex-1">
+          <Button variant="outline" size="lg" className="w-full">
             В каталог
           </Button>
         </Link>

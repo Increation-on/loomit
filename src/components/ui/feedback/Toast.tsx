@@ -9,7 +9,7 @@ export type ToastType = 'success' | 'error' | 'info' | 'warning';
 interface ToastProps {
   message: string;
   type: ToastType;
-  duration?: number;
+  duration?: number | null;
   onClose: () => void;
 }
 
@@ -27,30 +27,47 @@ const colorMap = {
   warning: 'text-(--loom-yellow)',
 };
 
-export function Toast({ message, type, duration = 3000, onClose }: ToastProps) {
+export function Toast({ message, type, duration = 4000, onClose }: ToastProps) {
   const [isVisible, setIsVisible] = useState(true);
 
+  // Автоскрытие: таймер живёт, пока тост видим
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsVisible(false);
-      setTimeout(onClose, 300);
-    }, duration);
-
+    if (!isVisible || !duration) return;
+    const timer = setTimeout(() => setIsVisible(false), duration);
     return () => clearTimeout(timer);
-  }, [duration, onClose]);
+  }, [duration, isVisible]);
+
+  // Удаление после анимации исчезновения
+  useEffect(() => {
+    if (isVisible) return;
+    const timer = setTimeout(onClose, 300);
+    return () => clearTimeout(timer);
+  }, [isVisible, onClose]);
 
   return (
     <div
+      role={type === 'error' || type === 'warning' ? 'alert' : 'status'}
       className={cn(
-        'fixed right-4 bottom-4 z-50 flex items-center gap-3 rounded-xl px-4 py-3 shadow-lg',
+        'flex w-full items-center gap-3 rounded-xl px-4 py-3 shadow-lg',
         'glitch-border bg-(--loom-black)',
         'animate-slide-up transition-all duration-300',
         !isVisible && 'translate-y-2 opacity-0'
       )}
-      role="alert"
     >
       <span className={cn('text-lg font-bold', colorMap[type])}>{iconMap[type]}</span>
-      <span className="text-sm text-(--loom-white)">{message}</span>
+      <span className="min-w-0 flex-1 wrap-break-word text-sm text-left text-(--loom-white) line-clamp-6">
+        {message}
+      </span>
+      <button
+        type="button"
+        onClick={() => {
+          if (isVisible) setIsVisible(false);
+        }}
+        aria-label="Закрыть уведомление"
+        className="grid h-8 w-8 shrink-0 place-items-center rounded-md text-(--loom-white)/60 transition-colors hover:bg-white/10 hover:text-(--loom-white) focus-visible:outline-2 focus-visible:outline-(--loom-cyan)"
+      >
+        ×
+      </button>
     </div>
   );
 }

@@ -8,8 +8,8 @@ import { useGetQuizByIdQuery } from '@/store/api/quizApi';
 import { Check, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
-import { BackLink } from '@/components/navigation/BackLink';
 import { usePageHeader } from '@/hooks/usePageHeader';
+import { PageContentTitle } from '@/components/ui/core/PageContentTitle';
 
 export default function AttemptDetailPage() {
   const params = useParams();
@@ -56,10 +56,15 @@ export default function AttemptDetailPage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-8 p-6 pb-24">
-      <BackLink fallback="/profile/history" />
+      
+      <PageContentTitle 
+        title={attempt.quizTitle || 'Разбор ответов'} 
+        showBack={true} 
+        fallback="/profile/history"
+        className="mb-4" // Убрали лишние отступы, чтобы статистика была ближе
+      />
 
       <div>
-        <h1 className="mb-2 text-2xl font-bold text-(--loom-white)">{attempt.quizTitle}</h1>
         <div className="flex flex-wrap gap-4 text-(--loom-white)/60">
           <span>
             Результат:{' '}

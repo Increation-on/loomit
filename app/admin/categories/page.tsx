@@ -1,17 +1,27 @@
+// app/admin/categories/page.tsx
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
 import { useToast } from '@/components/ui/feedback/ToastContainer';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
-import { BackLink } from '@/components/navigation/BackLink';
 import { CategoryForm } from '@/components/admin/categories/CategoryForm';
 import { CategoryList } from '@/components/admin/categories/CategoryList';
 import { useGetCategoriesQuery, useCreateCategoryMutation } from '@/store/api/categoryApi';
+import { usePageHeader } from '@/hooks/usePageHeader';
+import { PageContentTitle } from '@/components/ui/core/PageContentTitle';
 
 export default function CategoriesPage() {
   const { data: categories = [], isLoading } = useGetCategoriesQuery();
   const [createCategory, { isLoading: isCreating }] = useCreateCategoryMutation();
   const { success, error: showError } = useToast();
+
+  // 1. Добавляем умный хедер для PWA
+  usePageHeader({ 
+    variant: 'nested', 
+    title: 'Управление категориями', 
+    showBack: true 
+  });
 
   const handleAddCategory = async (name: string, iconFile: File | null) => {
     try {
@@ -63,11 +73,13 @@ export default function CategoriesPage() {
 
   return (
     <div className="mx-auto max-w-2xl p-4 pb-24">
-      <div className="mt-2 mb-2">
-        <BackLink fallback="/admin" className="mb-4" />
-      </div>
-
-      <h1 className="mb-6 text-2xl font-bold text-(--loom-white)">Управление категориями</h1>
+      
+      <PageContentTitle 
+        title="Управление категориями" 
+        showBack={true} 
+        fallback="/admin" 
+        className="mt-2 mb-6" 
+      />
 
       <CategoryForm onAdd={handleAddCategory} isLoading={isCreating} />
       <CategoryList categories={categories} />

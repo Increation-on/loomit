@@ -13,11 +13,11 @@ import { Button } from '@/components/ui/core/Button';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
 import { cn } from '@/lib/utils';
 import { StarButton } from '@/components/ui/core/StarButton';
-import { BackLink } from '@/components/navigation/BackLink';
 import { useQuizFontSize } from '@/hooks/useQuizFontSize';
 import { Modal } from '@/components/ui/feedback/Modal';
 import { resetQuiz } from '@/store/slices/quizSlice';
 import { usePageHeader } from '@/hooks/usePageHeader';
+import { PageContentTitle } from '@/components/ui/core/PageContentTitle';
 
 export default function QuizPreviewPage() {
   const params = useParams();
@@ -68,7 +68,6 @@ export default function QuizPreviewPage() {
     } else if (quiz.otherAttempt) {
       setIsOtherModalOpen(true);
     } else {
-      // ✅ Сброс Redux перед переходом
       dispatch(resetQuiz());
       router.push(`/quiz/${id}`);
     }
@@ -139,8 +138,14 @@ export default function QuizPreviewPage() {
 
   return (
     <div className="flex min-h-[80vh] flex-col p-4">
-      <div className="mt-3 w-full max-w-md">
-        <BackLink fallback="/catalog" />
+      
+      <div className="w-full max-w-md">
+        <PageContentTitle 
+          title="Предпросмотр квиза" 
+          showBack={true} 
+          fallback="/catalog" 
+          className="mt-3 mb-0" 
+        />
       </div>
 
       <div className="flex flex-1 items-center justify-center">

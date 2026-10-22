@@ -11,6 +11,7 @@ import { pluralize } from '@/lib/utils';
 import { useGetFavoritesQuery, useToggleFavoriteMutation } from '@/store/api/favoritesApi';
 import { useGetStatusesQuery } from '@/store/api/attemptsApi';
 import { usePageHeader } from '@/hooks/usePageHeader';
+import { PageContentTitle } from '@/components/ui/core/PageContentTitle';
 
 export default function FavoritesPage() {
   const { data: session, status } = useSession();
@@ -30,7 +31,7 @@ export default function FavoritesPage() {
   if (status === 'loading') {
     return (
       <div className="min-h-screen bg-(--loom-black) px-4 pt-6 pb-24 text-(--loom-white)">
-        <h1 className="mb-6 text-2xl font-bold">Избранное</h1>
+        <PageContentTitle title="Избранное" showBack={false} className="mb-6" />
         <Skeleton className="h-32 w-full rounded-xl" />
       </div>
     );
@@ -71,7 +72,7 @@ export default function FavoritesPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-(--loom-black) px-4 pt-6 pb-24 text-(--loom-white)">
-        <h1 className="mb-6 text-2xl font-bold">Избранное</h1>
+        <PageContentTitle title="Избранное" showBack={false} className="mb-6" />
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {[1, 2, 3, 4].map((i) => (
@@ -85,7 +86,7 @@ export default function FavoritesPage() {
   if (favorites.length === 0) {
     return (
       <div className="min-h-screen bg-(--loom-black) px-4 pt-6 pb-24 text-(--loom-white)">
-        <h1 className="mb-6 text-2xl font-bold">Избранное</h1>
+        <PageContentTitle title="Избранное" showBack={false} className="mb-6" />
 
         <EmptyState
           title="Нет избранных квизов"
@@ -97,9 +98,10 @@ export default function FavoritesPage() {
 
   return (
     <div className="min-h-screen bg-(--loom-black) px-4 pt-6 pb-24 text-(--loom-white)">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Избранное</h1>
-
+      
+      {/* Заголовок со счетчиком */}
+      <div className="mb-6 flex flex-col gap-1">
+        <PageContentTitle title="Избранное" showBack={false} className="mb-0" />
         <span className="text-sm text-(--loom-white)/60">
           {favorites.length} {pluralize(favorites.length, 'квиз', 'квиза', 'квизов')}
         </span>

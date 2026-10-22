@@ -16,6 +16,7 @@ import { Skeleton, AdminQuizRowSkeleton } from '@/components/ui/feedback/Skeleto
 import { useNavigationTransition } from '@/components/layout/NavigationProvider';
 import { useRouter } from 'next/navigation';
 import { usePageHeader } from '@/hooks/usePageHeader';
+import { PageContentTitle } from '@/components/ui/core/PageContentTitle';
 
 export default function AdminDashboard() {
   const {
@@ -101,22 +102,32 @@ export default function AdminDashboard() {
 
   return (
     <div className="mx-auto max-w-4xl p-4 pb-24">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-(--loom-white)">Управление квизами</h1>
-        <Link href="/admin/quiz/new">
-          <Button variant="glitch">
-            <Plus size={16} className="mr-2" />
-            Создать квиз
-          </Button>
-        </Link>
-      </div>
+      
+      {/* Умный заголовок (скроется в PWA) */}
+      <PageContentTitle 
+        title="Управление квизами" 
+        showBack={false} 
+        className="mb-6" 
+      />
 
-      <div className="mb-6">
-        <Link href="/admin/categories">
-          <Button variant="secondary" size="sm">
+      {/* Контейнер для кнопок в один ряд */}
+      <div className="mb-6 flex w-full items-stretch gap-2 sm:gap-3">
+        
+        {/* Кнопка "Управление категориями" */}
+        <Link href="/admin/categories" className="flex-1">
+          <Button variant="secondary" className="w-full px-2 text-xs sm:text-sm">
             Управление категориями
           </Button>
         </Link>
+
+        {/* Кнопка "Создать квиз" */}
+        <Link href="/admin/quiz/new" className="flex-1">
+          <Button variant="glitch" className="w-full px-2 text-xs sm:text-sm">
+            <Plus size={16} className="mr-1 shrink-0" />
+            Создать квиз
+          </Button>
+        </Link>
+        
       </div>
 
       <Filters

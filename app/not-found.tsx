@@ -1,14 +1,27 @@
+'use client';
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/core/Button';
+import { useEffect } from 'react';
 
 export default function NotFound() {
+
+   useEffect(() => {
+    document.documentElement.classList.add('quiz-hide-layout');
+    
+    // Убираем класс, когда уходим со страницы
+    return () => {
+      document.documentElement.classList.remove('quiz-hide-layout');
+    };
+  }, []);
+
   return (
-    <div className="relative flex min-h-[calc(100dvh-120px)] flex-col items-center justify-center overflow-hidden px-4 text-center">
+   <div className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden px-4 text-center">
       
       {/* Фоновый глитч-сканлайн */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-30">
-        <div className="absolute left-0 h-[2px] w-full bg-(--loom-cyan) animate-scanline shadow-[0_0_10px_var(--loom-cyan)]" />
-        <div className="absolute left-0 h-[1px] w-full bg-(--loom-magenta) animate-scanline shadow-[0_0_10px_var(--loom-magenta)]" style={{ animationDelay: '1.5s' }} />
+        <div className="absolute left-0 h-0.5 w-full bg-(--loom-cyan) animate-scanline shadow-[0_0_10px_var(--loom-cyan)]" />
+        <div className="absolute left-0 h-px w-full bg-(--loom-magenta) animate-scanline shadow-[0_0_10px_var(--loom-magenta)]" style={{ animationDelay: '1.5s' }} />
       </div>
 
       {/* 
@@ -49,13 +62,13 @@ export default function NotFound() {
 
       <div className="flex w-full flex-col gap-4 sm:w-auto sm:flex-row">
         <Link href="/" className="w-full sm:w-auto">
-          <Button variant="glitch" size="lg" className="w-full">
+          <Button variant="glitch" size="lg" className="w-[60vw]">
             На главную
           </Button>
         </Link>
         
         <Link href="/catalog" className="w-full sm:w-auto">
-          <Button variant="outline" size="lg" className="w-full">
+          <Button variant="outline" size="lg" className="w-[60vw]">
             В каталог
           </Button>
         </Link>

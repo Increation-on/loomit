@@ -8,6 +8,8 @@ import { Skeleton } from '@/components/ui/feedback/Skeleton';
 import { useNavigationTransition } from '@/components/layout/NavigationProvider';
 import { useRouter } from 'next/navigation';
 import { usePageHeader } from '@/hooks/usePageHeader';
+import { PageContentTitle } from '@/components/ui/core/PageContentTitle';
+import { usePWA } from '@/hooks/usePWA';
 
 export default function ProfilePage() {
   const { data: session } = useSession();
@@ -16,6 +18,7 @@ export default function ProfilePage() {
   const isAdmin = session?.user?.role === 'admin';
   const date = new Date().toLocaleDateString('ru-RU');
   const router = useRouter();
+  const isPWA = usePWA();
 
   const { data: stats, isLoading: statsLoading } = useGetStatsQuery(
     {},
@@ -32,14 +35,35 @@ export default function ProfilePage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-8 p-6 pb-24">
+      
       {/* 1. Приветствие */}
       <div>
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-(--loom-white)">Профиль</h1>
-        </div>
-        <p className="mt-2 text-(--loom-white)/60">
-          Привет, <span className="text-(--loom-yellow)">{userName}</span>! Сегодня {date}
-        </p>
+        {/* В PWA заголовок скроется (он есть в нативном хедере), в браузере покажется по центру */}
+        <PageContentTitle 
+          title="Профиль" 
+          showBack={false} 
+          className="mb-4" 
+        />
+
+        {isPWA ? (
+          /* --- ВАРИАНТ ДЛЯ PWA (как на рисунке) --- */
+          <div className="flex items-center justify-between rounded-2xl bg-(--loom-white)/5 p-4">
+            <div>
+              <p className="text-lg font-medium text-(--loom-white)">
+                Привет, <span className="text-(--loom-yellow)">{userName}</span>!
+              </p>
+              <p className="text-sm text-(--loom-white)/60">сегодня {date}</p>
+            </div>
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-(--loom-magenta) text-lg font-bold text-white shadow-lg">
+              {userName.charAt(0).toUpperCase()}
+            </div>
+          </div>
+        ) : (
+          /* --- ВАРИАНТ ДЛЯ БРАУЗЕРА (как было) --- */
+          <p className="mt-2 text-(--loom-white)/60">
+            Привет, <span className="text-(--loom-yellow)">{userName}</span>! Сегодня {date}
+          </p>
+        )}
       </div>
 
       {/* 2. Статистика */}

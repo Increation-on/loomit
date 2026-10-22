@@ -13,6 +13,7 @@ import { SearchWithDropdown } from '@/components/ui/core/SearchWithDropDown';
 import { Skeleton, CatalogCardSkeleton } from '@/components/ui/feedback/Skeleton';
 import { CatalogCard } from '@/components/cards/CatalogCard';
 import { usePageHeader } from '@/hooks/usePageHeader';
+import { PageContentTitle } from '@/components/ui/core/PageContentTitle';
 
 export default function CatalogPage() {
   const searchParams = useSearchParams();
@@ -75,7 +76,12 @@ export default function CatalogPage() {
   if (quizzesLoading) {
     return (
       <div className="min-h-screen bg-(--loom-black) px-4 pt-6 pb-24 text-(--loom-white)">
-        <h1 className="mb-6 text-2xl font-bold">Каталог квизов</h1>
+        
+        <PageContentTitle 
+          title="Каталог квизов" 
+          showBack={false} 
+          className="mb-6" 
+        />
 
         <Skeleton className="h-12 w-full rounded-xl" />
 
@@ -96,7 +102,12 @@ export default function CatalogPage() {
 
   return (
     <div className="min-h-screen bg-(--loom-black) px-4 pt-6 pb-24 text-(--loom-white)">
-      <h1 className="mb-6 text-2xl font-bold">Каталог квизов</h1>
+      
+      <PageContentTitle 
+        title="Каталог квизов" 
+        showBack={false} 
+        className="mb-6" 
+      />
 
       <div className="relative mb-6">
         <SearchWithDropdown items={quizzes || []} placeholder="Поиск квизов..." origin="/catalog" />

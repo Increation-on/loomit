@@ -74,7 +74,6 @@ export default function CategoriesPage() {
   return (
     <div className="mx-auto max-w-2xl p-4 pb-24">
       
-      {/* 2. Заменяем BackLink и h1 на PageContentTitle */}
       <PageContentTitle 
         title="Управление категориями" 
         showBack={true} 

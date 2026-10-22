@@ -2,13 +2,13 @@
 
 import { useTheme } from '@/hooks/useTheme';
 import { Bell, Sun, Moon, Trash2 } from 'lucide-react';
-import { BackLink } from '@/components/navigation/BackLink';
 import { Button } from '@/components/ui/core/Button';
 import { useState } from 'react';
 import { Modal } from '@/components/ui/feedback/Modal';
 import { useToast } from '@/components/ui/feedback/ToastContainer';
 import { useRouter } from 'next/navigation';
 import { usePageHeader } from '@/hooks/usePageHeader';
+import { PageContentTitle } from '@/components/ui/core/PageContentTitle';
 
 export default function SettingsPage() {
   const { theme, toggleTheme } = useTheme();
@@ -39,11 +39,12 @@ export default function SettingsPage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-6 p-6 pb-24">
-      {/* Назад */}
-      <BackLink fallback="/profile" />
-
-      {/* Заголовок */}
-      <h1 className="text-2xl font-bold text-(--loom-white)">Настройки</h1>
+      
+      <PageContentTitle 
+        title="Настройки" 
+        showBack={true} 
+        fallback="/profile" 
+      />
 
       {/* Тема */}
       <div className="glitch-border relative overflow-hidden rounded-2xl bg-(--loom-white)/5 p-5">

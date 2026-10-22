@@ -7,21 +7,25 @@ import { useRouter } from 'next/navigation';
 import { useGetAllAttemptsQuery } from '@/store/api/profileApi';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
 import { useNavigationTransition } from '@/components/layout/NavigationProvider';
-import { BackLink } from '@/components/navigation/BackLink';
 import { usePageHeader } from '@/hooks/usePageHeader';
+import { PageContentTitle } from '@/components/ui/core/PageContentTitle';
 
 export default function HistoryPage() {
   const router = useRouter();
   const { setAttemptReturnTo } = useNavigationTransition();
   const [page, setPage] = useState(1);
   const { data, isLoading } = useGetAllAttemptsQuery(page);
+  
   usePageHeader({ variant: 'nested', title: 'Вся история', showBack: true });
 
   return (
     <div className="mx-auto max-w-2xl space-y-6 p-6 pb-24">
-      <BackLink fallback="/profile" />
-
-      <h1 className="mb-6 text-2xl font-bold text-(--loom-white)">Вся история</h1>
+      
+      <PageContentTitle 
+        title="Вся история" 
+        showBack={true} 
+        fallback="/profile" 
+      />
 
       {isLoading ? (
         <div className="space-y-3">

@@ -30,7 +30,8 @@ export function BackLink({
     clearAttemptReturnTo,
     startGlitchTransition
   } = useNavigationTransition();
-
+console.log('[BackLink]', 
+  { fallback, attemptReturnTo, quizOrigin, idx: typeof window !== 'undefined' ? window.history.state?.idx : null });
   const handleBack = () => {
     startGlitchTransition();
 

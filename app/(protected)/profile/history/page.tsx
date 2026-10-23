@@ -16,7 +16,7 @@ export default function HistoryPage() {
   const [page, setPage] = useState(1);
   const { data, isLoading } = useGetAllAttemptsQuery(page);
   
-  usePageHeader({ variant: 'nested', title: 'Вся история', showBack: true });
+  usePageHeader({ variant: 'nested', title: 'Вся история', showBack: true, fallback: '/profile' });
 
   return (
     <div className="mx-auto max-w-2xl space-y-6 p-6 pb-24">

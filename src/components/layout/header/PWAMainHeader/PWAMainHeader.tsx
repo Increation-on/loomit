@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Settings } from 'lucide-react';
 import { GlitchLine } from '@/components/common/GlitchLine';
 
-export default function MainHeader() {
+export default function PWAMainHeader() {
   return (
     <header
       className="sticky top-0 z-50 flex h-12 w-full items-center justify-between px-4 backdrop-blur-sm"

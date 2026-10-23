@@ -7,9 +7,10 @@ import { useAppDispatch, store } from '@/store/store';
 import { selectHeaderState, resetHeader } from '@/store/slices/headerSlice';
 import { usePWA } from '@/hooks/usePWA';
 import { SkeletonHeader } from '@/components/ui/feedback/Skeleton';
-import MainHeader from './MainHeader/MainHeader';
-import PageHeader from './PageHeader/PageHeader';
+
 import WebHeader from './WebHeader/WebHeader';
+import PWAHeader from './PWAHeader/PWAHeader';
+import PWAMainHeader from './PWAMainHeader/PWAMainHeader';
 
 export function AppHeader() {
   const isPWA = usePWA();
@@ -58,10 +59,10 @@ export function AppHeader() {
   // 5. Рендерим нужный вариант
   switch (variant) {
     case 'main':
-      return <MainHeader />;
+      return <PWAMainHeader />;
     case 'tab':
     case 'nested':
-      return <PageHeader title={title} showBack={showBack} />;
+      return <PWAHeader title={title} showBack={showBack} />;
     default:
       return null;
   }

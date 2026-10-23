@@ -10,7 +10,7 @@ interface PageHeaderProps {
   showBack?: boolean;
 }
 
-export default function PageHeader({ title, showBack = false }: PageHeaderProps) {
+export default function PWAHeader({ title, showBack = false }: PageHeaderProps) {
   const router = useRouter();
   const { 
     quizOrigin, 

@@ -20,7 +20,8 @@ export default function CategoriesPage() {
   usePageHeader({ 
     variant: 'nested', 
     title: 'Управление категориями', 
-    showBack: true 
+    showBack: true,
+    fallback: '/admin'
   });
 
   const handleAddCategory = async (name: string, iconFile: File | null) => {

@@ -27,7 +27,7 @@ export default function AttemptDetailPage() {
 
   const isLoading = attemptLoading || (effectiveQuizId ? quizLoading : false);
 
-  usePageHeader({ variant: 'tab', title: 'Разбор ответов', showBack: true });
+  usePageHeader({ variant: 'nested', title: 'Разбор ответов', showBack: true,  fallback: '/profile/history'});
 
   if (isLoading) {
     return (

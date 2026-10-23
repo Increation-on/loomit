@@ -9,6 +9,7 @@ interface HeaderState {
   variant: HeaderVariant | null;
   title: string;
   showBack: boolean;
+  fallback: string | null;
 }
 
 const initialState: HeaderState = {
@@ -16,6 +17,7 @@ const initialState: HeaderState = {
   variant: null,
   title: '',
   showBack: false,
+  fallback: null,
 };
 
 interface SetHeaderPayload {
@@ -23,6 +25,7 @@ interface SetHeaderPayload {
   variant: HeaderVariant;
   title?: string;
   showBack?: boolean;
+  fallback?: string;
 }
 
 const headerSlice = createSlice({
@@ -34,12 +37,14 @@ const headerSlice = createSlice({
       state.variant = action.payload.variant;
       state.title = action.payload.title || '';
       state.showBack = action.payload.showBack || false;
+      state.fallback = action.payload.fallback ?? null;
     },
     resetHeader(state) {
       state.path = null;
       state.variant = null;
       state.title = '';
       state.showBack = false;
+      state.fallback = null;
     },
   },
 });
@@ -48,6 +53,7 @@ const headerSlice = createSlice({
 export const selectHeaderState = (state: RootState) => state.header;
 export const selectHeaderVariant = (state: RootState) => state.header.variant;
 export const selectHeaderPath = (state: RootState) => state.header.path;
+export const selectHeaderFallback = (state: RootState) => state.header.fallback;
 
 export const { setHeader, resetHeader } = headerSlice.actions;
 

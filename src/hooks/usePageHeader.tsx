@@ -8,9 +8,10 @@ interface PageHeaderConfig {
   variant: HeaderVariant;
   title?: string;
   showBack?: boolean;
+  fallback?: string;
 }
 
-export const usePageHeader = ({ variant, title, showBack }: PageHeaderConfig) => {
+export const usePageHeader = ({ variant, title, showBack, fallback }: PageHeaderConfig) => {
   const dispatch = useAppDispatch();
   const pathname = usePathname();
 
@@ -21,7 +22,8 @@ export const usePageHeader = ({ variant, title, showBack }: PageHeaderConfig) =>
         variant,
         title,
         showBack,
+        fallback,
       })
     );
-  }, [dispatch, pathname, variant, title, showBack]);
+  }, [dispatch, pathname, variant, title, showBack, fallback]);
 };

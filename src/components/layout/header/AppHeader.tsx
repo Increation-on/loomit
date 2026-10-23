@@ -17,7 +17,6 @@ export function AppHeader() {
   const pathname = usePathname();
   const dispatch = useAppDispatch();
   const { variant, path, title, showBack, fallback } = useSelector(selectHeaderState);
-  console.log('[AppHeader]', { pathname, path, variant, showBack, fallback });
 
   const prevPathname = useRef(pathname);
 

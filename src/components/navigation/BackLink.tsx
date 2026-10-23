@@ -46,8 +46,6 @@ export function BackLink({
       const historyLength = typeof window !== 'undefined' ? window.history.length : 0;
       const hasInternalHistory = (typeof idx === 'number' && idx > 0) || historyLength > 1;
 
-      console.log('[BackLink]', { fallback, idx, historyLength, hasInternalHistory });
-
       if (hasInternalHistory) {
         router.back();
       } else {

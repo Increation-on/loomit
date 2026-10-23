@@ -21,7 +21,7 @@ export default function CategoriesPage() {
     variant: 'nested', 
     title: 'Управление категориями', 
     showBack: true,
-    fallback: '/profile'
+    fallback: '/admin'
   });
 
   const handleAddCategory = async (name: string, iconFile: File | null) => {

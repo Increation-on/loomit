@@ -12,7 +12,7 @@ interface PWAHeaderProps {
 export default function PWAHeader({ title, showBack = false, fallback }: PWAHeaderProps) {
   return (
     <header
-      className="sticky top-0 z-50 flex h-12 w-full items-center px-4 backdrop-blur-sm"
+      className="sticky top-0 z-50 flex h-14 w-full items-center px-4 backdrop-blur-sm"
       style={{ backgroundColor: 'var(--nav-bg)' }}
     >
       <div className="flex w-10 shrink-0 items-center justify-start">
@@ -27,7 +27,7 @@ export default function PWAHeader({ title, showBack = false, fallback }: PWAHead
       </div>
 
       <div className="flex-1 text-center">
-        <h1 className="truncate text-base font-semibold text-(--loom-white)">{title}</h1>
+        <h1 className="truncate text-lg font-semibold text-(--loom-white)">{title}</h1>
       </div>
 
       <div className="w-10 shrink-0" />

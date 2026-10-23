@@ -18,6 +18,7 @@ import { Modal } from '@/components/ui/feedback/Modal';
 import { resetQuiz } from '@/store/slices/quizSlice';
 import { usePageHeader } from '@/hooks/usePageHeader';
 import { PageContentTitle } from '@/components/ui/core/PageContentTitle';
+import { InlineCodeText } from '@/components/ui/core/InlineCodeText';
 
 export default function QuizPreviewPage() {
   const params = useParams();
@@ -191,7 +192,7 @@ export default function QuizPreviewPage() {
                     visibility: isReady ? 'visible' : 'hidden',
                   }}
                 >
-                  {quiz.description}
+                  <InlineCodeText value={quiz.description} fontSize={descriptionFontSize} />
                 </p>
               </div>
             )}

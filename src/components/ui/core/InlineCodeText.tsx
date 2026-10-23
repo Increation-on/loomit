@@ -1,6 +1,7 @@
 'use client';
 
 import { parseInlineCode } from '@/lib/utils/quiz';
+import { cn } from '@/lib/utils';
 
 interface InlineCodeTextProps {
   value: string;
@@ -8,9 +9,11 @@ interface InlineCodeTextProps {
   fontSize?: number;
   /** Классы для текстовых (некодовых) сегментов */
   textClassName?: string;
+  /** Классы для кодовых сегментов (дополнительно к базовым) */
+  codeClassName?: string;
 }
 
-export function InlineCodeText({ value, fontSize, textClassName }: InlineCodeTextProps) {
+export function InlineCodeText({ value, fontSize, textClassName, codeClassName }: InlineCodeTextProps) {
   const segments = parseInlineCode(value);
 
   return (
@@ -24,7 +27,11 @@ export function InlineCodeText({ value, fontSize, textClassName }: InlineCodeTex
             <code
               key={i}
               style={style}
-              className="mx-0.5 inline rounded bg-(--loom-white)/10 px-1.5 py-0.5 align-baseline font-mono text-[0.9em] font-semibold whitespace-nowrap text-(--loom-yellow)"
+              className={cn(
+                'mx-0.5 inline rounded bg-(--loom-white)/10 px-1.5 py-0.5 align-baseline font-mono text-[0.9em] font-semibold text-(--loom-yellow)',
+                'wrap-anywhere',
+                codeClassName
+              )}
             >
               {segment.value}
             </code>

@@ -11,6 +11,8 @@ import { Skeleton } from '@/components/ui/feedback/Skeleton';
 import { usePageHeader } from '@/hooks/usePageHeader';
 import { PageContentTitle } from '@/components/ui/core/PageContentTitle';
 import { InlineCodeText } from '@/components/ui/core/InlineCodeText';
+import { prepareQuestionContent } from '@/lib/utils/quiz';
+import { QuestionCodeBlock } from '@/components/quiz/QuizQuestion/QuestionCodeBlock';
 
 export default function AttemptDetailPage() {
   const params = useParams();
@@ -62,10 +64,9 @@ export default function AttemptDetailPage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-8 p-6 pb-24">
-      
-      <PageContentTitle 
-        title={attempt.quizTitle || 'Разбор ответов'} 
-        showBack={true} 
+      <PageContentTitle
+        title={attempt.quizTitle || 'Разбор ответов'}
+        showBack={true}
         fallback="/profile/history"
         className="mb-4"
       />
@@ -88,19 +89,16 @@ export default function AttemptDetailPage() {
       <div className="space-y-4">
         {attempt.answers?.map((a: any, i: number) => {
           const isCorrect = a.isCorrect ?? false;
-
-          // 🔑 Ищем вопрос по тексту (questionId в attempt.answers нет)
           const realQuestion = quiz?.questions?.find((q: any) => q.text === a.questionText);
 
-          const getSelectedText = () => {
-            return a.selectedOptionText || a.selectedOptionId; // ← просто текст
-          };
-
-          const getCorrectText = () => {
-            return a.correctOptionText || a.correctOptionId; // ← просто текст
-          };
+          const questionText = a.questionText || realQuestion?.text || 'Вопрос';
+          const questionParsed = prepareQuestionContent(questionText);
 
           const explanation = realQuestion?.explanation;
+          const explanationParsed = explanation ? prepareQuestionContent(explanation) : null;
+
+          const getSelectedText = () => a.selectedOptionText || a.selectedOptionId;
+          const getCorrectText = () => a.correctOptionText || a.correctOptionId;
 
           return (
             <div
@@ -121,30 +119,45 @@ export default function AttemptDetailPage() {
                 {isCorrect ? <Check size={16} /> : <X size={16} />}
               </div>
 
-              <div className="flex-1 space-y-1">
+              <div className="min-w-0 flex-1 space-y-2">
                 <p className="text-sm font-medium text-(--loom-white)">
-                  {i + 1}.{' '}
-                  <InlineCodeText value={a.questionText || realQuestion?.text || 'Вопрос'} />
+                  {i + 1}. <InlineCodeText value={questionParsed.inlineText} />
                 </p>
+
+                {questionParsed.blockCode && (
+                  <QuestionCodeBlock
+                    code={questionParsed.blockCode}
+                    lang={questionParsed.blockLang}
+                  />
+                )}
+
                 <div className="flex flex-wrap gap-4 text-sm">
                   <span className="text-(--loom-white)/60">
                     Ваш ответ:{' '}
                     <span className={isCorrect ? 'text-(--loom-cyan)' : 'text-(--glitch-pink)'}>
-                      {getSelectedText()}
+                      <InlineCodeText value={getSelectedText()} />
                     </span>
                   </span>
                   {!isCorrect && (
                     <span className="text-(--loom-cyan)">
                       <span className="text-(--loom-yellow)"> Правильный: </span>
-                      {getCorrectText()}
+                      <InlineCodeText value={getCorrectText()} />
                     </span>
                   )}
                 </div>
 
-                {explanation && (
+                {explanationParsed && (
                   <div className="mt-2 rounded-lg bg-(--loom-white)/5 p-3 text-sm text-(--loom-white)/60">
                     <span className="font-medium text-(--loom-cyan)">Объяснение: </span>
-                    <InlineCodeText value={explanation} />
+                    <InlineCodeText value={explanationParsed.inlineText} />
+                    {explanationParsed.blockCode && (
+                      <div className="mt-2">
+                        <QuestionCodeBlock
+                          code={explanationParsed.blockCode}
+                          lang={explanationParsed.blockLang}
+                        />
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

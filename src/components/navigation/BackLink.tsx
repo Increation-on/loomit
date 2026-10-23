@@ -5,7 +5,6 @@ import { ChevronLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNavigationTransition } from '../layout/NavigationProvider';
 
-
 interface BackLinkProps {
   fallback?: string;
   className?: string;
@@ -30,8 +29,7 @@ export function BackLink({
     clearAttemptReturnTo,
     startGlitchTransition
   } = useNavigationTransition();
-console.log('[BackLink]', 
-  { fallback, attemptReturnTo, quizOrigin, idx: typeof window !== 'undefined' ? window.history.state?.idx : null });
+
   const handleBack = () => {
     startGlitchTransition();
 
@@ -43,8 +41,12 @@ console.log('[BackLink]',
       router.push(quizOrigin);
       clearQuizOrigin();
     } else {
-      // 2. Проверяем, есть ли внутренняя история Next.js (idx > 0)
-      const hasInternalHistory = typeof window !== 'undefined' && window.history.state?.idx > 0;
+      // 2. Проверяем, есть ли внутренняя история
+      const idx = typeof window !== 'undefined' ? window.history.state?.idx : undefined;
+      const historyLength = typeof window !== 'undefined' ? window.history.length : 0;
+      const hasInternalHistory = (typeof idx === 'number' && idx > 0) || historyLength > 1;
+
+      console.log('[BackLink]', { fallback, idx, historyLength, hasInternalHistory });
 
       if (hasInternalHistory) {
         router.back();

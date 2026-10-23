@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
 import { usePageHeader } from '@/hooks/usePageHeader';
 import { PageContentTitle } from '@/components/ui/core/PageContentTitle';
+import { InlineCodeText } from '@/components/ui/core/InlineCodeText';
 
 export default function AttemptDetailPage() {
   const params = useParams();
@@ -27,7 +28,12 @@ export default function AttemptDetailPage() {
 
   const isLoading = attemptLoading || (effectiveQuizId ? quizLoading : false);
 
-  usePageHeader({ variant: 'nested', title: 'Разбор ответов', showBack: true,  fallback: '/profile/history'});
+  usePageHeader({
+    variant: 'nested',
+    title: 'Разбор ответов',
+    showBack: true,
+    fallback: '/profile/history',
+  });
 
   if (isLoading) {
     return (
@@ -61,7 +67,7 @@ export default function AttemptDetailPage() {
         title={attempt.quizTitle || 'Разбор ответов'} 
         showBack={true} 
         fallback="/profile/history"
-        className="mb-4" // Убрали лишние отступы, чтобы статистика была ближе
+        className="mb-4"
       />
 
       <div>
@@ -117,7 +123,8 @@ export default function AttemptDetailPage() {
 
               <div className="flex-1 space-y-1">
                 <p className="text-sm font-medium text-(--loom-white)">
-                  {i + 1}. {a.questionText || realQuestion?.text || 'Вопрос'}
+                  {i + 1}.{' '}
+                  <InlineCodeText value={a.questionText || realQuestion?.text || 'Вопрос'} />
                 </p>
                 <div className="flex flex-wrap gap-4 text-sm">
                   <span className="text-(--loom-white)/60">
@@ -137,7 +144,7 @@ export default function AttemptDetailPage() {
                 {explanation && (
                   <div className="mt-2 rounded-lg bg-(--loom-white)/5 p-3 text-sm text-(--loom-white)/60">
                     <span className="font-medium text-(--loom-cyan)">Объяснение: </span>
-                    {explanation}
+                    <InlineCodeText value={explanation} />
                   </div>
                 )}
               </div>

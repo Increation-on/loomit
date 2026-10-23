@@ -16,7 +16,7 @@ export function AppHeader() {
   const isPWA = usePWA();
   const pathname = usePathname();
   const dispatch = useAppDispatch();
-  const { variant, path, title, showBack } = useSelector(selectHeaderState);
+  const { variant, path, title, showBack, fallback } = useSelector(selectHeaderState);
 
   const prevPathname = useRef(pathname);
 
@@ -62,7 +62,7 @@ export function AppHeader() {
       return <PWAMainHeader />;
     case 'tab':
     case 'nested':
-      return <PWAHeader title={title} showBack={showBack} />;
+      return <PWAHeader title={title} showBack={showBack} fallback={fallback}/>;
     default:
       return null;
   }

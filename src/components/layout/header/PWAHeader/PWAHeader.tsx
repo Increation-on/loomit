@@ -1,46 +1,15 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { ChevronLeft } from 'lucide-react';
 import { GlitchLine } from '@/components/common/GlitchLine';
-import { useNavigationTransition } from '../../NavigationProvider';
+import { BackLink } from '@/components/navigation/BackLink';
 
-interface PageHeaderProps {
+interface PWAHeaderProps {
   title: string;
   showBack?: boolean;
+  fallback?: string | null;
 }
 
-export default function PWAHeader({ title, showBack = false }: PageHeaderProps) {
-  const router = useRouter();
-  const { 
-    quizOrigin, 
-    attemptReturnTo, 
-    clearQuizOrigin, 
-    clearAttemptReturnTo, 
-    startGlitchTransition 
-  } = useNavigationTransition();
-
-  const handleBack = () => {
-    startGlitchTransition();
-    
-    if (attemptReturnTo) {
-      router.push(attemptReturnTo);
-      clearAttemptReturnTo();
-    } else if (quizOrigin) {
-      router.push(quizOrigin);
-      clearQuizOrigin();
-    } else {
-      // Проверяем, есть ли внутренняя история Next.js
-      const hasInternalHistory = typeof window !== 'undefined' && window.history.state?.idx > 0;
-      
-      if (hasInternalHistory) {
-        router.back();
-      } else {
-        router.push('/');
-      }
-    }
-  };
-
+export default function PWAHeader({ title, showBack = false, fallback }: PWAHeaderProps) {
   return (
     <header
       className="sticky top-0 z-50 flex h-12 w-full items-center px-4 backdrop-blur-sm"
@@ -48,13 +17,12 @@ export default function PWAHeader({ title, showBack = false }: PageHeaderProps) 
     >
       <div className="flex w-10 shrink-0 items-center justify-start">
         {showBack && (
-          <button
-            onClick={handleBack}
-            className="-ml-2 flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-white/10"
-            aria-label="Назад"
-          >
-            <ChevronLeft className="h-6 w-6 text-(--loom-white)" />
-          </button>
+          <BackLink
+            fallback={fallback ?? '/'}
+            label=""
+            iconSize={24}
+            className="-ml-2 flex h-10 w-10 items-center justify-center rounded-full hover:bg-white/10 active:scale-100"
+          />
         )}
       </div>
 
@@ -63,7 +31,7 @@ export default function PWAHeader({ title, showBack = false }: PageHeaderProps) 
       </div>
 
       <div className="w-10 shrink-0" />
-      
+
       <GlitchLine />
     </header>
   );

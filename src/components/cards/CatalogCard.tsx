@@ -8,6 +8,7 @@ import { StarButton } from '@/components/ui/core/StarButton';
 import { Button } from '@/components/ui/core/Button';
 import { cn, pluralize } from '@/lib/utils';
 import { useNavigationTransition } from '../layout/NavigationProvider';
+import { InlineCodeText } from '@/components/ui/core/InlineCodeText';
 
 interface CatalogCardProps {
   quiz: {
@@ -73,6 +74,7 @@ export function CatalogCard({
         <div className="flex h-13 items-start gap-3">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-(--loom-white)/10 bg-(--loom-black)">
             {quiz.category?.iconUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={quiz.category.iconUrl}
                 alt={quiz.category.name}
@@ -90,7 +92,14 @@ export function CatalogCard({
               {quiz.title}
             </h3>
             <p className="line-clamp-1 min-h-5 text-sm text-(--loom-white)/60">
-              {quiz.description || ' '}
+              {quiz.description ? (
+                <InlineCodeText
+                  value={quiz.description}
+                  codeClassName="bg-(--loom-yellow)/10 text-(--loom-yellow) text-[0.8em]"
+                />
+              ) : (
+                ' '
+              )}
             </p>
           </div>
         </div>
@@ -148,7 +157,7 @@ export function CatalogCard({
             variant="outline"
             className="glitch-border relative flex w-full items-center justify-center text-(--loom-cyan) transition-all hover:bg-(--loom-cyan)/10 hover:text-(--loom-white)"
             onClick={() => {
-              setQuizOrigin(origin); // 👈 использовать origin
+              setQuizOrigin(origin);
               router.push(`/quiz/${quiz.id}/preview`);
             }}
           >

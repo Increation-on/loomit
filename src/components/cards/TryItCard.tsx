@@ -2,6 +2,7 @@
 
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
+import { InlineCodeText } from '@/components/ui/core/InlineCodeText';
 
 interface TryItCardProps {
   quiz: {
@@ -87,7 +88,14 @@ export function TryItCard({
       <h3 className="mt-1 truncate text-lg leading-tight font-bold text-(--loom-white)">
         {quiz.title}
       </h3>
-      <p className="mt-1 line-clamp-4 flex-1 text-sm text-(--loom-white)/60">{quiz.description}</p>
+      <p className="mt-1 line-clamp-4 flex-1 text-sm text-(--loom-white)/60">
+        {quiz.description && (
+          <InlineCodeText
+            value={quiz.description}
+            codeClassName="bg-(--loom-yellow)/10 text-(--loom-yellow) text-[0.8em]"
+          />
+        )}
+      </p>
     </div>
   );
 }

@@ -12,6 +12,9 @@ import { AppHeader } from '@/components/layout/header/AppHeader';
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-display' });
 const inter = Inter({ subsets: ['latin', 'cyrillic'], variable: '--font-body' });
 
+// 1. Добавляем проверку окружения
+const isDev = process.env.NODE_ENV === 'development';
+
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
@@ -28,6 +31,12 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: 'black-translucent',
     title: 'LoomIt',
+  },
+  // 2. Добавляем условный favicon
+  icons: {
+    // В dev-режиме берем иконку с иголкой из public/icons/
+    // В prod-режиме Next.js автоматически возьмет app/favicon.ico
+    icon: isDev ? '/icons/favicon_dev.ico' : undefined,
   },
 };
 

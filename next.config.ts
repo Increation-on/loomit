@@ -21,7 +21,7 @@ const nextConfig: NextConfig = {
     ];
   },
   turbopack: {},
-  allowedDevOrigins: ['localhost', '127.0.0.1', '192.168.0.102', '192.168.0.104'],
+  allowedDevOrigins: ['localhost', '127.0.0.1', '192.168.0.102', '192.168.0.104', '192.168.0.101'],
   experimental: {
     viewTransition: true,
   },

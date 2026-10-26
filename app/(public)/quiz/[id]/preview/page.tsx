@@ -112,7 +112,7 @@ export default function QuizPreviewPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[80vh] items-center justify-center p-4">
+      <div className="flex min-h-[80dvh] items-center justify-center p-4">
         <div className="w-full max-w-md space-y-4">
           <Skeleton className="mx-auto h-10 w-3/4" />
           <Skeleton className="h-5 w-full" />
@@ -125,7 +125,7 @@ export default function QuizPreviewPage() {
 
   if (!quiz) {
     return (
-      <div className="flex min-h-[80vh] items-center justify-center p-4">
+      <div className="flex min-h-[80dvh] items-center justify-center p-4">
         <p className="text-(--loom-white)/60">Квиз не найден</p>
       </div>
     );
@@ -138,7 +138,7 @@ export default function QuizPreviewPage() {
   };
 
   return (
-    <div className="flex min-h-[80vh] flex-col p-4">
+    <div className="flex min-h-[80dvh] flex-col p-4">
       
       <div className="w-full max-w-md">
         <PageContentTitle 
@@ -149,7 +149,7 @@ export default function QuizPreviewPage() {
         />
       </div>
 
-      <div className="flex flex-1 items-center justify-center">
+      <div className="flex flex-1 items-center justify-center overflow-y-auto pb-14">
         <div className="glitch-border relative w-full max-w-md overflow-hidden rounded-2xl bg-(--loom-white)/5 p-7">
           <div className="pointer-events-none absolute inset-0">
             <div className="glitch-scanline-gradient animate-scanline absolute right-0 left-0 mx-auto h-0.75 w-full opacity-50 blur-[1px]" />

@@ -271,6 +271,12 @@ html {
   display: none !important;
 }
 
+body.quiz-hide-layout {
+  overflow: hidden; /* Полностью отключает скролл страницы */
+  height: 100dvh;   /* Фиксирует высоту body по экрану */
+  padding-bottom: 0; /* На всякий случай убираем возможный отступ снизу */
+}
+
 /* Скрыть скроллбар везде (для PWA) */
 .hide-scrollbar::-webkit-scrollbar,
 .hide-scrollbar *::-webkit-scrollbar {

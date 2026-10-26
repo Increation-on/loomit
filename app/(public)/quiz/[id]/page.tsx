@@ -47,7 +47,7 @@ export default function QuizPage() {
   usePageHeader({ variant: 'hidden' });
 
   return (
-    <div className="pb-safe pt-safe flex min-h-screen flex-col px-4">
+    <div className="flex min-h-dvh flex-col px-4">
       {shouldHideLayout && (
         <button
           onClick={() => setShowExitModal(true)}

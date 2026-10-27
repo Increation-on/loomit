@@ -5,6 +5,7 @@ import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/prisma';
 import { adminQuizCreateSchema } from '@/lib/validators/quiz';
 import { authOptions } from '../../auth/[...nextauth]/route';
+import { resolveCodeLang } from '@/lib/utils';
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -75,6 +76,8 @@ export async function POST(request: Request) {
             options: q.options,
             correct_option_id: q.correctOptionId,
             explanation: q.explanation,
+            code: q.code ?? null,
+            codeLang: resolveCodeLang(q.code, q.codeLang),
             order: index,
           })),
         },

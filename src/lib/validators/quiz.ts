@@ -34,6 +34,8 @@ export const adminQuizCreateSchema = z.object({
           .length(4, 'Должно быть ровно 4 варианта'),
         correctOptionId: z.string().min(1, 'Выберите правильный вариант'),
         explanation: z.string().optional(),
+        code: z.string().nullable().optional(),
+        codeLang: z.string().nullable().optional(),
       })
     )
     .min(1, 'Минимум 1 вопрос'),

@@ -29,6 +29,8 @@ export const quizImportSchema = z.object({
           .length(4, 'Должно быть ровно 4 варианта ответа'),
         correctOptionId: z.string().min(1, 'Укажите правильный вариант (correctOptionId)'),
         explanation: z.string().optional(),
+        code: z.string().nullable().optional(),
+        codeLang: z.string().nullable().optional(),
       })
     )
     .min(1, 'Должен быть минимум 1 вопрос'),

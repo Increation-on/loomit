@@ -7,7 +7,7 @@ import { useToast } from '@/components/ui/feedback/ToastContainer';
 import { Upload, ClipboardPaste, Lightbulb } from 'lucide-react';
 import { CategoryConflictModal } from './CategoryConflictModal';
 import { quizImportSchema } from '@/lib/validators/quizImport';
-import { levenshtein, normalizeCategoryName, commonPrefixLength } from '@/lib/utils';
+import { levenshtein, normalizeCategoryName, commonPrefixLength, resolveCodeLang } from '@/lib/utils';
 import { useCreateCategoryMutation, useGetCategoriesQuery } from '@/store/api/categoryApi';
 
 interface ImportedQuiz {
@@ -21,6 +21,8 @@ interface ImportedQuiz {
     options: { id: string; text: string }[];
     correctOptionId: string;
     explanation?: string;
+    code?: string | null;      // <-- добавили
+    codeLang?: string | null;  // <-- добавили
   }[];
 }
 
@@ -59,6 +61,8 @@ export function QuizImportBlock({ onImport }: QuizImportBlockProps) {
       options: q.options,
       correctOptionId: q.correctOptionId,
       explanation: q.explanation || '',
+      code: q.code ?? null,                           // <-- добавили
+      codeLang: resolveCodeLang(q.code, q.codeLang),  // <-- добавили
     }));
 
     onImport({
@@ -244,7 +248,9 @@ export function QuizImportBlock({ onImport }: QuizImportBlockProps) {
         { "id": "4", "text": "\\"boolean\\"" }
       ],
       "correctOptionId": "1",
-      "explanation": "Опционально, можно с \`кодом\`"
+      "explanation": "Опционально",
+      "code": "console.log('hello');",
+      "codeLang": "js"
     }
   ]
 }`}
@@ -262,9 +268,8 @@ export function QuizImportBlock({ onImport }: QuizImportBlockProps) {
               с id одного из вариантов
             </li>
             <li>
-              Код в бэктиках <code className="text-(--loom-cyan)">`...`</code> — только в{' '}
-              <strong className="text-(--loom-white)/70">text</strong> и{' '}
-              <strong className="text-(--loom-white)/70">explanation</strong>
+              Код выносится в отдельное поле <strong className="text-(--loom-white)/70">code</strong> (строка), язык —{' '}
+              <strong className="text-(--loom-white)/70">codeLang</strong> (по умолчанию <code className="text-(--loom-cyan)">js</code>)
             </li>
             <li>
               <strong className="text-(--loom-white)/70">categoryName</strong>: если категории нет —

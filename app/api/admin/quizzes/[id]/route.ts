@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/prisma';
 import { adminQuizCreateSchema } from '@/lib/validators/quiz';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { resolveCodeLang } from '@/lib/utils';
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -110,6 +111,8 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
             options: q.options,
             correct_option_id: q.correctOptionId,
             explanation: q.explanation,
+            code: q.code ?? null,                            
+            codeLang: resolveCodeLang(q.code, q.codeLang),
             order: index,
           })),
         },

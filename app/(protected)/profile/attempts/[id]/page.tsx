@@ -92,6 +92,8 @@ export default function AttemptDetailPage() {
           const realQuestion = quiz?.questions?.find((q: any) => q.text === a.questionText);
 
           const questionText = a.questionText || realQuestion?.text || 'Вопрос';
+          
+          // Обновленный парсинг (теперь возвращает только inlineText)
           const questionParsed = prepareQuestionContent(questionText);
 
           const explanation = realQuestion?.explanation;
@@ -99,6 +101,10 @@ export default function AttemptDetailPage() {
 
           const getSelectedText = () => a.selectedOptionText || a.selectedOptionId;
           const getCorrectText = () => a.correctOptionText || a.correctOptionId;
+
+          // Берем код напрямую из вопроса в базе
+          const questionCode = realQuestion?.code ?? null;
+          const questionCodeLang = realQuestion?.codeLang ?? null;
 
           return (
             <div
@@ -124,10 +130,11 @@ export default function AttemptDetailPage() {
                   {i + 1}. <InlineCodeText value={questionParsed.inlineText} />
                 </p>
 
-                {questionParsed.blockCode && (
+                {/* Рендерим код вопроса, если он есть */}
+                {questionCode && (
                   <QuestionCodeBlock
-                    code={questionParsed.blockCode}
-                    lang={questionParsed.blockLang}
+                    code={questionCode}
+                    lang={questionCodeLang}
                   />
                 )}
 
@@ -150,14 +157,7 @@ export default function AttemptDetailPage() {
                   <div className="mt-2 rounded-lg bg-(--loom-white)/5 p-3 text-sm text-(--loom-white)/60">
                     <span className="font-medium text-(--loom-cyan)">Объяснение: </span>
                     <InlineCodeText value={explanationParsed.inlineText} />
-                    {explanationParsed.blockCode && (
-                      <div className="mt-2">
-                        <QuestionCodeBlock
-                          code={explanationParsed.blockCode}
-                          lang={explanationParsed.blockLang}
-                        />
-                      </div>
-                    )}
+                    {/* Блок кода объяснения убран, так как explanationCode будет в LOO-25 */}
                   </div>
                 )}
               </div>

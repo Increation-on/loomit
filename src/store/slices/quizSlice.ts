@@ -21,6 +21,8 @@ interface QuizState {
     }[];
     correctOptionId: string;
     explanation?: string;
+    code?: string | null;     
+    codeLang?: string | null; 
   }[];
   answers: UserAnswer[];
   currentIndex: number;
@@ -80,6 +82,8 @@ const quizSlice = createSlice({
           ),
           correctOptionId: q.correct_option_id || q.correctOptionId || '',
           explanation: q.explanation || '',
+           code: q.code ?? null,        
+          codeLang: q.codeLang ?? null,
         };
       });
 
@@ -144,6 +148,8 @@ const quizSlice = createSlice({
           options: shuffle([...normalizedOptions]),
           correctOptionId: q.correctOptionId || q.correct_option_id || '',
           explanation: q.explanation || '',
+          code: q.code ?? null,        
+          codeLang: q.codeLang ?? null,
         };
       });
 

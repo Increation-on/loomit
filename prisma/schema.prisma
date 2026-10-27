@@ -37,8 +37,8 @@ model attempt {
   quiz_id         String
   score           Int           @default(0)
   total_questions Int
-  answers         Json          // Будет хранить массив ответов: [{ questionId: string, selectedOptionId: string, isCorrect: boolean, ... }]
-  question_order  Json?          // <-- НАШ ФИКС: Хранит зашафленный массив ID вопросов ["clx1", "clx2"]
+  answers         Json // Будет хранить массив ответов: [{ questionId: string, selectedOptionId: string, isCorrect: boolean, ... }]
+  question_order  Json? // <-- НАШ ФИКС: Хранит зашафленный массив ID вопросов ["clx1", "clx2"]
   status          AttemptStatus @default(IN_PROGRESS) // <-- НАШ ФИКС: Статус сессии
   sync_status     String        @default("pending")
   created_at      DateTime      @default(now())
@@ -50,7 +50,6 @@ model attempt {
   @@index([user_id])
 }
 
-
 model question {
   id                String  @id @default(cuid())
   text              String
@@ -58,6 +57,8 @@ model question {
   correct_option_id String
   order             Int
   explanation       String?
+  code              String?
+  codeLang          String?
   quiz_id           String
   quiz              quiz    @relation(fields: [quiz_id], references: [id], onDelete: Cascade)
 
@@ -65,20 +66,19 @@ model question {
 }
 
 model quiz {
-  id          String      @id @default(cuid())
-  title       String      @unique
+  id          String     @id @default(cuid())
+  title       String     @unique
   description String?
-  category_id String     // внешний ключ на категорию
-  category    category?   @relation(fields: [category_id], references: [id])
-  level       Level?      @default(JUNIOR)
-  created_at  DateTime    @default(now())
+  category_id String // внешний ключ на категорию
+  category    category?  @relation(fields: [category_id], references: [id])
+  level       Level?     @default(JUNIOR)
+  created_at  DateTime   @default(now())
   updated_at  DateTime
   attempts    attempt[]
   questions   question[]
 
   favorites favorite[]
 }
-
 
 model session {
   id            String   @id @default(cuid())
@@ -89,14 +89,14 @@ model session {
 }
 
 model user {
-  id             String     @id @default(cuid())
-  email          String     @unique
+  id             String    @id @default(cuid())
+  email          String    @unique
   name           String?
   image          String?
-  created_at     DateTime   @default(now())
+  created_at     DateTime  @default(now())
   password       String?
   email_verified DateTime?
-  role           String     @default("user")
+  role           String    @default("user")
   accounts       account[]
   attempts       attempt[]
   sessions       session[]
@@ -113,16 +113,16 @@ model verificationToken {
 }
 
 model category {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  quizzes     quiz[]  
+  id      String  @id @default(cuid())
+  name    String  @unique
+  quizzes quiz[]
   iconUrl String?
 }
 
 model favorite {
-  id        String   @id @default(cuid())
-  user_id   String
-  quiz_id   String
+  id         String   @id @default(cuid())
+  user_id    String
+  quiz_id    String
   created_at DateTime @default(now())
 
   user user @relation(fields: [user_id], references: [id], onDelete: Cascade)

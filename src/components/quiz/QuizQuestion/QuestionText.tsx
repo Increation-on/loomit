@@ -8,12 +8,12 @@ interface QuestionTextProps {
   inlineText: string; // текст с бэктиками (после парсинга)
   textForSizing: string; // текст без бэктиков (для измерения)
   questionId: string; // для dependencies в хуке
-  blockCode: string | null;
+  hasCode: boolean; // <-- изменили тип с string | null на boolean
 }
 
 export function QuestionText({
   inlineText,
-  blockCode,
+  hasCode,
   questionId,
   textForSizing,
 }: QuestionTextProps) {
@@ -36,14 +36,14 @@ export function QuestionText({
     <div
       className={cn(
         'w-full shrink-0',
-        !blockCode ? 'flex h-full flex-col justify-center' : 'h-auto'
+        !hasCode ? 'flex h-full flex-col justify-center' : 'h-auto'
       )}
     >
       <h2
         ref={questionRef}
         className={cn(
           'block w-full text-center font-bold wrap-break-word text-(--loom-white) transition-all duration-150',
-          blockCode && alignClass
+          hasCode && alignClass
         )}
         style={{
           fontSize: fontSize + 'px',

@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/core/Input';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/core/Card';
 import { useToast } from '@/components/ui/feedback/ToastContainer';
 import { Trash2, Plus, Check } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, resolveCodeLang } from '@/lib/utils'; // <-- добавили resolveCodeLang
 import { Filters } from '@/components/ui/core/Filters';
 import { useUpdateQuizMutation } from '@/store/api/quizApi';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
@@ -25,11 +25,13 @@ interface Question {
   options: Option[];
   correctOptionId: string;
   explanation?: string;
+  code?: string | null;     // <-- добавили
+  codeLang?: string | null; // <-- добавили
 }
 
 interface EditModalState {
   isOpen: boolean;
-  type: 'question' | 'explanation' | 'option';
+  type: 'question' | 'explanation' | 'option' | 'code'; // <-- добавили 'code'
   questionIndex: number;
   optionIndex?: number;
   value: string;
@@ -75,11 +77,13 @@ export default function EditQuizPage() {
             text: q.text,
             options: Array.isArray(q.options)
               ? q.options.map((o: any) =>
-                  typeof o === 'string' ? { id: crypto.randomUUID(), text: o } : o
-                )
+                typeof o === 'string' ? { id: crypto.randomUUID(), text: o } : o
+              )
               : [],
             correctOptionId: q.correct_option_id || q.correctOptionId || '',
             explanation: q.explanation || '',
+            code: q.code ?? null,         // <-- добавили маппинг
+            codeLang: q.codeLang ?? null, // <-- добавили маппинг
           }))
         );
       } catch (err) {
@@ -107,6 +111,8 @@ export default function EditQuizPage() {
         ],
         correctOptionId: '',
         explanation: '',
+        code: null,      // <-- добавили
+        codeLang: null,  // <-- добавили
       },
     ]);
   };
@@ -153,6 +159,11 @@ export default function EditQuizPage() {
       updated[questionIndex].explanation = value;
     } else if (type === 'option' && optionIndex !== undefined) {
       updated[questionIndex].options[optionIndex].text = value;
+    } else if (type === 'code') {
+      // <-- новая ветка для кода
+      const codeValue = value.trim() || null;
+      updated[questionIndex].code = codeValue;
+      updated[questionIndex].codeLang = resolveCodeLang(codeValue, updated[questionIndex].codeLang);
     }
 
     setQuestions(updated);
@@ -280,6 +291,32 @@ export default function EditQuizPage() {
                 </div>
               ))}
 
+              {/* Код — клик открывает модалку (НОВЫЙ БЛОК) */}
+              <div className="mt-2">
+                <label className="mb-1 block text-sm text-(--loom-white)/60">
+                  Код (необязательно)
+                </label>
+                <div
+                  onClick={() => {
+                    setEditModal({
+                      isOpen: true,
+                      type: 'code',
+                      questionIndex: qi,
+                      value: q.code || '',
+                    });
+                  }}
+                  className="min-h-12 w-full cursor-pointer rounded-xl border border-(--loom-white)/10 bg-(--loom-black) px-3 py-2 font-mono text-sm text-(--loom-white) transition-colors hover:border-(--loom-cyan)/50"
+                >
+                  {q.code ? (
+                    <span className="line-clamp-3 block whitespace-pre-wrap">{q.code}</span>
+                  ) : (
+                    <span className="font-sans text-(--loom-white)/30">
+                      Нажмите чтобы добавить код
+                    </span>
+                  )}
+                </div>
+              </div>
+
               {/* Объяснение — клик открывает модалку */}
               <div className="mt-2">
                 <label className="mb-1 block text-sm text-(--loom-white)/60">
@@ -303,6 +340,7 @@ export default function EditQuizPage() {
                   )}
                 </div>
               </div>
+
             </CardContent>
           </Card>
         ))}
@@ -332,21 +370,29 @@ export default function EditQuizPage() {
             ? 'Редактировать вопрос'
             : editModal.type === 'explanation'
               ? 'Редактировать объяснение'
-              : 'Редактировать вариант'
+              : editModal.type === 'code'
+                ? 'Редактировать код'
+                : 'Редактировать вариант'
         }
       >
         <textarea
           value={editModal.value}
           onChange={(e) => setEditModal((prev) => ({ ...prev, value: e.target.value }))}
-          className="min-h-24 w-full resize-y rounded-xl border border-(--loom-white)/10 bg-(--loom-black) px-3 py-2 text-(--loom-white) focus:border-(--loom-cyan) focus:outline-none"
+          // <-- для кода добавляем моноширинный шрифт
+          className={cn(
+            'min-h-24 w-full resize-y rounded-xl border border-(--loom-white)/10 bg-(--loom-black) px-3 py-2 text-(--loom-white) focus:border-(--loom-cyan) focus:outline-none',
+            editModal.type === 'code' && 'font-mono text-sm'
+          )}
           placeholder={
             editModal.type === 'question'
               ? 'Введите текст вопроса'
               : editModal.type === 'explanation'
                 ? 'Введите объяснение'
-                : 'Введите текст варианта'
+                : editModal.type === 'code'
+                  ? 'Введите код'
+                  : 'Введите текст варианта'
           }
-          rows={4}
+          rows={editModal.type === 'code' ? 6 : 4}
         />
         <div className="mt-4 flex justify-end gap-2">
           <Button

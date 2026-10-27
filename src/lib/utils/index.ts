@@ -6,3 +6,4 @@ export * from './levenshtein';
 export * from './normalizeCategoryName';
 export * from './commonPrefixLength';
 export * from './resolveCodeLang';
+export * from './generateQuizJson';

@@ -10,11 +10,12 @@ import { Trash2, Plus, Check } from 'lucide-react';
 import { cn, resolveCodeLang } from '@/lib/utils';
 import { Filters } from '@/components/ui/core/Filters';
 import { useUpdateQuizMutation } from '@/store/api/quizApi';
-import { useGetCategoriesQuery } from '@/store/api/categoryApi'; // <-- добавили
+import { useGetCategoriesQuery } from '@/store/api/categoryApi';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
 import { Modal } from '@/components/ui/feedback/Modal';
 import { usePageHeader } from '@/hooks/usePageHeader';
-import { QuizExportBlock } from '@/components/admin/QuizExportBlock'; // <-- добавили
+import { QuizExportBlock } from '@/components/admin/QuizExportBlock';
+import { QuizImportBlock } from '@/components/admin/QuizImportBlock'; // <-- добавили импорт
 
 interface Option {
   id: string;
@@ -53,7 +54,16 @@ export default function EditQuizPage() {
   const { success, error: showError } = useToast();
   const [updateQuiz, { isLoading: isUpdating }] = useUpdateQuizMutation();
   
-  const { data: categories = [] } = useGetCategoriesQuery(); // <-- добавили
+  const { data: categories = [] } = useGetCategoriesQuery();
+
+  // Состояние для подтверждения импорта
+  const [pendingImportData, setPendingImportData] = useState<{
+    title: string;
+    description?: string;
+    categoryId: string;
+    level: 'JUNIOR' | 'MIDDLE' | 'SENIOR';
+    questions: any[];
+  } | null>(null);
 
   usePageHeader({ variant: 'tab', title: 'Редактирование', showBack: true });
 
@@ -175,6 +185,31 @@ export default function EditQuizPage() {
     setEditModal((prev) => ({ ...prev, isOpen: false }));
   };
 
+  // Логика импорта: перехватываем данные и открываем модалку
+  const handleImport = (data: {
+    title: string;
+    description?: string;
+    categoryId: string;
+    level: 'JUNIOR' | 'MIDDLE' | 'SENIOR';
+    questions: any[];
+  }) => {
+    setPendingImportData(data);
+  };
+
+  // Применяем импорт после подтверждения
+  const confirmImport = () => {
+    if (!pendingImportData) return;
+    
+    setTitle(pendingImportData.title);
+    setDescription(pendingImportData.description || '');
+    setCategoryId(pendingImportData.categoryId);
+    setLevel(pendingImportData.level);
+    setQuestions(pendingImportData.questions);
+    
+    setPendingImportData(null);
+    success('Данные из JSON успешно применены. Не забудьте сохранить квиз!');
+  };
+
   if (loading) {
     return (
       <div className="mx-auto max-w-2xl p-4 pb-24">
@@ -196,21 +231,23 @@ export default function EditQuizPage() {
     );
   }
 
-  // Ищем имя текущей категории для экспорта
   const currentCategoryName = categories.find((c: any) => c.id === categoryId)?.name || '';
 
   return (
     <div className="mx-auto max-w-2xl p-4 pb-24">
       <h1 className="mb-6 text-2xl font-bold text-(--loom-white)">Редактирование квиза</h1>
 
-      {/* Блок экспорта */}
-      <QuizExportBlock
-        title={title}
-        description={description}
-        categoryName={currentCategoryName}
-        level={level}
-        questions={questions}
-      />
+      {/* Блоки экспорта и импорта */}
+      <div className="mb-6">
+        <QuizExportBlock
+          title={title}
+          description={description}
+          categoryName={currentCategoryName}
+          level={level}
+          questions={questions}
+        />
+        <QuizImportBlock onImport={handleImport} />
+      </div>
 
       <div className="mb-6 space-y-4">
         <label className="mb-2 block text-xl font-medium text-(--loom-white)/80">Название</label>
@@ -378,7 +415,7 @@ export default function EditQuizPage() {
         </Button>
       </div>
 
-      {/* Единая модалка для всего */}
+      {/* Единая модалка для редактирования */}
       <Modal
         isOpen={editModal.isOpen}
         onClose={() => setEditModal((prev) => ({ ...prev, isOpen: false }))}
@@ -421,6 +458,24 @@ export default function EditQuizPage() {
             Сохранить
           </Button>
         </div>
+      </Modal>
+
+      {/* Модалка подтверждения импорта (ЗАМЕНА ДАННЫХ) */}
+      <Modal
+        isOpen={!!pendingImportData}
+        onClose={() => setPendingImportData(null)}
+        title="Подтверждение замены"
+        confirmText="Заменить данные"
+        cancelText="Отмена"
+        onConfirm={confirmImport}
+        onCancel={() => setPendingImportData(null)}
+      >
+        <p className="text-sm text-(--loom-white)/70">
+          Вы уверены, что хотите заменить текущие данные квиза данными из JSON?
+          <br /><br />
+          <strong className="text-(--glitch-pink)">Это действие перезапишет все поля формы</strong> (название, описание, категорию и вопросы). 
+          Изменения вступят в силу только после нажатия кнопки «Сохранить».
+        </p>
       </Modal>
     </div>
   );

@@ -15,8 +15,8 @@ export function usePWA() {
       // ✅ Включаем отладку только на реальных мобильных устройствах
       const isDevMobile = process.env.NODE_ENV === 'development' && isMobile;
 
-      // setIsHidden(isStandalone || isDevMobile);
-      setIsHidden(isStandalone);
+      setIsHidden(isStandalone || isDevMobile);
+      // setIsHidden(isStandalone);
     };
 
     check();

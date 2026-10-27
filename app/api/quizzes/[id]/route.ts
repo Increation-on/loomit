@@ -25,6 +25,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
             correct_option_id: true,
             explanation: true,
             order: true,
+            code: true,
+            codeLang: true
           },
         },
       },

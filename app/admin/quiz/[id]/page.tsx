@@ -7,12 +7,14 @@ import { Input } from '@/components/ui/core/Input';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/core/Card';
 import { useToast } from '@/components/ui/feedback/ToastContainer';
 import { Trash2, Plus, Check } from 'lucide-react';
-import { cn, resolveCodeLang } from '@/lib/utils'; // <-- добавили resolveCodeLang
+import { cn, resolveCodeLang } from '@/lib/utils';
 import { Filters } from '@/components/ui/core/Filters';
 import { useUpdateQuizMutation } from '@/store/api/quizApi';
+import { useGetCategoriesQuery } from '@/store/api/categoryApi'; // <-- добавили
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
 import { Modal } from '@/components/ui/feedback/Modal';
 import { usePageHeader } from '@/hooks/usePageHeader';
+import { QuizExportBlock } from '@/components/admin/QuizExportBlock'; // <-- добавили
 
 interface Option {
   id: string;
@@ -25,13 +27,13 @@ interface Question {
   options: Option[];
   correctOptionId: string;
   explanation?: string;
-  code?: string | null;     // <-- добавили
-  codeLang?: string | null; // <-- добавили
+  code?: string | null;     
+  codeLang?: string | null; 
 }
 
 interface EditModalState {
   isOpen: boolean;
-  type: 'question' | 'explanation' | 'option' | 'code'; // <-- добавили 'code'
+  type: 'question' | 'explanation' | 'option' | 'code';
   questionIndex: number;
   optionIndex?: number;
   value: string;
@@ -50,6 +52,8 @@ export default function EditQuizPage() {
   const [loading, setLoading] = useState(true);
   const { success, error: showError } = useToast();
   const [updateQuiz, { isLoading: isUpdating }] = useUpdateQuizMutation();
+  
+  const { data: categories = [] } = useGetCategoriesQuery(); // <-- добавили
 
   usePageHeader({ variant: 'tab', title: 'Редактирование', showBack: true });
 
@@ -82,8 +86,8 @@ export default function EditQuizPage() {
               : [],
             correctOptionId: q.correct_option_id || q.correctOptionId || '',
             explanation: q.explanation || '',
-            code: q.code ?? null,         // <-- добавили маппинг
-            codeLang: q.codeLang ?? null, // <-- добавили маппинг
+            code: q.code ?? null,         
+            codeLang: q.codeLang ?? null, 
           }))
         );
       } catch (err) {
@@ -111,8 +115,8 @@ export default function EditQuizPage() {
         ],
         correctOptionId: '',
         explanation: '',
-        code: null,      // <-- добавили
-        codeLang: null,  // <-- добавили
+        code: null,      
+        codeLang: null,  
       },
     ]);
   };
@@ -160,7 +164,6 @@ export default function EditQuizPage() {
     } else if (type === 'option' && optionIndex !== undefined) {
       updated[questionIndex].options[optionIndex].text = value;
     } else if (type === 'code') {
-      // <-- новая ветка для кода
       const codeValue = value.trim() || null;
       updated[questionIndex].code = codeValue;
       updated[questionIndex].codeLang = codeValue
@@ -193,9 +196,21 @@ export default function EditQuizPage() {
     );
   }
 
+  // Ищем имя текущей категории для экспорта
+  const currentCategoryName = categories.find((c: any) => c.id === categoryId)?.name || '';
+
   return (
     <div className="mx-auto max-w-2xl p-4 pb-24">
       <h1 className="mb-6 text-2xl font-bold text-(--loom-white)">Редактирование квиза</h1>
+
+      {/* Блок экспорта */}
+      <QuizExportBlock
+        title={title}
+        description={description}
+        categoryName={currentCategoryName}
+        level={level}
+        questions={questions}
+      />
 
       <div className="mb-6 space-y-4">
         <label className="mb-2 block text-xl font-medium text-(--loom-white)/80">Название</label>
@@ -293,7 +308,7 @@ export default function EditQuizPage() {
                 </div>
               ))}
 
-              {/* Код — клик открывает модалку (НОВЫЙ БЛОК) */}
+              {/* Код — клик открывает модалку */}
               <div className="mt-2">
                 <label className="mb-1 block text-sm text-(--loom-white)/60">
                   Код (необязательно)
@@ -380,7 +395,6 @@ export default function EditQuizPage() {
         <textarea
           value={editModal.value}
           onChange={(e) => setEditModal((prev) => ({ ...prev, value: e.target.value }))}
-          // <-- для кода добавляем моноширинный шрифт
           className={cn(
             'min-h-24 w-full resize-y rounded-xl border border-(--loom-white)/10 bg-(--loom-black) px-3 py-2 text-(--loom-white) focus:border-(--loom-cyan) focus:outline-none',
             editModal.type === 'code' && 'font-mono text-sm'

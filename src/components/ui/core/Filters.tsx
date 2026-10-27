@@ -9,17 +9,18 @@ interface FiltersProps {
   // Категории
   categoryFilter: string;
   setCategoryFilter: (value: string) => void;
-  disableAllOption?: boolean; // убираем «Все» для категорий
+  disableAllOption?: boolean;
 
   // Уровни
   levelFilter?: string;
   setLevelFilter?: (value: any) => void;
-  includeLevelAll?: boolean; // ✅ добавляем «Все» для уровней
+  includeLevelAll?: boolean;
 
   // Сортировка
   sortBy?: string;
   setSortBy?: (value: string) => void;
   showSort?: boolean;
+  showUpdatedSort?: boolean; // <-- ДОБАВИЛИ
 
   className?: string;
 }
@@ -34,6 +35,7 @@ export function Filters({
   sortBy,
   setSortBy,
   showSort = true,
+  showUpdatedSort = false, // <-- ДОБАВИЛИ
   className,
 }: FiltersProps) {
   const { data: categories, isLoading } = useGetCategoriesQuery();
@@ -42,6 +44,8 @@ export function Filters({
     { value: 'popular', label: 'Популярные' },
     { value: 'newest', label: 'Новые' },
     { value: 'alphabetical', label: 'По алфавиту' },
+    // Добавляем опцию только если showUpdatedSort = true
+    ...(showUpdatedSort ? [{ value: 'updated', label: 'По изменению' }] : []),
   ];
 
   const categoryOptions = [

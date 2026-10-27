@@ -3,7 +3,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useGetQuizzesQuery } from '@/store/api/quizApi';
+import { useGetAdminQuizzesQuery } from '@/store/api/quizApi';
 import Link from 'next/link';
 import { Button } from '@/components/ui/core/Button';
 import { Modal } from '@/components/ui/feedback/Modal';
@@ -19,12 +19,12 @@ import { usePageHeader } from '@/hooks/usePageHeader';
 import { PageContentTitle } from '@/components/ui/core/PageContentTitle';
 
 export default function AdminDashboard() {
-  const {
+    const {
     data: quizzes,
     isLoading,
     refetch,
-  } = useGetQuizzesQuery(
-    {},
+  } = useGetAdminQuizzesQuery(
+    undefined, // <-- аргумент void (можно undefined)
     {
       refetchOnMountOrArgChange: true,
     }
@@ -76,6 +76,10 @@ export default function AdminDashboard() {
         return sorted.sort((a, b) => a.title.localeCompare(b.title));
       case 'popular':
         return sorted.sort((a, b) => (b._count?.attempts || 0) - (a._count?.attempts || 0));
+              case 'updated':
+        return sorted.sort(
+          (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+        );
       default:
         return sorted;
     }
@@ -130,13 +134,14 @@ export default function AdminDashboard() {
         
       </div>
 
-      <Filters
+           <Filters
         categoryFilter={categoryFilter}
         setCategoryFilter={setCategoryFilter}
         levelFilter={levelFilter}
         setLevelFilter={setLevelFilter}
         sortBy={sortBy}
         setSortBy={setSortBy}
+        showUpdatedSort={true}
       />
 
       {sortedQuizzes.length === 0 ? (
@@ -158,9 +163,22 @@ export default function AdminDashboard() {
                     {pluralize(quiz._count?.questions || 0, 'вопрос', 'вопроса', 'вопросов')}
                   </span>
                   <span>•</span>
-                  <span>
-                    {quiz.created_at ? new Date(quiz.created_at).toLocaleDateString('ru') : '—'}
+                 <span title="Дата создания">
+                    Создан: {quiz.created_at ? new Date(quiz.created_at).toLocaleDateString('ru') : '—'}
                   </span>
+                   {quiz.updated_at ? (
+                    <>
+                      <span>•</span>
+                      <span title="Дата последнего изменения" className="text-(--loom-yellow)/80">
+                        Изменен: {new Date(quiz.updated_at).toLocaleDateString('ru')}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span>•</span>
+                      <span className="text-(--loom-white)/40">Не изменялся</span>
+                    </>
+                  )}
                   {quiz.category?.name && (
                     <>
                       <span>•</span>

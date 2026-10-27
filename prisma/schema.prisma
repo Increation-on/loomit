@@ -73,7 +73,7 @@ model quiz {
   category    category?  @relation(fields: [category_id], references: [id])
   level       Level?     @default(JUNIOR)
   created_at  DateTime   @default(now())
-  updated_at  DateTime
+  updated_at  DateTime   @updatedAt
   attempts    attempt[]
   questions   question[]
 

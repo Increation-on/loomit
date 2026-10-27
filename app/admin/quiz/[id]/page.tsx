@@ -163,7 +163,9 @@ export default function EditQuizPage() {
       // <-- новая ветка для кода
       const codeValue = value.trim() || null;
       updated[questionIndex].code = codeValue;
-      updated[questionIndex].codeLang = resolveCodeLang(codeValue, updated[questionIndex].codeLang);
+      updated[questionIndex].codeLang = codeValue
+        ? resolveCodeLang(codeValue, updated[questionIndex].codeLang)
+        : null;
     }
 
     setQuestions(updated);

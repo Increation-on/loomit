@@ -139,10 +139,11 @@ export default function NewQuizPage() {
     } else if (type === 'option' && optionIndex !== undefined) {
       updated[questionIndex].options[optionIndex].text = value;
     } else if (type === 'code') {
-      // <-- новая ветка для кода
       const codeValue = value.trim() || null;
       updated[questionIndex].code = codeValue;
-      updated[questionIndex].codeLang = resolveCodeLang(codeValue, updated[questionIndex].codeLang);
+      updated[questionIndex].codeLang = codeValue
+        ? resolveCodeLang(codeValue, updated[questionIndex].codeLang)
+        : null;
     }
 
     setQuestions(updated);

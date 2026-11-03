@@ -92,15 +92,15 @@ export default function AttemptDetailPage() {
           const realQuestion = quiz?.questions?.find((q: any) => q.id === a.questionId);
 
           const questionText = a.questionText || realQuestion?.text || 'Вопрос';
-          
+
           // Обновленный парсинг (теперь возвращает только inlineText)
           const questionParsed = prepareQuestionContent(questionText);
 
           const explanation = realQuestion?.explanation;
           const explanationParsed = explanation ? prepareQuestionContent(explanation) : null;
 
-          const getSelectedText = () => a.selectedOptionText || a.selectedOptionId;
-          const getCorrectText = () => a.correctOptionText || a.correctOptionId;
+          const selectedText = a.selectedOptionText || '—';
+          const correctText = a.correctOptionText || '—';
 
           // Берем код напрямую из вопроса в базе
           const questionCode = realQuestion?.code ?? null;
@@ -142,13 +142,13 @@ export default function AttemptDetailPage() {
                   <span className="text-(--loom-white)/60">
                     Ваш ответ:{' '}
                     <span className={isCorrect ? 'text-(--loom-cyan)' : 'text-(--glitch-pink)'}>
-                      <InlineCodeText value={getSelectedText()} />
+                      <InlineCodeText value={selectedText} />
                     </span>
                   </span>
                   {!isCorrect && (
                     <span className="text-(--loom-cyan)">
                       <span className="text-(--loom-yellow)"> Правильный: </span>
-                      <InlineCodeText value={getCorrectText()} />
+                      <InlineCodeText value={correctText} />
                     </span>
                   )}
                 </div>

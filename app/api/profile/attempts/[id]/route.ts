@@ -32,6 +32,8 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
               options: true,
               correct_option_id: true,
               explanation: true,
+              code: true,
+              codeLang: true,
             },
           },
         },
@@ -53,9 +55,12 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
   const formattedAnswers = rawAnswers.map((a: any, index: number) => {
     const questionText = a.questionText;
 
-    // 🔑 Ищем вопрос по тексту, а не по индексу
-    // (потому что ответы идут в порядке прохождения, а вопросы — в порядке order)
-    const question = attempt.quiz.questions.find((q: any) => q.text === questionText) || null;
+    // 🔑 Приоритет: матч по questionId. Fallback по тексту — только для старых ответов,
+    // где questionId ещё не сохранялся.
+    const question =
+      attempt.quiz.questions.find((q: any) =>
+        a.questionId ? q.id === a.questionId : q.text === questionText
+      ) || null;
 
     let optionsArray: any[] = [];
     if (question?.options) {
@@ -72,13 +77,16 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
 
     return {
       id: a.id || index,
+      questionId: a.questionId || question?.id || null,
       questionText: question?.text || a.questionText || 'Вопрос',
       selectedOptionId: a.selectedOptionId || a.selected_option_id,
       selectedOptionText: a.selectedOptionText || a.selected_option_text,
       isCorrect: a.isCorrect ?? a.is_correct,
       correctOptionId: a.correctOptionId || question?.correct_option_id,
       correctOptionText: a.correctOptionText || a.correct_option_text,
-      explanation: question?.explanation || null, // ← объяснение сразу в ответе
+      explanation: question?.explanation || null,
+      code: question?.code ?? null,
+      codeLang: question?.codeLang ?? null,
       options: optionsArray,
     };
   });

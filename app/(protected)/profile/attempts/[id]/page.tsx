@@ -89,7 +89,7 @@ export default function AttemptDetailPage() {
       <div className="space-y-4">
         {attempt.answers?.map((a: any, i: number) => {
           const isCorrect = a.isCorrect ?? false;
-          const realQuestion = quiz?.questions?.find((q: any) => q.text === a.questionText);
+          const realQuestion = quiz?.questions?.find((q: any) => q.id === a.questionId);
 
           const questionText = a.questionText || realQuestion?.text || 'Вопрос';
           

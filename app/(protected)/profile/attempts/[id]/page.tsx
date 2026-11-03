@@ -108,7 +108,7 @@ export default function AttemptDetailPage() {
 
           return (
             <div
-              key={i}
+              key={a.questionId ?? i}
               className={cn(
                 'glitch-border flex items-start gap-4 rounded-xl bg-(--loom-white)/5 p-4 transition-colors',
                 isCorrect ? 'border-l-4 border-(--loom-cyan)' : 'border-l-4 border-(--glitch-pink)'

@@ -2,9 +2,8 @@
 
 'use client';
 
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useGetAttemptByIdQuery } from '@/store/api/profileApi';
-import { useGetQuizByIdQuery } from '@/store/api/quizApi';
 import { Check, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/feedback/Skeleton';
@@ -16,19 +15,9 @@ import { QuestionCodeBlock } from '@/components/quiz/QuizQuestion/QuestionCodeBl
 
 export default function AttemptDetailPage() {
   const params = useParams();
-  const searchParams = useSearchParams();
   const id = params.id as string;
-  const quizId = searchParams.get('quizId');
 
-  const { data: attempt, isLoading: attemptLoading } = useGetAttemptByIdQuery(id);
-
-  const effectiveQuizId = quizId || attempt?.quiz_id;
-
-  const { data: quiz, isLoading: quizLoading } = useGetQuizByIdQuery(effectiveQuizId ?? '', {
-    skip: !effectiveQuizId,
-  });
-
-  const isLoading = attemptLoading || (effectiveQuizId ? quizLoading : false);
+  const { data: attempt, isLoading } = useGetAttemptByIdQuery(id);
 
   usePageHeader({
     variant: 'nested',
@@ -89,26 +78,22 @@ export default function AttemptDetailPage() {
       <div className="space-y-4">
         {attempt.answers?.map((a: any, i: number) => {
           const isCorrect = a.isCorrect ?? false;
-          const realQuestion = quiz?.questions?.find((q: any) => q.id === a.questionId);
 
-          const questionText = a.questionText || realQuestion?.text || 'Вопрос';
-
-          // Обновленный парсинг (теперь возвращает только inlineText)
+          const questionText = a.questionText || 'Вопрос';
           const questionParsed = prepareQuestionContent(questionText);
 
-          const explanation = realQuestion?.explanation;
+          const explanation = a.explanation;
           const explanationParsed = explanation ? prepareQuestionContent(explanation) : null;
 
           const selectedText = a.selectedOptionText || '—';
           const correctText = a.correctOptionText || '—';
 
-          // Берем код напрямую из вопроса в базе
-          const questionCode = realQuestion?.code ?? null;
-          const questionCodeLang = realQuestion?.codeLang ?? null;
+          const questionCode = a.code ?? null;
+          const questionCodeLang = a.codeLang ?? null;
 
           return (
             <div
-              key={a.questionId ?? i}
+              key={a.questionId ?? a.id ?? i}
               className={cn(
                 'glitch-border flex items-start gap-4 rounded-xl bg-(--loom-white)/5 p-4 transition-colors',
                 isCorrect ? 'border-l-4 border-(--loom-cyan)' : 'border-l-4 border-(--glitch-pink)'
@@ -130,13 +115,7 @@ export default function AttemptDetailPage() {
                   {i + 1}. <InlineCodeText value={questionParsed.inlineText} />
                 </p>
 
-                {/* Рендерим код вопроса, если он есть */}
-                {questionCode && (
-                  <QuestionCodeBlock
-                    code={questionCode}
-                    lang={questionCodeLang}
-                  />
-                )}
+                {questionCode && <QuestionCodeBlock code={questionCode} lang={questionCodeLang} />}
 
                 <div className="flex flex-wrap gap-4 text-sm">
                   <span className="text-(--loom-white)/60">
@@ -157,7 +136,6 @@ export default function AttemptDetailPage() {
                   <div className="mt-2 rounded-lg bg-(--loom-white)/5 p-3 text-sm text-(--loom-white)/60">
                     <span className="font-medium text-(--loom-cyan)">Объяснение: </span>
                     <InlineCodeText value={explanationParsed.inlineText} />
-                    {/* Блок кода объяснения убран, так как explanationCode будет в LOO-25 */}
                   </div>
                 )}
               </div>

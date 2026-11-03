@@ -32,6 +32,8 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
               options: true,
               correct_option_id: true,
               explanation: true,
+              code: true,     
+              codeLang: true,
             },
           },
         },
@@ -72,13 +74,16 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
 
     return {
       id: a.id || index,
+      questionId: a.questionId || question?.id || null,   // ← добавлено
       questionText: question?.text || a.questionText || 'Вопрос',
       selectedOptionId: a.selectedOptionId || a.selected_option_id,
       selectedOptionText: a.selectedOptionText || a.selected_option_text,
       isCorrect: a.isCorrect ?? a.is_correct,
       correctOptionId: a.correctOptionId || question?.correct_option_id,
       correctOptionText: a.correctOptionText || a.correct_option_text,
-      explanation: question?.explanation || null, // ← объяснение сразу в ответе
+      explanation: question?.explanation || null,
+      code: question?.code ?? null,                        // ← добавлено
+      codeLang: question?.codeLang ?? null,                // ← добавлено
       options: optionsArray,
     };
   });

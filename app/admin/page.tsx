@@ -17,9 +17,10 @@ import { useNavigationTransition } from '@/components/layout/NavigationProvider'
 import { useRouter } from 'next/navigation';
 import { usePageHeader } from '@/hooks/usePageHeader';
 import { PageContentTitle } from '@/components/ui/core/PageContentTitle';
+import { SearchWithDropdown } from '@/components/ui/core/SearchWithDropDown';
 
 export default function AdminDashboard() {
-    const {
+  const {
     data: quizzes,
     isLoading,
     refetch,
@@ -39,6 +40,7 @@ export default function AdminDashboard() {
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [levelFilter, setLevelFilter] = useState('all');
   const [sortBy, setSortBy] = useState('newest');
+  const [searchQuery, setSearchQuery] = useState('');
 
   usePageHeader({ variant: 'tab', title: 'Управление квизами', showBack: true });
 
@@ -58,12 +60,14 @@ export default function AdminDashboard() {
 
   const filteredQuizzes = useMemo(() => {
     if (!quizzes) return [];
+    const q = searchQuery.trim().toLowerCase();
     return quizzes.filter((quiz: any) => {
       const matchCategory = categoryFilter === 'all' || quiz.category?.id === categoryFilter;
       const matchLevel = levelFilter === 'all' || quiz.level === levelFilter;
-      return matchCategory && matchLevel;
+      const matchSearch = !q || quiz.title.toLowerCase().includes(q);
+      return matchCategory && matchLevel && matchSearch;
     });
-  }, [quizzes, categoryFilter, levelFilter]);
+  }, [quizzes, categoryFilter, levelFilter, searchQuery]);
 
   const sortedQuizzes = useMemo(() => {
     const sorted = [...filteredQuizzes];
@@ -76,7 +80,7 @@ export default function AdminDashboard() {
         return sorted.sort((a, b) => a.title.localeCompare(b.title));
       case 'popular':
         return sorted.sort((a, b) => (b._count?.attempts || 0) - (a._count?.attempts || 0));
-              case 'updated':
+      case 'updated':
         return sorted.sort(
           (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
         );
@@ -106,17 +110,17 @@ export default function AdminDashboard() {
 
   return (
     <div className="mx-auto max-w-4xl p-4 pb-24">
-      
+
       {/* Умный заголовок (скроется в PWA) */}
-      <PageContentTitle 
-        title="Управление квизами" 
-        showBack 
-        className="mb-6" 
+      <PageContentTitle
+        title="Управление квизами"
+        showBack
+        className="mb-6"
       />
 
       {/* Контейнер для кнопок в один ряд */}
       <div className="mb-6 flex w-full items-stretch gap-2 sm:gap-3">
-        
+
         {/* Кнопка "Управление категориями" */}
         <Link href="/admin/categories" className="flex-1">
           <Button variant="secondary" className="w-full px-2 text-xs sm:text-sm">
@@ -131,10 +135,20 @@ export default function AdminDashboard() {
             Создать квиз
           </Button>
         </Link>
-        
+
       </div>
 
-           <Filters
+      <SearchWithDropdown
+        items={quizzes ?? []}
+        value={searchQuery}
+        onChange={setSearchQuery}
+        onSelect={(quiz) => setSearchQuery(quiz.title)}
+        origin="/admin"
+        placeholder="Поиск по названию..."
+        className="mt-4 mb-4"
+      />
+
+      <Filters
         categoryFilter={categoryFilter}
         setCategoryFilter={setCategoryFilter}
         levelFilter={levelFilter}
@@ -163,10 +177,10 @@ export default function AdminDashboard() {
                     {pluralize(quiz._count?.questions || 0, 'вопрос', 'вопроса', 'вопросов')}
                   </span>
                   <span>•</span>
-                 <span title="Дата создания">
+                  <span title="Дата создания">
                     Создан: {quiz.created_at ? new Date(quiz.created_at).toLocaleDateString('ru') : '—'}
                   </span>
-                   {quiz.updated_at ? (
+                  {quiz.updated_at ? (
                     <>
                       <span>•</span>
                       <span title="Дата последнего изменения" className="text-(--loom-yellow)/80">

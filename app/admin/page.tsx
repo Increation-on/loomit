@@ -4,6 +4,7 @@
 
 import { useState, useMemo } from 'react';
 import { useGetAdminQuizzesQuery } from '@/store/api/quizApi';
+import { useGetCategoriesQuery } from '@/store/api/categoryApi';
 import Link from 'next/link';
 import { Button } from '@/components/ui/core/Button';
 import { Modal } from '@/components/ui/feedback/Modal';
@@ -25,11 +26,14 @@ export default function AdminDashboard() {
     isLoading,
     refetch,
   } = useGetAdminQuizzesQuery(
-    undefined, // <-- аргумент void (можно undefined)
+    undefined,
     {
       refetchOnMountOrArgChange: true,
     }
   );
+
+  // 👇 1. Получаем категории для маппинга id -> name
+  const { data: categories } = useGetCategoriesQuery();
 
   const router = useRouter();
   const { setQuizOrigin } = useNavigationTransition();
@@ -58,13 +62,17 @@ export default function AdminDashboard() {
     }
   };
 
+  // 👇 2. Исправленная фильтрация (category_id + поиск)
   const filteredQuizzes = useMemo(() => {
     if (!quizzes) return [];
+    
     const q = searchQuery.trim().toLowerCase();
+    
     return quizzes.filter((quiz: any) => {
-      const matchCategory = categoryFilter === 'all' || quiz.category?.id === categoryFilter;
+      const matchCategory = categoryFilter === 'all' || quiz.category_id === categoryFilter;
       const matchLevel = levelFilter === 'all' || quiz.level === levelFilter;
       const matchSearch = !q || quiz.title.toLowerCase().includes(q);
+      
       return matchCategory && matchLevel && matchSearch;
     });
   }, [quizzes, categoryFilter, levelFilter, searchQuery]);
@@ -160,92 +168,99 @@ export default function AdminDashboard() {
 
       {sortedQuizzes.length === 0 ? (
         <div className="mt-3 py-16 text-center text-(--loom-white)/60">
-          <p>Нет квизов по выбранным фильтрам</p>
+          <p>{searchQuery ? 'Ничего не найдено по запросу' : 'Нет квизов по выбранным фильтрам'}</p>
         </div>
       ) : (
         <div className="space-y-4">
-          {sortedQuizzes.map((quiz: any) => (
-            <Card
-              key={quiz.id}
-              className="mt-4 flex flex-col justify-between gap-3 p-4 sm:flex-row sm:items-center"
-            >
-              <div className="flex-1">
-                <h2 className="text-lg font-semibold text-(--loom-white)">{quiz.title}</h2>
-                <div className="mt-1 flex flex-wrap gap-2 text-sm text-(--loom-white)/60">
-                  <span>
-                    {quiz._count?.questions || 0}{' '}
-                    {pluralize(quiz._count?.questions || 0, 'вопрос', 'вопроса', 'вопросов')}
-                  </span>
-                  <span>•</span>
-                  <span title="Дата создания">
-                    Создан: {quiz.created_at ? new Date(quiz.created_at).toLocaleDateString('ru') : '—'}
-                  </span>
-                  {quiz.updated_at ? (
-                    <>
-                      <span>•</span>
-                      <span title="Дата последнего изменения" className="text-(--loom-yellow)/80">
-                        Изменен: {new Date(quiz.updated_at).toLocaleDateString('ru')}
+          {sortedQuizzes.map((quiz: any) => {
+            // 👇 3. Находим название категории по id
+            const categoryName = categories?.find((c: any) => c.id === quiz.category_id)?.name;
+
+            return (
+              <Card
+                key={quiz.id}
+                className="mt-4 flex flex-col justify-between gap-3 p-4 sm:flex-row sm:items-center"
+              >
+                <div className="flex-1">
+                  <h2 className="text-lg font-semibold text-(--loom-white)">{quiz.title}</h2>
+                  <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-(--loom-white)/60">
+                    <span>
+                      {quiz._count?.questions || 0}{' '}
+                      {pluralize(quiz._count?.questions || 0, 'вопрос', 'вопроса', 'вопросов')}
+                    </span>
+                    <span>•</span>
+                    <span title="Дата создания">
+                      Создан: {quiz.created_at ? new Date(quiz.created_at).toLocaleDateString('ru') : '—'}
+                    </span>
+                    {quiz.updated_at ? (
+                      <>
+                        <span>•</span>
+                        <span title="Дата последнего изменения" className="text-(--loom-yellow)/80">
+                          Изменен: {new Date(quiz.updated_at).toLocaleDateString('ru')}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <span>•</span>
+                        <span className="text-(--loom-white)/40">Не изменялся</span>
+                      </>
+                    )}
+                    
+                    {/* 👇 4. Новый бейдж категории */}
+                    {categoryName && (
+                      <span className="rounded bg-(--loom-magenta)/20 px-2 py-0.5 text-xs font-medium text-(--loom-magenta)">
+                        {categoryName}
                       </span>
-                    </>
-                  ) : (
-                    <>
-                      <span>•</span>
-                      <span className="text-(--loom-white)/40">Не изменялся</span>
-                    </>
-                  )}
-                  {quiz.category?.name && (
-                    <>
-                      <span>•</span>
-                      <span className="text-(--loom-magenta)">{quiz.category.name}</span>
-                    </>
-                  )}
-                  {quiz.level && (
-                    <>
-                      <span>•</span>
-                      <span
-                        className={cn(
-                          'text-(--loom-white)/40',
-                          quiz.level === 'JUNIOR' && 'text-(--loom-cyan)',
-                          quiz.level === 'MIDDLE' && 'text-(--loom-yellow)',
-                          quiz.level === 'SENIOR' && 'text-(--glitch-pink)'
-                        )}
-                      >
-                        {quiz.level.charAt(0) + quiz.level.slice(1).toLowerCase()}
-                      </span>
-                    </>
-                  )}
+                    )}
+
+                    {quiz.level && (
+                      <>
+                        <span>•</span>
+                        <span
+                          className={cn(
+                            'text-(--loom-white)/40',
+                            quiz.level === 'JUNIOR' && 'text-(--loom-cyan)',
+                            quiz.level === 'MIDDLE' && 'text-(--loom-yellow)',
+                            quiz.level === 'SENIOR' && 'text-(--glitch-pink)'
+                          )}
+                        >
+                          {quiz.level.charAt(0) + quiz.level.slice(1).toLowerCase()}
+                        </span>
+                      </>
+                    )}
+                  </div>
                 </div>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setQuizOrigin('/admin');
-                    router.push(`/quiz/${quiz.id}/preview`);
-                  }}
-                >
-                  <Eye size={14} className="mr-1" />
-                  Смотреть
-                </Button>
-                <Link href={`/admin/quiz/${quiz.id}`}>
-                  <Button variant="outline" size="sm">
-                    <Pencil size={14} className="mr-1" />
-                    Ред.
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setQuizOrigin('/admin');
+                      router.push(`/quiz/${quiz.id}/preview`);
+                    }}
+                  >
+                    <Eye size={14} className="mr-1" />
+                    Смотреть
                   </Button>
-                </Link>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-red-400 hover:text-red-300"
-                  onClick={() => setDeleteId(quiz.id)}
-                >
-                  <Trash2 size={14} className="mr-1" />
-                  Удалить
-                </Button>
-              </div>
-            </Card>
-          ))}
+                  <Link href={`/admin/quiz/${quiz.id}`}>
+                    <Button variant="outline" size="sm">
+                      <Pencil size={14} className="mr-1" />
+                      Ред.
+                    </Button>
+                  </Link>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-red-400 hover:text-red-300"
+                    onClick={() => setDeleteId(quiz.id)}
+                  >
+                    <Trash2 size={14} className="mr-1" />
+                    Удалить
+                  </Button>
+                </div>
+              </Card>
+            );
+          })}
         </div>
       )}
 

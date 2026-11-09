@@ -60,19 +60,19 @@ export function SearchWithDropdown({
   }, [searchQuery, items]);
 
   const handleSuggestionClick = (quiz: any) => {
-  setIsDropdownOpen(false); // закрываем в любом случае
-  setSuggestions([]);       // и очищаем, чтобы не мигали старые
+    setIsDropdownOpen(false); // закрываем в любом случае
+    setSuggestions([]);       // и очищаем, чтобы не мигали старые
 
-  if (onSelect) {
-    onSelect(quiz);
-    return;
-  }
+    if (onSelect) {
+      onSelect(quiz);
+      return;
+    }
 
-  // Старое поведение для каталога
-  setQuizOrigin(origin);
-  router.push(`/quiz/${quiz.id}/preview`);
-  setQuery('');
-};
+    // Старое поведение для каталога
+    setQuizOrigin(origin);
+    router.push(`/quiz/${quiz.id}/preview`);
+    setQuery('');
+  };
 
   return (
     <div className={cn('relative', className)}>

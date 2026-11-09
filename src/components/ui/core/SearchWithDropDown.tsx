@@ -13,7 +13,12 @@ interface SearchWithDropdownProps {
   isLoading?: boolean;
   placeholder?: string;
   className?: string;
-  origin?: string; // 👈 добавляем
+  origin?: string;
+
+  // 👇 новые пропсы
+  value?: string;                          // controlled-режим
+  onChange?: (value: string) => void;
+  onSelect?: (item: any) => void;          // клик по подсказке
 }
 
 export function SearchWithDropdown({
@@ -21,13 +26,25 @@ export function SearchWithDropdown({
   isLoading,
   placeholder = 'Поиск...',
   className,
-  origin = '/', // 👈 дефолт — главная
+  origin = '/',
+  value,
+  onChange,
+  onSelect,
 }: SearchWithDropdownProps) {
   const router = useRouter();
   const { setQuizOrigin } = useNavigationTransition();
-  const [searchQuery, setSearchQuery] = useState('');
+
+  const isControlled = value !== undefined;
+  const [internalQuery, setInternalQuery] = useState('');
+  const searchQuery = isControlled ? value : internalQuery;
+
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [suggestions, setSuggestions] = useState<any[]>([]);
+
+  const setQuery = (v: string) => {
+    if (isControlled) onChange?.(v);
+    else setInternalQuery(v);
+  };
 
   useEffect(() => {
     if (!items || searchQuery.length < 1) {
@@ -42,19 +59,34 @@ export function SearchWithDropdown({
     setIsDropdownOpen(true);
   }, [searchQuery, items]);
 
+  const handleSuggestionClick = (quiz: any) => {
+    setIsDropdownOpen(false); // закрываем в любом случае
+    setSuggestions([]);       // и очищаем, чтобы не мигали старые
+
+    if (onSelect) {
+      onSelect(quiz);
+      return;
+    }
+
+    // Старое поведение для каталога
+    setQuizOrigin(origin);
+    router.push(`/quiz/${quiz.id}/preview`);
+    setQuery('');
+  };
+
   return (
     <div className={cn('relative', className)}>
       <Input
         type="text"
         placeholder={placeholder}
         value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
+        onChange={(e) => setQuery(e.target.value)}
         leftIcon={<Search size={20} />}
         rightIcon={
           searchQuery.length > 0 && (
             <button
               onClick={() => {
-                setSearchQuery('');
+                setQuery('');
                 setIsDropdownOpen(false);
                 setSuggestions([]);
               }}
@@ -74,16 +106,13 @@ export function SearchWithDropdown({
           {suggestions.map((quiz: any) => (
             <button
               key={quiz.id}
-              onClick={() => {
-                setQuizOrigin(origin); // 👈 используем origin
-                router.push(`/quiz/${quiz.id}/preview`);
-                setIsDropdownOpen(false);
-                setSearchQuery('');
-              }}
+              onClick={() => handleSuggestionClick(quiz)}
               className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm text-(--loom-white) transition-colors hover:bg-(--loom-white)/10"
             >
               <span className="truncate">{quiz.title}</span>
-              <span className="text-xs text-(--loom-cyan)">Перейти</span>
+              <span className="text-xs text-(--loom-cyan)">
+                {onSelect ? 'Выбрать' : 'Перейти'}
+              </span>
             </button>
           ))}
         </div>

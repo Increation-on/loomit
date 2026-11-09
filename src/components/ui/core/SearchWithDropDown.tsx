@@ -60,18 +60,19 @@ export function SearchWithDropdown({
   }, [searchQuery, items]);
 
   const handleSuggestionClick = (quiz: any) => {
-    if (onSelect) {
-      // 👇 режим админки: подставить название в поле
-      onSelect(quiz);
-      setIsDropdownOpen(false);
-      return;
-    }
-    // 👇 старое поведение (главная): переход на превью
-    setQuizOrigin(origin);
-    router.push(`/quiz/${quiz.id}/preview`);
-    setIsDropdownOpen(false);
-    setQuery('');
-  };
+  setIsDropdownOpen(false); // закрываем в любом случае
+  setSuggestions([]);       // и очищаем, чтобы не мигали старые
+
+  if (onSelect) {
+    onSelect(quiz);
+    return;
+  }
+
+  // Старое поведение для каталога
+  setQuizOrigin(origin);
+  router.push(`/quiz/${quiz.id}/preview`);
+  setQuery('');
+};
 
   return (
     <div className={cn('relative', className)}>

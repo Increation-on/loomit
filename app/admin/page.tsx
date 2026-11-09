@@ -71,7 +71,7 @@ export default function AdminDashboard() {
     return quizzes.filter((quiz: any) => {
       const matchCategory = categoryFilter === 'all' || quiz.category_id === categoryFilter;
       const matchLevel = levelFilter === 'all' || quiz.level === levelFilter;
-      const matchSearch = !q || quiz.title.toLowerCase().includes(q);
+      const matchSearch = !q || quiz.title?.toLowerCase().includes(q);
       
       return matchCategory && matchLevel && matchSearch;
     });
